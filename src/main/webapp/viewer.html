@@ -1,64 +1,75 @@
 <!DOCTYPE HTML>
 <html>
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=utf-8">
-    <title>Simple_grid_demo</title>
-  </head>
-  <body>
-    <h1>Dumb grid demo!</h1>
-    <div id="gridHolder"> </div>
-  </body>
-  <script src="https://raw.github.com/kriszyp/put-selector/master/put.js"></script><!-- I hate the DOM -->
-  <script>
-    var holder = document.querySelector('#gridHolder');
-    var table = put(holder, 'table');
-    var theader = put(table, 'thead > tr');
-    var tbody = put(table, 'tbody');
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8">
+        <title>Simple_grid_demo</title>
+    </head>
+    <body>
+        <h1>Dumb grid demo!</h1>
 
-    var theDatas = [
-      {alpha:1, beta:2, charlie: 3},
-      {alpha:1, beta:2, charlie: 3, delta: 4},
-      {alpha:1, beta:2, charlie: 3, delta: 4, echo: 2, nested : {alpha:1, beta:2, charlie: 3, delta: 4, echo: 2}},
-      {alpha:1, beta:2, charlie: 3, kilo: 6},
-      {alpha:1, beta:2, charlie: 3, kilo: 6, bob: 42},
-      {alpha:1, charlie: 3, kilo: 6},
-      {alpha:1}
-    ];
-
-    var seenHash = {};
-
-    theDatas.forEach(function(item) {
-
-      // Take care of the header
-      Object.keys(item).forEach(function(key) {
-
-        // if we haven't seen it
-        if (!(key in seenHash)) {
-
-          // Add it to our hash (taking advantage of the fact that non-numeric
-          // keys are kept in order which is nonstandard but universally
-          // supported)
-          seenHash[key] = true;
-
-          // and add a new header to our table header
-          put(theader, 'th', key);
+        <div id="gridHolder"></div>
+    </body>
+    <script src="https://raw.github.com/kriszyp/put-selector/master/put.js"></script>
+    <!-- I hate the DOM -->
+    <script>
+        var holder = document.querySelector('#gridHolder');
+        var table = put(holder, 'table');
+        var theader = put(table, 'thead > tr');
+        var tbody = put(table, 'tbody');
+        var theDatas = [
+            {alpha:1, beta:2, charlie:3, delta:4, echo:2, nested:{heart:'dude', burn:'sweet'}, kilo:'kilo1', bob:'bob2'},
+            {alpha:1, beta:2, charlie:3},
+            {alpha:1, beta:2, charlie:3, delta:4},
+            {alpha:1, beta:2, charlie:3, kilo:6, nested:{heart:'tommy', burn:'gavin'}},
+            {alpha:1, beta:2, charlie:3, kilo:6, bob:42},
+            {alpha:1, charlie:3, kilo:6},
+            {alpha:1}
+        ];
+        var seenHash = {};
+        function header(key, prefix) {
+            if (!(key in seenHash)) {
+                seenHash[(typeof prefix === 'undefined' ? '' : prefix + '.') + key] = true;
+                put(theader, 'th', (typeof prefix === 'undefined' ? '' : prefix + '.') + key);
+            }
         }
-      });
 
-      // Now for the item values, we make a new row for our table
-      var valueRow = put('tr');
+        function displayValue(valueRow, item, field) {
+            var value = item;
+            if (field.indexOf('.') != -1) {
+//                value = item[field.split('.')[0]];
+//                field = field.slice(field.indexOf('.'));
+                while(field.indexOf('.') != -1) {
+                    var key = field.split('.')[0];
+                    value = value[key];
+                    field = field.slice(field.indexOf('.') + 1);
+                }
+                value = typeof value === 'undefined' ? '' : value[field];
+            } else {
+                value = item[field];
+            }
+            put(valueRow, 'td', typeof value === 'undefined' ? '' : value);
+        }
 
-      // walk our full fields list so everything goes in the right column
-      Object.keys(seenHash).forEach(function(field) {
-        // and create a table cell with undefined being a special case since it's toString is 'undefined'
-        put(valueRow, 'td', typeof item[field] === 'undefined' ? '' : item[field]);
-      });
+        function buildTable(item, prefix) {
+            Object.keys(item).forEach(function (key) {
+                if (typeof item[key] == "object") {
+                    for (var data in item[key]) {
+                        header(data, key);
+                    }
+                } else {
+                    header(key, prefix);
+                }
+            });
+            var valueRow = put('tr');
+            Object.keys(seenHash).forEach(function (field) {
+                displayValue(valueRow, item, field);
+            });
+            put(tbody, valueRow);
+        }
+        theDatas.forEach(function (data) {
+            buildTable(data);
+        });
 
-      // With our row complete, add it to the table body
-      put(tbody, valueRow);
 
-    });
-
-
-  </script>
+    </script>
 </html>
