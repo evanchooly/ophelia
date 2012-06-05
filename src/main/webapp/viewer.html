@@ -27,17 +27,16 @@
         ];
         var seenHash = {};
         function header(key, prefix) {
-            if (!(key in seenHash)) {
-                seenHash[(typeof prefix === 'undefined' ? '' : prefix + '.') + key] = true;
-                put(theader, 'th', (typeof prefix === 'undefined' ? '' : prefix + '.') + key);
+            var header = (typeof prefix === 'undefined' ? '' : prefix + '.') + key;
+            if (!(header in seenHash)) {
+                seenHash[header] = true;
+                put(theader, 'th', header);
             }
         }
 
         function displayValue(valueRow, item, field) {
             var value = item;
             if (field.indexOf('.') != -1) {
-//                value = item[field.split('.')[0]];
-//                field = field.slice(field.indexOf('.'));
                 while(field.indexOf('.') != -1) {
                     var key = field.split('.')[0];
                     value = value[key];
