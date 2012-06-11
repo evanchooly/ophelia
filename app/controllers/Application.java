@@ -10,6 +10,6 @@ public class Application extends Controller {
 
   @Post("/query")
   public static void query(String query) {
-    render();
+    index();
   }
 }
