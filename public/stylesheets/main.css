@@ -1,0 +1,8 @@
+textarea {
+    width: 100%;
+}
+
+.well {
+    color: green;
+    padding: 1em;
+}

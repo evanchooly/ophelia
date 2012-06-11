@@ -1,0 +1,6 @@
+# Application dependencies
+
+require:
+    - play
+    - play -> less 0.9.1
+    - play -> router 1.2
