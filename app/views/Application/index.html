@@ -10,16 +10,18 @@
         #{/form}
     </div>
 
-    table
-    table
-    table
-    table
-    table
-    table
-    table
-    table
-    table
-    table
-    table
-    table
+    <script>
+        $(function() {
+            $(".button").click(function() {
+                var listAction = #{jsAction @query(':query') /}
+                        $('#result').load(
+                                listAction({query: $("query").text()}),
+                                function() {
+                                    $('#content').css('visibility', 'visible')
+                                }
+                        )
+                // validate and process form here
+            });
+        });
+    </script>
 </div>

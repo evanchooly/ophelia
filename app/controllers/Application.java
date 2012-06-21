@@ -17,7 +17,6 @@ public class Application extends Controller {
     Mongo mongo = new Mongo();
     DB db = mongo.getDB("collage");
     Object list = db.eval(query);
-    System.out.println("mongo = " + mongo);
     index();
   }
 }
