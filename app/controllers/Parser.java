@@ -1,3 +1,5 @@
+package controllers;
+
 import java.io.IOException;
 import java.util.LinkedHashMap;
 
@@ -14,6 +16,7 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.WriteResult;
 import org.bson.types.ObjectId;
+import utils.Localizer;
 
 public class Parser {
   private BasicDBObject db;
@@ -27,13 +30,20 @@ public class Parser {
     }
     if (query.startsWith("db.")) {
       query = query.substring(3);
+      parseQuery(query);
+    } else {
+      throw new InvalidQueryException(Localizer.invalidQuery(query));
     }
+  }
+
+  private void parseQuery(String query) throws IOException {
     collection = query.substring(0, query.indexOf("."));
     query = query.substring(query.indexOf(".") + 1);
     method = query.substring(0, query.indexOf("("));
     query = query.substring(query.indexOf("(") + 1);
-    query = query.substring(query.indexOf("{"), query.lastIndexOf("}") + 1);
-    db = new BasicDBObject(getMapper().readValue(query, LinkedHashMap.class));
+    query = query.substring(0, query.lastIndexOf("}") + 1);
+    db = query.isEmpty() ? new BasicDBObject()
+      : new BasicDBObject(getMapper().readValue(query, LinkedHashMap.class));
   }
 
   public ObjectMapper getMapper() {

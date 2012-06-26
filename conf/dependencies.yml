@@ -4,3 +4,11 @@ require:
     - play
     - play -> less 0.9.1
     - play -> router 1.2
+    - playCustomModules -> sofia
+
+repositories:
+    - playCustomModules:
+        type:       local
+        artifact:   "/Users/jlee/personal/dev/sofia/play-plugin"
+        contains:
+            - customModules -> *

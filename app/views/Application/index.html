@@ -4,23 +4,25 @@
 <div class="span9">
     <!--Body content-->
     <div class="well query">
-        #{form @Application.query()}
-            <textarea id="query" name="query" rows="5"></textarea>
-            <input type="submit" value="&{'query.submit'}"></button>
-        #{/form}
+    <form>
+        <textarea id="mongo" name="query" rows="5"></textarea>
+        <input class="button" type="button" value="&{'query.submit'}">
+    </form>
     </div>
 
-    <script>
-        $(function() {
-            $(".button").click(function() {
-                var listAction = #{jsAction @query(':query') /}
-                        $('#result').load(
-                                listAction({query: $("query").text()}),
-                                function() {
-                                    $('#content').css('visibility', 'visible')
-                                }
-                        )
-                // validate and process form here
+    <script type="text/javascript">
+        $(function () {
+            $(".button").click(function () {
+                alert($("#mongo").val());
+                *{jQuery.post("@{query()}", )}*
+                $.ajax({
+                    type: "POST",
+                    url: "@{query()}",
+                    data: { "query": $("#mongo").val() },
+                    success: function(response) {
+                        alert(response);
+                    }
+                });
             });
         });
     </script>
