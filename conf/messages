@@ -2,6 +2,7 @@
 # For example, for French create a messages.fr file
 #
 
+app.title=Clerk
 query.submit=Query
 
-invalid.query=Unknown query: {0}
+invalid.query=Bad query: {0}

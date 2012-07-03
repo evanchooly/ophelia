@@ -1,10 +1,9 @@
-function showResults(theDatas) {
+function showResults(results) {
     holder = document.querySelector('#gridHolder');
     table = put(holder, 'table');
     theader = put(table, 'thead > tr');
     tbody = put(table, 'tbody');
     seenHash = {};
-
     function header(key, prefix) {
         var header = (typeof prefix === 'undefined' ? '' : prefix + '.') + key;
         if (!(header in seenHash)) {
@@ -25,7 +24,9 @@ function showResults(theDatas) {
         } else {
             value = item[field];
         }
-        put(valueRow, 'td', typeof value === 'undefined' ? '' : value);
+        var td = put(valueRow, 'td');
+        var div = put(td, 'div', typeof value === 'undefined' ? '' : value);
+        div.style.class = 'result';
     }
 
     function buildTable(item, prefix) {
@@ -45,7 +46,18 @@ function showResults(theDatas) {
         put(tbody, valueRow);
     }
 
-    theDatas.forEach(function (data) {
+    results.forEach(function (data) {
         buildTable(data);
+    });
+//    var tds = $("#gridHolder div");
+//    tds.each(function (e) {
+//        $(this).css({"class":"result"});
+//    });
+//    $('#gridHolder').find('div').each(function (e) {
+//        this.style['class'] = 'result';
+//    });
+    $('#gridHolder div').each(function()
+    {
+        $(this).addClass('result');
     });
 }

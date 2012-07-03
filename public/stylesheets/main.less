@@ -1,4 +1,5 @@
 @padding: 1em;
+@cornerRadius: 4px;
 
 .query {
     padding: @padding;
@@ -9,4 +10,30 @@
     textarea {
         width: 100%;
     }
+}
+
+#error {
+    display: none;
+    text-align: center;
+    padding: 0.7em;
+    margin-left: 1em;
+    background-color: #FF6666;
+    -webkit-border-radius: @cornerRadius;
+    -webkit-border-bottom-left-radius: 0px;
+    -webkit-border-bottom-right-radius: 0px;
+    -moz-border-radius: @cornerRadius;
+    -moz-border-bottom-left-radius: 0px;
+    -moz-border-bottom-right-radius: 0px;
+    border-radius: @cornerRadius;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+
+.result {
+    color : blue;
+    word-wrap: normal;
+//    max-height: 3em;
+//    min-width: 10em;
+//    overflow-y: scroll;
+    overflow-style: move;
 }

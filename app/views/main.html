@@ -29,6 +29,7 @@
         <link rel="shortcut icon" type="image/png" href="@{'/public/images/favicon.ico'}">
         <script src="@{'/public/javascripts/jquery-1.7.2.min.js'}" type="text/javascript"
                 charset="${_response_encoding}"></script>
+        <script src="@{'/public/javascripts/put.js'}"></script>
         <script src="@{'/public/javascripts/bootstrap.js'}"></script>
         <script src="@{'/public/javascripts/titus.js'}"></script>
     #{get 'moreScripts' /}
@@ -43,11 +44,11 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </a>
-                    <a class="brand" href="#">Titus</a>
+                    <a class="brand" href="#">&{'app.title'}</a>
 
                     <div class="btn-group pull-right">
                         <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-                            <i class="icon-user"></i> Username
+                            <i class="icon-home"></i> Host
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">
@@ -56,6 +57,7 @@
                             <li><a href="#">Sign Out</a></li>
                         </ul>
                     </div>
+*{
                     <div class="nav-collapse">
                         <ul class="nav">
                             <li class="active"><a href="#">Home</a></li>
@@ -63,6 +65,7 @@
                             <li><a href="#contact">Contact</a></li>
                         </ul>
                     </div>
+}*
                 </div>
             </div>
         </div>
@@ -72,6 +75,8 @@
                 <div class="span3">
                     <div class="well sidebar-nav">
                         <ul class="nav nav-list">
+                            <li class="nav-header">Collections</li>
+                        *{
                             <li class="nav-pills">
                                 <a class="dropdown-toggle" data-toggle="dropdown" href="#menu1">
                                     Dropdown
@@ -88,7 +93,7 @@
                             </li>
                             <li class="active"><a href="#">Link</a></li>
                             <li><a href="#">Link</a></li>
-                        </ul>
+                        }*</ul>
                     </div>
                 </div>
 

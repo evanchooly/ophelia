@@ -4,23 +4,30 @@
 <div class="span9">
     <!--Body content-->
     <div class="well query">
-    <form>
-        <textarea id="mongo" name="query" rows="5"></textarea>
-        <input class="button" type="button" value="&{'query.submit'}">
-    </form>
+        <form>
+            <div id="error">i knew it!</div>
+            <textarea id="mongo" name="query" rows="5">db.Messages.find()</textarea>
+            <input id="button" class="btn btn-primary" type="button" value="&{'query.submit'}">
+        </form>
     </div>
+    <div class="table" id="gridHolder"></div>
 
     <script type="text/javascript">
         $(function () {
-            $(".button").click(function () {
-                alert($("#mongo").val());
-                *{jQuery.post("@{query()}", )}*
+            $("#button").click(function () {
+                $("#gridHolder table").remove();
+                $("#error").css('display', 'none');
                 $.ajax({
-                    type: "POST",
-                    url: "@{query()}",
-                    data: { "query": $("#mongo").val() },
-                    success: function(response) {
-                        alert(response);
+                    type:"POST",
+                    url:"@{query()}",
+                    data:{ "query":$("#mongo").val() },
+                    success:function (response) {
+                        if(response.results) {
+                            showResults(response.results);
+                        }
+                    },
+                    error:function(response) {
+                        $("#error").css('display', 'inherit');
                     }
                 });
             });

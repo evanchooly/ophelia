@@ -4,11 +4,11 @@ require:
     - play
     - play -> less 0.9.1
     - play -> router 1.2
-    - playCustomModules -> sofia
+    - sofia -> sofia-play 0.5
 
 repositories:
-    - playCustomModules:
+    - antwerkz:
         type:       local
-        artifact:   "/Users/jlee/personal/dev/sofia/play-plugin"
+        artifact:   "/Users/jlee/.m2/repository/com/antwerkz/[organization]/[module]/[revision]/[module]-[revision].zip"
         contains:
-            - customModules -> *
+            - sofia -> *
