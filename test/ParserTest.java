@@ -30,11 +30,18 @@ public class ParserTest extends FunctionalTest {
       + "\"y\" : 102}})");
     Object execute = parser.execute(db);
 
-    parser = new Parser("db.UnitTest.find( { type : \"database\" }");
+    parser = new Parser("db.UnitTest.find( { type : \"database\" } )");
     Iterator<BasicDBObject> iterator = (Iterator<BasicDBObject>) parser.execute(db);
     Assert.assertTrue(iterator.hasNext());
     Map map = iterator.next().toMap();
+    Assert.assertEquals("database", map.get("type"));
+    Assert.assertEquals(102, ((Map) map.get("info")).get("y"));
     String json = parser.getMapper().writer().writeValueAsString(map);
+  }
+
+  @Test
+  public void parameters() throws IOException {
+    Parser parser = new Parser("db.users.find({}, {thumbnail:0});");
   }
 
   @Test
