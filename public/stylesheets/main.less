@@ -1,5 +1,11 @@
 @padding: 1em;
-@cornerRadius: 4px;
+@cornerRadius: 8px;
+@highlightBG: blue;
+@highlightFG: white;
+@navGradientTop: #08c;
+@navGradientBottom: #05c;
+@btnGradientTop: #333333;
+@btnGradientBottom: #222222;
 
 .query {
     padding: @padding;
@@ -30,10 +36,56 @@
 }
 
 .result {
-    color : blue;
+    color : @highlightBG;
     word-wrap: normal;
 //    max-height: 3em;
 //    min-width: 10em;
 //    overflow-y: scroll;
     overflow-style: move;
 }
+
+#countTable {
+    width: 100%;
+}
+
+.count {
+    text-align: right;
+    width: 100%;
+}
+
+.countContent {
+    text-align: right;
+    -webkit-border-radius: @cornerRadius;
+    -moz-border-radius: @cornerRadius;
+    border-radius: @cornerRadius;
+//    background-color: @highlightBG;
+//    color: @highlightFG;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+}
+
+/*
+.navbar-inner {
+    background-image: -moz-linear-gradient(top, @navGradientTop, @navGradientBottom);
+    background-image: -ms-linear-gradient(top, @navGradientTop, @navGradientBottom);
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(@navGradientTop), to(@navGradientBottom));
+    background-image: -webkit-linear-gradient(top, @navGradientTop, @navGradientBottom);
+    background-image: -o-linear-gradient(top, @navGradientTop, @navGradientBottom);
+    background-image: linear-gradient(top, @navGradientTop, @navGradientBottom);
+}
+
+.btn-primary {
+    background-image: -ms-linear-gradient(top, @btnGradientTop, @btnGradientBottom);
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(@btnGradientTop), to(@btnGradientBottom));
+    background-image: -webkit-linear-gradient(top, @btnGradientTop, @btnGradientBottom);
+    background-image: -o-linear-gradient(top, @btnGradientTop, @btnGradientBottom);
+    background-image: -moz-linear-gradient(top, @btnGradientTop, @btnGradientBottom);
+    background-image: linear-gradient(top, @btnGradientTop, @btnGradientBottom);
+    border-color: #0055cc #0055cc #003580;
+    border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+}
+
+.navbar .brand {
+    color: black;
+}
+*/

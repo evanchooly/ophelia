@@ -48,7 +48,7 @@
 
                     <div class="btn-group pull-right">
                         <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-                            <i class="icon-home"></i> Host
+                            <i class="icon-home"></i> ${content.database}
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">
@@ -57,7 +57,7 @@
                             <li><a href="#">Sign Out</a></li>
                         </ul>
                     </div>
-*{
+                *{
                     <div class="nav-collapse">
                         <ul class="nav">
                             <li class="active"><a href="#">Home</a></li>
@@ -76,28 +76,23 @@
                     <div class="well sidebar-nav">
                         <ul class="nav nav-list">
                             <li class="nav-header">Collections</li>
-                        *{
                             <li class="nav-pills">
-                                <a class="dropdown-toggle" data-toggle="dropdown" href="#menu1">
-                                    Dropdown
-                                    <b class="caret"></b>
-                                </a>
-                                <ul class="dropdown-menu">
-                                    <li><a href="#">Action</a></li>
-                                    <li><a href="#">Another action</a></li>
-                                    <li><a href="#">Something else here</a></li>
-                                    <li class="divider"></li>
-                                    <li><a href="#">Separated link</a></li>
-                                </ul>
+                                <table id="countTable">
+                                #{list content.collections, as:'collection'}
+                                    <tr>
+                                        <td> ${collection?.key} </td>
+                                        <td class="countContent"><div class="count">${collection?.value}</div></td>
+                                    </tr>
+                                #{/list}
+
+                                </table>
 
                             </li>
-                            <li class="active"><a href="#">Link</a></li>
-                            <li><a href="#">Link</a></li>
-                        }*</ul>
+                        </ul>
                     </div>
                 </div>
 
-                #{doLayout /}
+            #{doLayout /}
             </div>
 
 

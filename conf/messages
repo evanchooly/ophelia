@@ -1,8 +1,5 @@
-# You can specialize this file for each language.
-# For example, for French create a messages.fr file
-#
-
 app.title=Clerk
 query.submit=Query
 
 invalid.query=Bad query: {0}
+unknown.query.method=Unknown or unsupported query method: {0}

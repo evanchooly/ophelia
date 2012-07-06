@@ -91,13 +91,14 @@ public class Parser {
 
   public Object execute(DB db) {
     DBCollection collection = db.getCollection(getCollection());
-    if (method.equals("insert")) {
-      return doInsert(collection);
+    switch (method) {
+      case "insert":
+        return doInsert(collection);
+      case "find":
+        return doFind(collection);
+      default:
+        throw new InvalidQueryException(Messages.unknownQueryMethod(method));
     }
-    if (method.equals("find")) {
-      return doFind(collection);
-    }
-    return null;
   }
 
   private Object doFind(DBCollection collection) {

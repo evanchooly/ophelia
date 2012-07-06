@@ -27,6 +27,7 @@
                         }
                     },
                     error:function(response) {
+                        $("#error").text(response.responseText);
                         $("#error").css('display', 'inherit');
                     }
                 });
