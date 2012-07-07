@@ -1,4 +1,40 @@
+handlers = {};
+handlers['results'] = showResults;
+handlers['collections'] = collections;
+function processResponse(response) {
+    for (var key in response) {
+        var handler = handlers[key];
+        if (handler) {
+            handler(response[key])
+        }
+    }
+//    if(response.results) {
+//        showResults(response.results);
+//    }
+}
+function collections(collections) {
+    var table = $("#countTable");
+    var children = table.children();
+    if(children) {
+        children.remove();
+    }
+    for (var collection in collections) {
+        var row = $("<tr></tr>");
+        row.append($("<td>" + collection + "</td>"));
+        var count = collections[collection];
+        var cell = $("<td></td>").addClass("count");
+        var text = $("<span></span>").addClass("countContent");
+        text
+            .addClass("countContent")
+            .text(count);
+        cell.append(text);
+        row.append(cell);
+        table.append(row);
+    }
+}
+
 function showResults(results) {
+    $("#gridHolder table").remove();
     holder = document.querySelector('#gridHolder');
     table = put(holder, 'table');
     theader = put(table, 'thead > tr');
@@ -56,8 +92,7 @@ function showResults(results) {
 //    $('#gridHolder').find('div').each(function (e) {
 //        this.style['class'] = 'result';
 //    });
-    $('#gridHolder div').each(function()
-    {
+    $('#gridHolder div').each(function () {
         $(this).addClass('result');
     });
 }

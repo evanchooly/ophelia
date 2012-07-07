@@ -52,20 +52,11 @@
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a href="#">Profile</a></li>
+                            <li><a href="#">to do!</a></li>
                             <li class="divider"></li>
                             <li><a href="#">Sign Out</a></li>
                         </ul>
                     </div>
-                *{
-                    <div class="nav-collapse">
-                        <ul class="nav">
-                            <li class="active"><a href="#">Home</a></li>
-                            <li><a href="#about">About</a></li>
-                            <li><a href="#contact">Contact</a></li>
-                        </ul>
-                    </div>
-}*
                 </div>
             </div>
         </div>
@@ -78,15 +69,7 @@
                             <li class="nav-header">Collections</li>
                             <li class="nav-pills">
                                 <table id="countTable">
-                                #{list content.collections, as:'collection'}
-                                    <tr>
-                                        <td> ${collection?.key} </td>
-                                        <td class="countContent"><div class="count">${collection?.value}</div></td>
-                                    </tr>
-                                #{/list}
-
                                 </table>
-
                             </li>
                         </ul>
                     </div>

@@ -39,7 +39,7 @@ public class Application extends Controller {
   private static Map<String, Object> loadCollections() throws UnknownHostException {
     TreeMap<String, Object> map = new TreeMap<>();
     String database = getDatabase();
-    DB db = getMongo().getDB(database);
+    DB db = getDB();
     Set<String> collections = db.getCollectionNames();
     for (String collection : collections) {
       CommandResult stats = db.getCollection(collection).getStats();
@@ -54,7 +54,7 @@ public class Application extends Controller {
     Map<String, Object> content = generateContent();
     try {
       Parser parser = new Parser(query);
-      DBCursor results = (DBCursor) parser.execute(mongo.getDB(getDatabase()));
+      DBCursor results = (DBCursor) parser.execute(getDB());
       if (results != null) {
         List<Map> list = new ArrayList<>();
         for (DBObject result : results) {
@@ -66,6 +66,13 @@ public class Application extends Controller {
       error(400, e.getMessage());
     }
     renderJSON(content, new GsonObjectIdJsonSerializer());
+  }
+
+  private static DB getDB() throws UnknownHostException {
+    DB db = getMongo().getDB(getDatabase());
+    String readOnly = params.get("readOnly");
+    db.setReadOnly(Boolean.valueOf(readOnly));
+    return db;
   }
 
   private static String getDatabase() throws UnknownHostException {

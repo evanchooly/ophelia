@@ -2,10 +2,9 @@
 #{set title:'Home' /}
 
 <div class="span9">
-    <!--Body content-->
     <div class="well query">
         <form>
-            <div id="error">i knew it!</div>
+            <div id="error"></div>
             <textarea id="mongo" name="query" rows="5">db.Messages.find()</textarea>
             <input id="button" class="btn btn-primary" type="button" value="&{'query.submit'}">
         </form>
@@ -14,17 +13,15 @@
 
     <script type="text/javascript">
         $(function () {
+            *{processResponse(eval("${content}"));}*
             $("#button").click(function () {
-                $("#gridHolder table").remove();
                 $("#error").css('display', 'none');
                 $.ajax({
                     type:"POST",
                     url:"@{query()}",
                     data:{ "query":$("#mongo").val() },
                     success:function (response) {
-                        if(response.results) {
-                            showResults(response.results);
-                        }
+                        processResponse(response);
                     },
                     error:function(response) {
                         $("#error").text(response.responseText);
