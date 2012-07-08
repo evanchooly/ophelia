@@ -35,18 +35,18 @@ public class Parser {
   private void parseQuery() throws IOException {
     String preamble = query.substring(0, query.indexOf("("));
     collection = preamble.substring(0, preamble.lastIndexOf("."));
-    method = preamble.substring(preamble.lastIndexOf(".")+1);
-    consume(preamble.length()+1);
-    if(query.startsWith("{")) {
+    method = preamble.substring(preamble.lastIndexOf(".") + 1);
+    consume(preamble.length() + 1);
+    if (query.startsWith("{")) {
       db = new BasicDBObject(getMapper().readValue(new ConsumingStringReader(query), LinkedHashMap.class));
     } else {
       db = new BasicDBObject();
     }
-    if(query.startsWith(",")) {
+    if (query.startsWith(",")) {
       consume(1);
       keys = new BasicDBObject(getMapper().readValue(new ConsumingStringReader(query), LinkedHashMap.class));
     }
-    if(query.startsWith(")")) {
+    if (query.startsWith(")")) {
       consume(1);
     }
   }
@@ -58,17 +58,10 @@ public class Parser {
   private String consume(int count, boolean trim) {
     String sub = query.substring(0, count);
     query = query.substring(count);
-    if(trim) {
+    if (trim) {
       query = query.trim();
     }
     return sub;
-  }
-
-  private String consume(final String target) {
-    //    query = consume(index + 1);
-    String consume = consume(query.indexOf(target));
-    consume(1);
-    return consume;
   }
 
   public ObjectMapper getMapper() {
@@ -94,13 +87,22 @@ public class Parser {
   public Object execute(DB db) {
     DBCollection collection = db.getCollection(getCollection());
     switch (method) {
+      case "drop":
+        doDrop(collection);
+        return null;
       case "insert":
         return doInsert(collection);
       case "find":
         return doFind(collection);
+      case "remove":
+        return doRemove(collection);
       default:
         throw new InvalidQueryException(Messages.unknownQueryMethod(method));
     }
+  }
+
+  private void doDrop(DBCollection collection) {
+    collection.drop();
   }
 
   private Object doFind(DBCollection collection) {
@@ -115,8 +117,17 @@ public class Parser {
     }
     return insert.getN();
   }
-  private class ConsumingStringReader extends StringReader {
 
+  private Object doRemove(DBCollection collection) {
+    WriteResult remove = collection.remove(getDb());
+    String error = remove.getError();
+    if (error != null) {
+      throw new IllegalArgumentException(error);
+    }
+    return remove.getN();
+  }
+
+  private class ConsumingStringReader extends StringReader {
     public ConsumingStringReader(final String query) {
       super(query);
     }
@@ -132,6 +143,7 @@ public class Parser {
       cbuf[off] = (char) read();
       return 1;
     }
+
     @Override
     public void close() {
     }

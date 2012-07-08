@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,30 +53,40 @@ public class Application extends Controller {
 
   @Get("/database")
   public static void setDatabase(String database) throws UnknownHostException {
-    if(database == null) {
+    if (database == null) {
       session.remove("database");
     } else {
       session.put("database", database);
     }
     renderJSON(generateContent());
   }
+
   @Post("/query")
   public static void query(String query) throws IOException {
     Mongo mongo = getMongo();
-    Map<String, Object> content = generateContent();
+    Map<String, Object> content = new TreeMap<>();
     try {
       Parser parser = new Parser(query);
-      DBCursor results = (DBCursor) parser.execute(getDB());
-      if (results != null) {
-        List<Map> list = new ArrayList<>();
-        for (DBObject result : results) {
-          list.add(result.toMap());
+      Object execute = parser.execute(getDB());
+      if (execute instanceof DBCursor) {
+        DBCursor results = (DBCursor) execute;
+        if (results != null) {
+          List<Map> list = new ArrayList<>();
+          for (DBObject result : results) {
+            list.add(result.toMap());
+          }
+          content.put("results", list);
         }
+      } else if(execute instanceof Number) {
+        Map<String, Number> count = new TreeMap<>();
+        count.put("count", (Number)execute);
+        List<Map> list = Arrays.<Map>asList(count);
         content.put("results", list);
       }
     } catch (InvalidQueryException e) {
       error(400, e.getMessage());
     }
+    content.putAll(generateContent());
     renderJSON(content, new GsonObjectIdJsonSerializer());
   }
 
