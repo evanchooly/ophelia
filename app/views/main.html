@@ -48,13 +48,17 @@
 
                     <div class="btn-group pull-right">
                         <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-                            <i class="icon-home"></i> ${content.database}
+                            <i class="icon-home"></i> <span id="db">${content.database}</span>
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a href="#">to do!</a></li>
+                            <div id="dbList">
+                                <li><a href="#">to do!</a></li>
+                            </div>
+*{
                             <li class="divider"></li>
                             <li><a href="#">Sign Out</a></li>
+}*
                         </ul>
                     </div>
                 </div>

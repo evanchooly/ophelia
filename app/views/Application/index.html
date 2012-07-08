@@ -13,7 +13,7 @@
 
     <script type="text/javascript">
         $(function () {
-            $.post('@{Application.setDatabase()}', function(data) {
+            $.get('@{Application.setDatabase()}', function(data) {
                 processResponse(data);
             });
             $("#button").click(function () {

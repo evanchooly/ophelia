@@ -1,6 +1,9 @@
 handlers = {};
 handlers['results'] = showResults;
 handlers['collections'] = collections;
+handlers['databaseList'] = databases;
+handlers['database'] = database;
+
 function processResponse(response) {
     for (var key in response) {
         var handler = handlers[key];
@@ -8,10 +11,31 @@ function processResponse(response) {
             handler(response[key])
         }
     }
-//    if(response.results) {
-//        showResults(response.results);
-//    }
 }
+
+function databases(dbs) {
+//    <li><a href="#">to do!</a></li>
+    var list = $("#dbList");
+    var children = list.children();
+    if (children) {
+        children.remove();
+    }
+    for (var database in dbs) {
+        var li = $("<li></li>");
+        var link = $("<a></a>")
+            .attr("onclick", "changeDB('" + dbs[database] + "')")
+            .text(dbs[database]);
+        li.append(link);
+        list.append(li);
+    }
+}
+
+function changeDB(db) {
+    $.get('database', {database: db}, function(data) {
+        processResponse(data);
+    });
+}
+
 function collections(collections) {
     var table = $("#countTable");
     var children = table.children();
@@ -33,13 +57,17 @@ function collections(collections) {
     }
 }
 
+function database(db) {
+    $("#db").text(db);
+}
+
 function showResults(results) {
     $("#gridHolder table").remove();
-    holder = document.querySelector('#gridHolder');
-    table = put(holder, 'table');
-    theader = put(table, 'thead > tr');
-    tbody = put(table, 'tbody');
-    seenHash = {};
+    var holder = document.querySelector('#gridHolder');
+    var table = put(holder, 'table');
+    var theader = put(table, 'thead > tr');
+    var tbody = put(table, 'tbody');
+    var seenHash = {};
     function header(key, prefix) {
         var header = (typeof prefix === 'undefined' ? '' : prefix + '.') + key;
         if (!(header in seenHash)) {
@@ -85,13 +113,6 @@ function showResults(results) {
     results.forEach(function (data) {
         buildTable(data);
     });
-//    var tds = $("#gridHolder div");
-//    tds.each(function (e) {
-//        $(this).css({"class":"result"});
-//    });
-//    $('#gridHolder').find('div').each(function (e) {
-//        this.style['class'] = 'result';
-//    });
     $('#gridHolder div').each(function () {
         $(this).addClass('result');
     });

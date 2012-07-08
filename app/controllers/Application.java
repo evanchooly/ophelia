@@ -20,6 +20,7 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 import org.bson.types.ObjectId;
+import play.modules.router.Get;
 import play.modules.router.Post;
 import play.mvc.Controller;
 
@@ -33,6 +34,7 @@ public class Application extends Controller {
     Map<String, Object> map = new HashMap<>();
     map.put("collections", loadCollections());
     map.put("database", getDatabase());
+    map.put("databaseList", getMongo().getDatabaseNames());
     return map;
   }
 
@@ -48,10 +50,12 @@ public class Application extends Controller {
     return map;
   }
 
-  @Post("/database")
+  @Get("/database")
   public static void setDatabase(String database) throws UnknownHostException {
-    if(database != null) {
+    if(database == null) {
       session.remove("database");
+    } else {
+      session.put("database", database);
     }
     renderJSON(generateContent());
   }
