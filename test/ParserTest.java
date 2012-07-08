@@ -42,11 +42,18 @@ public class ParserTest extends FunctionalTest {
   @Test
   public void parameters() throws IOException {
     Parser parser = new Parser("db.users.find({}, {thumbnail:0});");
+    parser.execute(db);
   }
 
   @Test
   public void emptyFind() throws IOException {
     Parser parser = new Parser("db.Collection.find()");
+    parser.execute(db);
+  }
+
+  @Test
+  public void systemIndexes() throws IOException {
+    Parser parser = new Parser("db.system.indexes.find()");
     parser.execute(db);
   }
 }

@@ -33,8 +33,10 @@ public class Parser {
   }
 
   private void parseQuery() throws IOException {
-    collection = consume(".");
-    method = consume("(");
+    String preamble = query.substring(0, query.indexOf("("));
+    collection = preamble.substring(0, preamble.lastIndexOf("."));
+    method = preamble.substring(preamble.lastIndexOf(".")+1);
+    consume(preamble.length()+1);
     if(query.startsWith("{")) {
       db = new BasicDBObject(getMapper().readValue(new ConsumingStringReader(query), LinkedHashMap.class));
     } else {
