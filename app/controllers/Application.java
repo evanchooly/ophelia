@@ -48,6 +48,13 @@ public class Application extends Controller {
     return map;
   }
 
+  @Post("/database")
+  public static void setDatabase(String database) throws UnknownHostException {
+    if(database != null) {
+      session.remove("database");
+    }
+    renderJSON(generateContent());
+  }
   @Post("/query")
   public static void query(String query) throws IOException {
     Mongo mongo = getMongo();

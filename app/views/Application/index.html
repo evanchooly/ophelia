@@ -13,7 +13,9 @@
 
     <script type="text/javascript">
         $(function () {
-            *{processResponse(eval("${content}"));}*
+            $.post('@{Application.setDatabase()}', function(data) {
+                processResponse(data);
+            });
             $("#button").click(function () {
                 $("#error").css('display', 'none');
                 $.ajax({
