@@ -4,7 +4,8 @@ require:
     - play
     - play -> less 0.9.1
     - play -> router 1.2
-    - sofia -> sofia-play 0.6-SNAPSHOT
+    - com.antwerkz.sofia -> sofia-play 0.5
+#    - sofia -> sofia-play 0.6-SNAPSHOT
 
 repositories:
     - antwerkz:
@@ -12,3 +13,8 @@ repositories:
         artifact:   "/Users/jlee/.m2/repository/com/antwerkz/[organization]/[module]/[revision]/[module]-[revision].zip"
         contains:
             - sofia -> *
+    - maven:
+        type: iBiblio
+        root: "http://repo1.maven.org/maven2"
+        contains:
+            - com.antwerkz -> *

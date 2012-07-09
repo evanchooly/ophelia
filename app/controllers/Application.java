@@ -61,6 +61,13 @@ public class Application extends Controller {
     renderJSON(generateContent());
   }
 
+  @Post("/changeHost")
+  public static void changeHost(String dbHost, String dbPort) throws UnknownHostException {
+    session.put("dbHost", dbHost);
+    session.put("dbPort", dbPort);
+    index();
+  }
+
   @Post("/query")
   public static void query(String query) throws IOException {
     Mongo mongo = getMongo();
@@ -77,9 +84,9 @@ public class Application extends Controller {
           }
           content.put("results", list);
         }
-      } else if(execute instanceof Number) {
+      } else if (execute instanceof Number) {
         Map<String, Number> count = new TreeMap<>();
-        count.put("count", (Number)execute);
+        count.put("count", (Number) execute);
         List<Map> list = Arrays.<Map>asList(count);
         content.put("results", list);
       }
@@ -112,7 +119,17 @@ public class Application extends Controller {
   }
 
   private static Mongo getMongo() throws UnknownHostException {
-    return new Mongo();
+    String dbHost = session.get("dbHost");
+    if (dbHost == null) {
+      dbHost = "localhost";
+      session.put("dbHost", dbHost);
+    }
+    String dbPort = session.get("dbPort");
+    if (dbPort == null) {
+      dbPort = "27017";
+      session.put("dbPort", dbPort);
+    }
+    return new Mongo(dbHost, Integer.parseInt(dbPort));
   }
 
   private static class GsonObjectIdJsonSerializer implements JsonSerializer<ObjectId> {

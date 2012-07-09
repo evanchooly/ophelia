@@ -57,7 +57,20 @@
                             </div>
 *{
                             <li class="divider"></li>
-                            <li><a href="#">Sign Out</a></li>
+                            <li>
+                                #{form @Application.changeHost()}
+                                    <table>
+                                        <tr>
+                                            <td>Host</td>
+                                            <td><input type="text" name="${dbHost}" value="${session.dbHost}" size="10"/> </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Port</td>
+                                            <td><input type="text" name="${dbPort}" value="${session.dbPort}" size="5"/> </td>
+                                        </tr>
+                                    </table>
+                                #{/form}
+                            </li>
 }*
                         </ul>
                     </div>
