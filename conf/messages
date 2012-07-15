@@ -2,4 +2,5 @@ app.title=Clerk
 query.submit=Query
 
 invalid.query=Bad query: {0}
+invalidObjectId=Invalid ObjectId value: {0}
 unknown.query.method=Unknown or unsupported query method: {0}

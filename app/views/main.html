@@ -51,24 +51,60 @@
                             <i class="icon-home"></i> <span id="db">${content.database}</span>
                             <span class="caret"></span>
                         </a>
-                        <ul class="dropdown-menu">
+*{
+                        <ul class="dropdown-menu dropdown-form" id="signin-dropdown">
+                            <li class="dropdown-caret right">
+                                <span class="caret-outer"></span>
+                                <span class="caret-inner"></span>
+                            </li>
+                            <li>
+                                <form action="https://twitter.com/sessions" class="js-signin signin" method="post">
+                                    <fieldset class="textbox">
+                                        <label class="username js-username">
+                                            <span>Username or email</span>
+                                            <input class="js-username-field email-input" type="text" name="session[username_or_email]" autocomplete="on">
+                                        </label>
+                                        <label class="password js-password">
+                                            <span>Password</span>
+                                            <input class="js-password-field" type="password" value="" name="session[password]">
+                                        </label>
+                                    </fieldset>
+                                    <fieldset class="subchck">
+                                        <label class="remember">
+                                            <input type="checkbox" value="1" name="remember_me">
+                                            <span>Remember me</span>
+                                        </label>
+                                        <button type="submit" class="btn submit">Sign in</button>
+                                    </fieldset>
+
+                                    <div class="divider"></div>
+                                    <p>
+                                        <a class="forgot" href="/account/resend_password" data-bitly-type="bitly_hover_card">Forgot password?</a><br>
+                                        <a class="mobile has-sms" href="/account/complete" data-bitly-type="bitly_hover_card">Already using Twitter via text message?</a>
+                                    </p>
+                                </form>
+                            </li>
+                        </ul>
+}*
+                        <ul class="dropdown-menu dropdown-form">
                             <div id="dbList">
                                 <li><a href="#">to do!</a></li>
                             </div>
 *{
-                            <li class="divider"></li>
+                            <div class="divider"></div>
                             <li>
-                                #{form @Application.changeHost()}
-                                    <table>
-                                        <tr>
-                                            <td>Host</td>
-                                            <td><input type="text" name="${dbHost}" value="${session.dbHost}" size="10"/> </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Port</td>
-                                            <td><input type="text" name="${dbPort}" value="${session.dbPort}" size="5"/> </td>
-                                        </tr>
-                                    </table>
+                                #{form @Application.changeHost(), class:'js-signin signin'}
+                                    <fieldset class="textbox">
+                                        <label class="host">
+                                            <span>Host</span>
+                                            <input type="text" name="${dbHost}" value="${session.dbHost}">
+                                        </label>
+                                        <label class="password">
+                                            <span>Port</span>
+                                            <input type="text" name="${dbPort}" value="${session.dbPort}"/>
+                                        </label>
+                                        <button type="submit" class="btn submit">Sign in</button>
+                                    </fieldset>
                                 #{/form}
                             </li>
 }*

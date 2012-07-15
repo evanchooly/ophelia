@@ -5,6 +5,7 @@ import java.lang.reflect.Type;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +36,8 @@ public class Application extends Controller {
     Map<String, Object> map = new HashMap<>();
     map.put("collections", loadCollections());
     map.put("database", getDatabase());
-    map.put("databaseList", getMongo().getDatabaseNames());
+    Mongo mongo = getMongo();
+    map.put("databaseList", mongo != null ? mongo.getDatabaseNames() : Collections.emptyList());
     return map;
   }
 
@@ -43,10 +45,12 @@ public class Application extends Controller {
     TreeMap<String, Object> map = new TreeMap<>();
     String database = getDatabase();
     DB db = getDB();
-    Set<String> collections = db.getCollectionNames();
-    for (String collection : collections) {
-      CommandResult stats = db.getCollection(collection).getStats();
-      map.put(collection, stats.get("count"));
+    if (db != null) {
+      Set<String> collections = db.getCollectionNames();
+      for (String collection : collections) {
+        CommandResult stats = db.getCollection(collection).getStats();
+        map.put(collection, stats.get("count"));
+      }
     }
     return map;
   }
@@ -62,7 +66,8 @@ public class Application extends Controller {
   }
 
   @Post("/changeHost")
-  public static void changeHost(String dbHost, String dbPort) throws UnknownHostException {
+  public static void changeHost(String dbHost, String dbPort)
+    throws UnknownHostException {
     session.put("dbHost", dbHost);
     session.put("dbPort", dbPort);
     index();
@@ -70,7 +75,6 @@ public class Application extends Controller {
 
   @Post("/query")
   public static void query(String query) throws IOException {
-    Mongo mongo = getMongo();
     Map<String, Object> content = new TreeMap<>();
     try {
       Parser parser = new Parser(query);
@@ -107,7 +111,8 @@ public class Application extends Controller {
   private static String getDatabase() throws UnknownHostException {
     String database = session.get("database");
     if (database == null) {
-      List<String> names = getMongo().getDatabaseNames();
+      Mongo mongo = getMongo();
+      List<String> names = mongo != null ? mongo.getDatabaseNames() : Collections.<String>emptyList();
       if (!names.isEmpty()) {
         database = names.get(0);
       } else {

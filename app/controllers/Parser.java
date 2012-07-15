@@ -3,6 +3,8 @@ package controllers;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.TreeMap;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
@@ -20,7 +22,7 @@ public class Parser {
   private String query;
 
   public Parser(String queryString) throws IOException {
-    this.query = queryString;
+    this.query = scrub(queryString);
     if (this.query.endsWith(";")) {
       query = query.substring(0, query.length() - 1);
     }
@@ -38,17 +40,22 @@ public class Parser {
     method = preamble.substring(preamble.lastIndexOf(".") + 1);
     consume(preamble.length() + 1);
     if (query.startsWith("{")) {
-      db = new BasicDBObject(getMapper().readValue(new ConsumingStringReader(query), LinkedHashMap.class));
+      db = new BasicDBObject(parse());
     } else {
       db = new BasicDBObject();
     }
     if (query.startsWith(",")) {
       consume(1);
-      keys = new BasicDBObject(getMapper().readValue(new ConsumingStringReader(query), LinkedHashMap.class));
+      keys = new BasicDBObject(parse());
     }
     if (query.startsWith(")")) {
       consume(1);
     }
+  }
+
+  @SuppressWarnings("unchecked")
+  private Map<String, Object> parse() throws IOException {
+    return getMapper().readValue(new ConsumingStringReader(query), LinkedHashMap.class);
   }
 
   private String consume(int count) {
@@ -85,20 +92,23 @@ public class Parser {
   }
 
   public Object execute(DB db) {
-    DBCollection collection = db.getCollection(getCollection());
-    switch (method) {
-      case "drop":
-        doDrop(collection);
-        return null;
-      case "insert":
-        return doInsert(collection);
-      case "find":
-        return doFind(collection);
-      case "remove":
-        return doRemove(collection);
-      default:
-        throw new InvalidQueryException(Messages.unknownQueryMethod(method));
+    if (db != null) {
+      DBCollection collection = db.getCollection(getCollection());
+      switch (method) {
+        case "drop":
+          doDrop(collection);
+          return null;
+        case "insert":
+          return doInsert(collection);
+        case "find":
+          return doFind(collection);
+        case "remove":
+          return doRemove(collection);
+        default:
+          throw new InvalidQueryException(Messages.unknownQueryMethod(method));
+      }
     }
+    return null;
   }
 
   private void doDrop(DBCollection collection) {
@@ -125,6 +135,29 @@ public class Parser {
       throw new IllegalArgumentException(error);
     }
     return remove.getN();
+  }
+
+  public static String scrub(String query) throws IOException {
+    int index;
+    while ((index = query.indexOf("ObjectId(\"")) != -1) {
+      String slug = query.substring(index - 4, index);
+      if (slug.equals("new ")) {
+        index -= 4;
+      }
+      query = String.format("%s%s%s", query.substring(0, index),
+        extractValue(query, index),
+        query.substring(query.indexOf(")", index) + 1));
+    }
+    return query;
+  }
+
+  private static String extractValue(String value, int index) throws IOException {
+    int first = value.indexOf("\"", index) + 1;
+    int last = value.indexOf("\"", first + 1);
+    String id = value.substring(first, last);
+    Map<String, String> oid = new TreeMap<>();
+    oid.put("$oid", id);
+    return new ObjectMapper().writeValueAsString(oid);
   }
 
   private class ConsumingStringReader extends StringReader {

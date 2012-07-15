@@ -56,4 +56,14 @@ public class ParserTest extends FunctionalTest {
     Parser parser = new Parser("db.system.indexes.find()");
     parser.execute(db);
   }
+
+  @Test
+  public void objectId() throws IOException {
+    String slug = "I'm just a random chunk of new ObjectId(\"4f54216718c69681f6f14e13\") text with"
+      + " ObjectId(\"4f54216718c69681f6f14e13\") random references to ObjectId sprinkled in";
+    String scrubbed = Parser.scrub(slug);
+
+    Parser parser = new Parser("db.Collection.find( { _id : ObjectId(\"4f54216718c69681f6f14e13\") })");
+    parser.execute(db);
+  }
 }
