@@ -25,7 +25,6 @@ public class Parser {
 
   public Parser(String queryString) throws IOException {
     this.query = scrub(queryString);
-    System.out.println("query = " + query);
     if (this.query.endsWith(";")) {
       query = query.substring(0, query.length() - 1);
     }
