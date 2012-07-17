@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,6 +12,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.WriteResult;
+import org.bson.types.ObjectId;
 import utils.Messages;
 
 public class Parser {
@@ -23,6 +25,7 @@ public class Parser {
 
   public Parser(String queryString) throws IOException {
     this.query = scrub(queryString);
+    System.out.println("query = " + query);
     if (this.query.endsWith(";")) {
       query = query.substring(0, query.length() - 1);
     }
@@ -55,7 +58,16 @@ public class Parser {
 
   @SuppressWarnings("unchecked")
   private Map<String, Object> parse() throws IOException {
-    return getMapper().readValue(new ConsumingStringReader(query), LinkedHashMap.class);
+    Map<String, Object> map = getMapper().readValue(new ConsumingStringReader(query), LinkedHashMap.class);
+    for (Entry<String, Object> o : map.entrySet()) {
+      if (o.getValue() instanceof Map) {
+        Map<String, Object> value = (Map<String, Object>) o.getValue();
+        if (value.get("$oid") != null) {
+          o.setValue(new ObjectId((String) value.get("$oid")));
+        }
+      }
+    }
+    return map;
   }
 
   private String consume(int count) {
@@ -137,9 +149,9 @@ public class Parser {
     return remove.getN();
   }
 
-  public static String scrub(String query) throws IOException {
-    int index;
-    while ((index = query.indexOf("ObjectId(\"")) != -1) {
+  private String scrub(String query) throws IOException {
+    int index = -1;
+    while ((index = query.indexOf("ObjectId(\"", index + 1)) != -1) {
       String slug = query.substring(index - 4, index);
       if (slug.equals("new ")) {
         index -= 4;
@@ -147,11 +159,12 @@ public class Parser {
       query = String.format("%s%s%s", query.substring(0, index),
         extractValue(query, index),
         query.substring(query.indexOf(")", index) + 1));
+      index = query.indexOf(")", index);
     }
     return query;
   }
 
-  private static String extractValue(String value, int index) throws IOException {
+  private String extractValue(String value, int index) throws IOException {
     int first = value.indexOf("\"", index) + 1;
     int last = value.indexOf("\"", first + 1);
     String id = value.substring(first, last);
