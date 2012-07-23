@@ -4,15 +4,15 @@ require:
     - play
     - play -> less 0.9.1
     - play -> router 1.2
-    - com.antwerkz.sofia -> sofia-play 0.5
+    - com.antwerkz.sofia -> sofia-play 0.6
 #    - sofia -> sofia-play 0.6-SNAPSHOT
 
 repositories:
-    - antwerkz:
-        type:       local
-        artifact:   "/Users/jlee/.m2/repository/com/antwerkz/[organization]/[module]/[revision]/[module]-[revision].zip"
-        contains:
-            - sofia -> *
+#    - antwerkz:
+#        type:       local
+#        artifact:   "/Users/jlee/.m2/repository/com/antwerkz/[organization]/[module]/[revision]/[module]-[revision].zip"
+#        contains:
+#            - sofia -> *
     - maven:
         type: iBiblio
         root: "http://repo1.maven.org/maven2"

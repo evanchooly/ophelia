@@ -14,7 +14,6 @@ function processResponse(response) {
 }
 
 function databases(dbs) {
-//    <li><a href="#">to do!</a></li>
     var list = $("#dbList");
     var children = list.children();
     if (children) {
