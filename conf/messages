@@ -1,4 +1,4 @@
-app.title=Clerk
+app.title=Ophelia
 query.submit=Query
 
 invalid.query=Bad query: {0}
