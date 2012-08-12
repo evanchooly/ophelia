@@ -13,13 +13,14 @@
 
     <script type="text/javascript">
         $(function () {
-            $.get('@@{Application.setDatabase()}', function(data) {
-                processResponse(data);
-            });
+            if ($("#dbList").children().length == 0) {
+                $.getJSON('@@{Application.getContent()}', function (data) {
+                    processResponse(data);
+                });
+            }
             $("#button").click(function () {
                 $("#error").css('display', 'none');
-                $.ajax({
-                    type:"POST",
+                $.post({
                     url:"@{query()}",
                     data:{ "query":$("#mongo").val() },
                     success:function (response) {

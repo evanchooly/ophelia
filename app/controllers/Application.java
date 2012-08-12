@@ -5,11 +5,8 @@ import java.lang.reflect.Type;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 
 import com.google.gson.JsonElement;
@@ -21,33 +18,35 @@ import com.mongodb.DB;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
+import models.ConnectionInfo;
+import models.Results;
 import org.bson.types.ObjectId;
+import play.cache.Cache;
 import play.modules.router.Get;
 import play.modules.router.Post;
 import play.mvc.Controller;
 
 public class Application extends Controller {
+  private static final String CONTEXT_NAME = "-context";
+
   public static void index() throws UnknownHostException {
-    Map content = generateContent();
+    Results content = new Results();// generateContent();
     render(content);
   }
 
-  private static Map<String, Object> generateContent() throws UnknownHostException {
-    Map<String, Object> map = new HashMap<>();
-    map.put("collections", loadCollections());
-    map.put("database", getDatabase());
-    Mongo mongo = getMongo();
-    map.put("databaseList", mongo != null ? mongo.getDatabaseNames() : Collections.emptyList());
-    return map;
+  private static Results generateContent() throws UnknownHostException {
+    Results results = new Results();
+    results.setCollections(loadCollections());
+    results.setDatabase(getDatabase());
+    results.setDatabaseList(getMongo().getDatabaseNames());
+    return results;
   }
 
   private static Map<String, Object> loadCollections() throws UnknownHostException {
     TreeMap<String, Object> map = new TreeMap<>();
-    String database = getDatabase();
     DB db = getDB();
     if (db != null) {
-      Set<String> collections = db.getCollectionNames();
-      for (String collection : collections) {
+      for (String collection : db.getCollectionNames()) {
         CommandResult stats = db.getCollection(collection).getStats();
         map.put(collection, stats.get("count"));
       }
@@ -55,50 +54,49 @@ public class Application extends Controller {
     return map;
   }
 
+  @Get("/content")
+  public static void getContent() throws UnknownHostException {
+    renderJSON(generateContent());
+  }
+
   @Get("/database")
   public static void setDatabase(String database) throws UnknownHostException {
-    if (database == null) {
-      session.remove("database");
-    } else {
-      session.put("database", database);
-    }
+    getConnectionInfo().setDatabase(database);
     renderJSON(generateContent());
   }
 
   @Post("/changeHost")
-  public static void changeHost(String dbHost, String dbPort)
-    throws UnknownHostException {
-    session.put("dbHost", dbHost);
-    session.put("dbPort", dbPort);
+  public static void changeHost(String dbHost, Integer dbPort) throws UnknownHostException {
+    ConnectionInfo info = getConnectionInfo();
+    info.setHost(dbHost);
+    info.setPort(dbPort);
     index();
   }
 
   @Post("/query")
   public static void query(String query) throws IOException {
-    Map<String, Object> content = new TreeMap<>();
+    Results results = generateContent();
     try {
       Parser parser = new Parser(query);
       Object execute = parser.execute(getDB());
       if (execute instanceof DBCursor) {
-        DBCursor results = (DBCursor) execute;
-        if (results != null) {
+        DBCursor dbResults = (DBCursor) execute;
+        if (dbResults != null) {
           List<Map> list = new ArrayList<>();
-          for (DBObject result : results) {
+          for (DBObject result : dbResults) {
             list.add(result.toMap());
           }
-          content.put("results", list);
+          results.setDbResults(list);
         }
       } else if (execute instanceof Number) {
         Map<String, Number> count = new TreeMap<>();
         count.put("count", (Number) execute);
-        List<Map> list = Arrays.<Map>asList(count);
-        content.put("results", list);
+        results.setDbResults(Arrays.<Map>asList(count));
       }
     } catch (InvalidQueryException e) {
-      error(400, e.getMessage());
+      results.setError(e.getMessage());
     }
-    content.putAll(generateContent());
-    renderJSON(content, new GsonObjectIdJsonSerializer());
+    renderJSON(results, new GsonObjectIdJsonSerializer());
   }
 
   private static DB getDB() throws UnknownHostException {
@@ -109,34 +107,26 @@ public class Application extends Controller {
   }
 
   private static String getDatabase() throws UnknownHostException {
-    String database = session.get("database");
-    if (database == null) {
-      Mongo mongo = getMongo();
-      List<String> names = mongo != null ? mongo.getDatabaseNames() : Collections.<String>emptyList();
-      if (!names.isEmpty()) {
-        database = names.get(0);
-      } else {
-        database = "local";
-      }
-      session.put("database", database);
-    }
-    return database;
+    return getConnectionInfo().getDatabase();
   }
 
   private static Mongo getMongo() throws UnknownHostException {
-    String dbHost = session.get("dbHost");
-    if (dbHost == null) {
-      dbHost = "localhost";
-      session.put("dbHost", dbHost);
-    }
-    String dbPort = session.get("dbPort");
-    if (dbPort == null) {
-      dbPort = "27017";
-      session.put("dbPort", dbPort);
-    }
-    return new Mongo(dbHost, Integer.parseInt(dbPort));
+    ConnectionInfo info = getConnectionInfo();
+    return new Mongo(info.getHost(), info.getPort());
   }
 
+  public static ConnectionInfo getConnectionInfo() {
+    System.out.printf("session id: %s, request: %s\n", session.getId(), request.url);
+    ConnectionInfo info = (ConnectionInfo) Cache.get(session.getId() + CONTEXT_NAME);
+    if(info == null) {
+      System.out.println("** creating a new info");
+      info = new ConnectionInfo();
+      Cache.set(session.getId() + CONTEXT_NAME, info);
+      session.put(CONTEXT_NAME, info);
+    }
+    return info;
+  }
+  
   private static class GsonObjectIdJsonSerializer implements JsonSerializer<ObjectId> {
     @Override
     public JsonElement serialize(ObjectId o, Type type, JsonSerializationContext context) {
