@@ -21,7 +21,6 @@ import com.mongodb.Mongo;
 import models.ConnectionInfo;
 import models.Results;
 import org.bson.types.ObjectId;
-import play.cache.Cache;
 import play.modules.router.Get;
 import play.modules.router.Post;
 import play.mvc.Controller;
@@ -30,7 +29,7 @@ public class Application extends Controller {
   private static final String CONTEXT_NAME = "-context";
 
   public static void index() throws UnknownHostException {
-    Results content = new Results();// generateContent();
+    Results content = new Results(); //generateContent();
     render(content);
   }
 
@@ -75,6 +74,8 @@ public class Application extends Controller {
 
   @Post("/query")
   public static void query(String query) throws IOException {
+    ConnectionInfo info = getConnectionInfo();
+    info.setQuery(query);
     Results results = generateContent();
     try {
       Parser parser = new Parser(query);
@@ -101,8 +102,7 @@ public class Application extends Controller {
 
   private static DB getDB() throws UnknownHostException {
     DB db = getMongo().getDB(getDatabase());
-    String readOnly = params.get("readOnly");
-    db.setReadOnly(Boolean.valueOf(readOnly));
+    db.setReadOnly(getConnectionInfo().getReadOnly());
     return db;
   }
 
@@ -116,13 +116,11 @@ public class Application extends Controller {
   }
 
   public static ConnectionInfo getConnectionInfo() {
-    System.out.printf("session id: %s, request: %s\n", session.getId(), request.url);
-    ConnectionInfo info = (ConnectionInfo) Cache.get(session.getId() + CONTEXT_NAME);
+    ConnectionInfo info = ConnectionInfo.find("bySession", session.getId()).first();
     if(info == null) {
       System.out.println("** creating a new info");
-      info = new ConnectionInfo();
-      Cache.set(session.getId() + CONTEXT_NAME, info);
-      session.put(CONTEXT_NAME, info);
+      info = new ConnectionInfo(session.getId());
+      info.save();
     }
     return info;
   }

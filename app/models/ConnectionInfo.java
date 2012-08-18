@@ -1,7 +1,6 @@
 package models;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.CommandResult;
@@ -19,8 +20,12 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 import controllers.Parser;
+import play.db.jpa.Model;
 
-public class ConnectionInfo implements Serializable {
+@Entity
+@Table(name = "connection_info")
+public class ConnectionInfo extends Model {
+  private String session;
   private String collection;
   private String database = "local";
   private String host = "127.0.0.1";
@@ -29,9 +34,15 @@ public class ConnectionInfo implements Serializable {
   private String query;
 
   public ConnectionInfo() {
-    Mongo mongo = getMongo();
-    List<String> names = mongo != null ? mongo.getDatabaseNames() : Collections.<String>emptyList();
-    database = !names.isEmpty() ? names.get(0) : "local";
+  }
+
+  public ConnectionInfo(String session) {
+    this.session = session;
+  }
+
+  @Override
+  public Object _key() {
+    return getSession();
   }
 
   public String getCollection() {
@@ -44,6 +55,7 @@ public class ConnectionInfo implements Serializable {
 
   public void setDatabase(String database) {
     this.database = database;
+    save();
   }
 
   public String getHost() {
@@ -52,6 +64,7 @@ public class ConnectionInfo implements Serializable {
 
   public void setHost(String host) {
     this.host = host;
+    save();
   }
 
   public Integer getPort() {
@@ -60,6 +73,7 @@ public class ConnectionInfo implements Serializable {
 
   public void setPort(Integer port) {
     this.port = port;
+    save();
   }
 
   public Boolean getReadOnly() {
@@ -68,6 +82,16 @@ public class ConnectionInfo implements Serializable {
 
   public void setReadOnly(Boolean readOnly) {
     this.readOnly = readOnly;
+    save();
+  }
+
+  public String getSession() {
+    return session;
+  }
+
+  public void setSession(String session) {
+    this.session = session;
+    save();
   }
 
   public DB getDB() {
@@ -119,6 +143,7 @@ public class ConnectionInfo implements Serializable {
 
   public void setQuery(String query) {
     this.query = query;
+    save();
   }
 
   public Map<String, Object> loadCollections() {
@@ -132,5 +157,20 @@ public class ConnectionInfo implements Serializable {
       }
     }
     return map;
+  }
+
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder();
+    sb.append("ConnectionInfo {");
+    sb.append(" session='").append(session).append('\'');
+    sb.append(", collection='").append(collection).append('\'');
+    sb.append(", database='").append(database).append('\'');
+    sb.append(", host='").append(host).append('\'');
+    sb.append(", port=").append(port);
+    sb.append(", readOnly=").append(readOnly);
+    sb.append(", query='").append(query).append('\'');
+    sb.append('}');
+    return sb.toString();
   }
 }

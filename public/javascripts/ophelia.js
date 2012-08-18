@@ -1,5 +1,5 @@
 handlers = {};
-handlers['results'] = showResults;
+handlers['dbResults'] = showResults;
 handlers['collections'] = collections;
 handlers['databaseList'] = databases;
 handlers['database'] = database;
@@ -9,6 +9,8 @@ function processResponse(response) {
         var handler = handlers[key];
         if (handler) {
             handler(response[key])
+        } else {
+            console.write("no handler for " + key);
         }
     }
 }
