@@ -6,6 +6,23 @@
 @navGradientBottom: #05c;
 @btnGradientTop: #333333;
 @btnGradientBottom: #222222;
+@string: green;
+@number: red;
+@boolean: blue;
+@null: magenta;
+
+table {
+    width: 100%;
+}
+
+.table td {
+    border: none;
+    padding: 0;
+}
+
+.table {
+    margin-top: @padding;
+}
 
 .query {
     padding: @padding;
@@ -16,6 +33,26 @@
     textarea {
         width: 100%;
     }
+}
+
+.string {
+    color: @string;
+}
+
+.number {
+    color: @number;
+}
+
+.boolean {
+    color: @boolean;
+}
+
+.null {
+    color: @null;
+}
+
+.key {
+    font-weight: bold;
 }
 
 #error {

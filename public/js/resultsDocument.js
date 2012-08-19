@@ -1,56 +1,42 @@
 function showResults(results) {
-    $("#resultsHolder table").remove();
-    var holder = document.querySelector('#resultsHolder');
-    var table = put(holder, 'table');
-    var theader = put(table, 'thead > tr');
-    var tbody = put(table, 'tbody');
-    var seenHash = {};
-    function header(key, prefix) {
-        var header = (typeof prefix === 'undefined' ? '' : prefix + '.') + key;
-        if (!(header in seenHash)) {
-            seenHash[header] = true;
-            put(theader, 'th', header);
-        }
+    var holder = $("#resultsHolder");
+    var children = holder.children();
+    if (children) {
+        children.remove();
     }
-
-    function displayValue(valueRow, item, field) {
-        var value = item;
-        if (field.indexOf('.') != -1) {
-            while (field.indexOf('.') != -1) {
-                var key = field.split('.')[0];
-                value = value[key];
-                field = field.slice(field.indexOf('.') + 1);
-            }
-            value = typeof value === 'undefined' ? '' : value[field];
-        } else {
-            value = item[field];
-        }
-        var td = put(valueRow, 'td');
-        var div = put(td, 'div', typeof value === 'undefined' ? '' : value);
-        div.style.class = 'result';
-    }
-
-    function buildTable(item, prefix) {
-        Object.keys(item).forEach(function (key) {
-            if (typeof item[key] == "object") {
-                for (var data in item[key]) {
-                    header(data, key);
-                }
-            } else {
-                header(key, prefix);
-            }
-        });
-        var valueRow = put('tr');
-        Object.keys(seenHash).forEach(function (field) {
-            displayValue(valueRow, item, field);
-        });
-        put(tbody, valueRow);
-    }
+    var table = $("<table></table>");
 
     results.forEach(function (data) {
-        buildTable(data);
+        var row = $("<tr></tr>");
+        var cell = $("<td></td>");
+        cell.append("<pre>" + syntaxHighlight(data) + "</pre>");
+        row.append(cell);
+        table.append(row);
     });
-    $('#resultsHolder div').each(function () {
-        $(this).addClass('result');
+
+    holder.append(table);
+}
+
+// This function courtesy of StackOverflow user Pumbaa80
+// http://stackoverflow.com/questions/4810841/json-pretty-print-using-javascript
+function syntaxHighlight(json) {
+    if (typeof json != 'string') {
+        json = JSON.stringify(json, undefined, 2);
+    }
+    json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+        var cls = 'number';
+        if (/^"/.test(match)) {
+            if (/:$/.test(match)) {
+                cls = 'key';
+            } else {
+                cls = 'string';
+            }
+        } else if (/true|false/.test(match)) {
+            cls = 'boolean';
+        } else if (/null/.test(match)) {
+            cls = 'null';
+        }
+        return '<span class="' + cls + '">' + match + '</span>';
     });
 }
