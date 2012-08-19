@@ -1,6 +1,6 @@
 function showResults(results) {
-    $("#gridHolder table").remove();
-    var holder = document.querySelector('#gridHolder');
+    $("#resultsHolder table").remove();
+    var holder = document.querySelector('#resultsHolder');
     var table = put(holder, 'table');
     var theader = put(table, 'thead > tr');
     var tbody = put(table, 'tbody');
@@ -50,7 +50,7 @@ function showResults(results) {
     results.forEach(function (data) {
         buildTable(data);
     });
-    $('#gridHolder div').each(function () {
+    $('#resultsHolder div').each(function () {
         $(this).addClass('result');
     });
 }

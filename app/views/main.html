@@ -5,7 +5,7 @@
         <title>#{get 'title' /}</title>
         <meta charset="${_response_encoding}">
         <!-- Le styles -->
-        <link href="@{'/public/stylesheets/bootstrap.css'}" rel="stylesheet">
+        <link href="@{'/public/style/bootstrap.css'}" rel="stylesheet">
         <style type="text/css">
             body {
                 padding-top: 60px;
@@ -16,8 +16,8 @@
                 padding: 9px 0;
             }
         </style>
-        <link href="@{'/public/stylesheets/bootstrap-responsive.css'}" rel="stylesheet">
-        <link href="@{'/public/stylesheets/main.less'}" rel="stylesheet">
+        <link href="@{'/public/style/bootstrap-responsive.css'}" rel="stylesheet">
+        <link href="@{'/public/style/main.less'}" rel="stylesheet">
 
         <!--[if lt IE 9]>
         <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -27,16 +27,15 @@
         <link rel="shortcut icon" href="@{'/public/images/O.png'}">
     #{get 'moreStyles' /}
         <link rel="shortcut icon" type="image/png" href="@{'/public/images/O.png'}">
-        <script src="@{'/public/javascripts/jquery-1.7.2.min.js'}" type="text/javascript"
+        <script src="@{'/public/js/jquery-1.7.2.min.js'}" type="text/javascript"
                 charset="${_response_encoding}"></script>
-        <script src="@{'/public/javascripts/put.js'}"></script>
-        <script src="@{'/public/javascripts/bootstrap.js'}"></script>
-        <script src="@{'/public/javascripts/resultsTable.js'}"></script>
-        <script src="@{'/public/javascripts/ophelia.js'}"></script>
+        <script src="@{'/public/js/put.js'}"></script>
+        <script src="@{'/public/js/bootstrap.js'}"></script>
+        <script src="@{'/public/js/resultsDocument.js'}"></script>
+        <script src="@{'/public/js/ophelia.js'}"></script>
     #{get 'moreScripts' /}
     </head>
     <body>
-
         <div class="navbar navbar-fixed-top">
             <div class="navbar-inner">
                 <div class="container-fluid">
