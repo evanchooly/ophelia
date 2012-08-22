@@ -35,9 +35,15 @@ public class Application extends Controller {
 
   private static Results generateContent() throws UnknownHostException {
     Results results = new Results();
+    List<String> names = getMongo().getDatabaseNames();
+    results.setDatabaseList(names);
+    String database = getDatabase();
+    if(database == null) {
+      database = names.get(0);
+      getConnectionInfo().setDatabase(database);
+    }
+    results.setDatabase(database);
     results.setCollections(loadCollections());
-    results.setDatabase(getDatabase());
-    results.setDatabaseList(getMongo().getDatabaseNames());
     return results;
   }
 

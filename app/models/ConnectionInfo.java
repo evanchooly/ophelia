@@ -27,7 +27,7 @@ import play.db.jpa.Model;
 public class ConnectionInfo extends Model {
   private String session;
   private String collection;
-  private String database = "local";
+  private String database;
   private String host = "127.0.0.1";
   private Integer port = 27017;
   private Boolean readOnly = Boolean.FALSE;
