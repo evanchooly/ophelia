@@ -13,6 +13,7 @@ function processResponse(response) {
             console.write("no handler for " + key);
         }
     }
+    dbClick();
 }
 
 function databases(dbs) {
@@ -45,13 +46,15 @@ function collections(collections) {
     }
     for (var collection in collections) {
         var row = $("<tr></tr>");
-        row.append($("<td>" + collection + "</td>"));
+        var td = $("<td></td>");
+        var text = $("<div></div>").addClass("dbName");
+        text.text(collection);
+        td.append(text);
+        row.append(td);
         var count = collections[collection];
         var cell = $("<td></td>").addClass("count");
-        var text = $("<span></span>").addClass("countContent");
-        text
-            .addClass("countContent")
-            .text(count);
+        text = $("<span></span>").addClass("countContent");
+        text.text(count);
         cell.append(text);
         row.append(cell);
         table.append(row);
@@ -60,4 +63,10 @@ function collections(collections) {
 
 function database(db) {
     $("#db").text(db);
+}
+
+function dbClick() {
+    $(".dbName").click(function () {
+        $("#mongo").text("db." + this.textContent + ".find()");
+    });
 }
