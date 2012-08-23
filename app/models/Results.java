@@ -5,18 +5,10 @@ import java.util.Map;
 
 public class Results {
   private Map<String, Object> collections;
-  private String database;
   private List<String> databaseList;
   private List<Map> dbResults;
   private String error;
-
-  public String getDatabase() {
-    return database;
-  }
-
-  public void setDatabase(String database) {
-    this.database = database;
-  }
+  private ConnectionInfo info;
 
   public Map<String, Object> getCollections() {
     return collections;
@@ -48,5 +40,13 @@ public class Results {
 
   public void setError(String error) {
     this.error = error;
+  }
+
+  public ConnectionInfo getInfo() {
+    return info;
+  }
+
+  public void setInfo(ConnectionInfo info) {
+    this.info = info;
   }
 }

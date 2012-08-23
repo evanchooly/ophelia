@@ -2,7 +2,7 @@ handlers = {};
 handlers['dbResults'] = showResults;
 handlers['collections'] = collections;
 handlers['databaseList'] = databases;
-handlers['database'] = database;
+handlers['info'] = database;
 
 function processResponse(response) {
     for (var key in response) {
@@ -10,7 +10,7 @@ function processResponse(response) {
         if (handler) {
             handler(response[key])
         } else {
-            console.write("no handler for " + key);
+            console.log("no handler for " + key);
         }
     }
     dbClick();
@@ -62,7 +62,7 @@ function collections(collections) {
 }
 
 function database(db) {
-    $("#db").text(db);
+    $("#db").text(db.database);
 }
 
 function dbClick() {

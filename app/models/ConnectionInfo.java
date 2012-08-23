@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
@@ -26,10 +27,11 @@ import play.db.jpa.Model;
 @Table(name = "connection_info")
 public class ConnectionInfo extends Model {
   private String session;
-  private String collection;
   private String database;
   private String host = "127.0.0.1";
   private Integer port = 27017;
+  @Column(name = "queryLimit")
+  private Integer limit = 100;
   private Boolean readOnly = Boolean.FALSE;
   private String query;
 
@@ -43,10 +45,6 @@ public class ConnectionInfo extends Model {
   @Override
   public Object _key() {
     return getSession();
-  }
-
-  public String getCollection() {
-    return collection;
   }
 
   public String getDatabase() {
@@ -67,6 +65,14 @@ public class ConnectionInfo extends Model {
     save();
   }
 
+  public Integer getLimit() {
+    return limit;
+  }
+
+  public void setLimit(Integer limit) {
+    this.limit = limit == null || limit < 1 ? 10000 : limit;
+  }
+
   public Integer getPort() {
     return port;
   }
@@ -81,7 +87,7 @@ public class ConnectionInfo extends Model {
   }
 
   public void setReadOnly(Boolean readOnly) {
-    this.readOnly = readOnly;
+    this.readOnly = readOnly == null ? false : readOnly;
     save();
   }
 
@@ -164,11 +170,11 @@ public class ConnectionInfo extends Model {
     final StringBuilder sb = new StringBuilder();
     sb.append("ConnectionInfo {");
     sb.append(" session='").append(session).append('\'');
-    sb.append(", collection='").append(collection).append('\'');
     sb.append(", database='").append(database).append('\'');
     sb.append(", host='").append(host).append('\'');
     sb.append(", port=").append(port);
     sb.append(", readOnly=").append(readOnly);
+    sb.append(", limit=").append(limit);
     sb.append(", query='").append(query).append('\'');
     sb.append('}');
     return sb.toString();

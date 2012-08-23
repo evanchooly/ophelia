@@ -5,6 +5,7 @@ import java.lang.reflect.Type;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -26,23 +27,22 @@ import play.modules.router.Post;
 import play.mvc.Controller;
 
 public class Application extends Controller {
-  private static final String CONTEXT_NAME = "-context";
-
   public static void index() throws UnknownHostException {
-    Results content = new Results(); //generateContent();
+    Results content = generateContent();
     render(content);
   }
 
   private static Results generateContent() throws UnknownHostException {
     Results results = new Results();
+    ConnectionInfo info = getConnectionInfo();
     List<String> names = getMongo().getDatabaseNames();
     results.setDatabaseList(names);
     String database = getDatabase();
     if(database == null) {
       database = names.get(0);
-      getConnectionInfo().setDatabase(database);
+      info.setDatabase(database);
     }
-    results.setDatabase(database);
+    results.setInfo(info);
     results.setCollections(loadCollections());
     return results;
   }
@@ -79,9 +79,11 @@ public class Application extends Controller {
   }
 
   @Post("/query")
-  public static void query(String query) throws IOException {
+  public static void query(String query, Integer limit, Boolean readOnly) throws IOException {
     ConnectionInfo info = getConnectionInfo();
     info.setQuery(query);
+    info.setLimit(limit);
+    info.setReadOnly(readOnly);
     Results results = generateContent();
     try {
       Parser parser = new Parser(query);
@@ -90,7 +92,9 @@ public class Application extends Controller {
         DBCursor dbResults = (DBCursor) execute;
         if (dbResults != null) {
           List<Map> list = new ArrayList<>();
-          for (DBObject result : dbResults) {
+          Iterator<DBObject> iterator = dbResults.iterator();
+          while(list.size() < info.getLimit() && iterator.hasNext()) {
+            DBObject result = iterator.next();
             list.add(result.toMap());
           }
           results.setDbResults(list);
@@ -122,10 +126,11 @@ public class Application extends Controller {
   }
 
   public static ConnectionInfo getConnectionInfo() {
-    ConnectionInfo info = ConnectionInfo.find("bySession", session.getId()).first();
+    String id = session.getId();
+    ConnectionInfo info = ConnectionInfo.find("bySession", id).first();
     if(info == null) {
       System.out.println("** creating a new info");
-      info = new ConnectionInfo(session.getId());
+      info = new ConnectionInfo(id);
       info.save();
     }
     return info;

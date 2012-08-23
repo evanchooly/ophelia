@@ -1,4 +1,6 @@
 app.title=Ophelia
+query.limit=Limit:
+query.readOnly=Read Only:
 query.submit=Query
 
 invalid.query=Bad query: {0}
