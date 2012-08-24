@@ -5,6 +5,7 @@ handlers['databaseList'] = databases;
 handlers['info'] = database;
 
 function processResponse(response) {
+    $("#error").css('display', 'none');
     for (var key in response) {
         var handler = handlers[key];
         if (handler) {
