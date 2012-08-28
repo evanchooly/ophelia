@@ -9,7 +9,8 @@ How to run it
 ======
 
 1. One option is to download the latest distribution from [here](https://github.com/evanchooly/ophelia/downloads).  Extract the bundle wherever you'd like.
-1. Another is to simply clone the repository using the url above.  You can find specific release tags [here](https://github.com/evanchooly/ophelia/tags).
+1. Another is to simply clone the repository using the url above.  You should be familiar with how the play framework
+   works before trying this approach.  You can find specific release tags [here](https://github.com/evanchooly/ophelia/tags).
 1. Make sure the play framework 1.2.x is [installed](http://www.playframework.org/documentation/1.2.4/install) and that
    you are running java 7.  Play supports war distributions but I'm currently having issues with the production mode
    that entails.  The problems aren't insurmountable but I want to get a release or two or three out so I can get some
