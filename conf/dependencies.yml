@@ -5,6 +5,9 @@ require:
     - play -> less 0.9.1
     - play -> router 1.2
     - antwerkz -> sofia-play 0.11
+    - com.fasterxml.jackson.core -> jackson-databind 2.0.5
+    - com.google.code.gson -> gson 1.7.1
+    - org.mongodb -> mongo-java-driver 2.7.3
 
 repositories:
     - antwerkz:
