@@ -4,7 +4,7 @@ require:
     - play
     - play -> less 0.9.1
     - play -> router 1.2
-    - antwerkz -> sofia 0.9
+    - antwerkz -> sofia-play 0.10
 
 repositories:
     - antwerkz:
