@@ -9,8 +9,8 @@
             <div class="pull-left">
                 <label for="limit">&{'query.limit'}</label>
                 <input id="limit" name="limit" value="${content.info.limit}">
-                <label for="readOnly">&{'query.readOnly'}</label>
-                <input id="readOnly" name="readOnly" type="checkbox" #{if content.info.readOnly } checked #{/if} >
+                *{<label for="readOnly">&{'query.readOnly'}</label>}*
+                *{<input id="readOnly" name="readOnly" type="checkbox" #{if content.info.readOnly } checked #{/if} >}*
             </div>
             <div class="pull-right">
                 <input id="button" class="btn btn-primary" type="button" value="&{'query.submit'}">
@@ -25,7 +25,6 @@
                 processResponse(data);
             });
             $("#button").click(function () {
-                $("#error").css('display', 'none');
                 $.ajax({
                     type:"POST",
                     url:"@{query()}",
@@ -34,7 +33,7 @@
                         processResponse(response);
                     },
                     error:function(response) {
-                        $("#error").text(response.responseText);
+                        $("#error").val(response.responseText);
                         $("#error").css('display', 'inherit');
                     }
                 });

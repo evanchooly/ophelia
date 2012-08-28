@@ -2,10 +2,12 @@ handlers = {};
 handlers['dbResults'] = showResults;
 handlers['collections'] = collections;
 handlers['databaseList'] = databases;
+handlers['error'] = showDBError;
 handlers['info'] = database;
 
 function processResponse(response) {
     $("#error").css('display', 'none');
+    clearResults();
     for (var key in response) {
         var handler = handlers[key];
         if (handler) {
@@ -14,7 +16,6 @@ function processResponse(response) {
             console.log("no handler for " + key);
         }
     }
-    dbClick();
 }
 
 function databases(dbs) {
@@ -60,6 +61,7 @@ function collections(collections) {
         row.append(cell);
         table.append(row);
     }
+    dbClick();
 }
 
 function database(db) {
@@ -68,6 +70,6 @@ function database(db) {
 
 function dbClick() {
     $(".dbName").click(function () {
-        $("#mongo").text("db." + this.textContent + ".find()");
+        $("#mongo").val("db." + this.textContent + ".find()");
     });
 }

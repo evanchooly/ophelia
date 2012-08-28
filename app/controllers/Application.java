@@ -1,7 +1,6 @@
 package controllers;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,10 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
 import com.mongodb.CommandResult;
 import com.mongodb.DB;
 import com.mongodb.DBCursor;
@@ -21,7 +16,6 @@ import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 import models.ConnectionInfo;
 import models.Results;
-import org.bson.types.ObjectId;
 import play.modules.router.Get;
 import play.modules.router.Post;
 import play.mvc.Controller;
@@ -86,8 +80,7 @@ public class Application extends Controller {
     info.setReadOnly(readOnly);
     Results results = generateContent();
     try {
-      Parser parser = new Parser(query);
-      Object execute = parser.execute(getDB());
+      Object execute = new Parser(query).execute(getDB());
       if (execute instanceof DBCursor) {
         DBCursor dbResults = (DBCursor) execute;
         if (dbResults != null) {
@@ -129,17 +122,10 @@ public class Application extends Controller {
     String id = session.getId();
     ConnectionInfo info = ConnectionInfo.find("bySession", id).first();
     if(info == null) {
-      System.out.println("** creating a new info");
       info = new ConnectionInfo(id);
       info.save();
     }
     return info;
   }
-  
-  private static class GsonObjectIdJsonSerializer implements JsonSerializer<ObjectId> {
-    @Override
-    public JsonElement serialize(ObjectId o, Type type, JsonSerializationContext context) {
-      return new JsonPrimitive(o.toString());
-    }
-  }
+
 }
