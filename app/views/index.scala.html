@@ -1,5 +1,6 @@
-#{extends 'main.html' /}
-#{set title:'Home' /}
+@(content: QueryResults)
+
+@main {
 
 <div class="span9">
     <div class="well query">
@@ -7,13 +8,13 @@
             <div id="error"></div>
             <textarea id="mongo" name="query" rows="5"></textarea>
             <div class="pull-left">
-                <label for="limit">&{'query.limit'}</label>
-                <input id="limit" name="limit" value="${content.info.limit}">
-                *{<label for="readOnly">&{'query.readOnly'}</label>}*
-                *{<input id="readOnly" name="readOnly" type="checkbox" #{if content.info.readOnly } checked #{/if} >}*
+                <label for="limit">@Messages("query.limit")</label>
+                <input id="limit" name="limit" value="@{content.info.query.limit}">
+            @*<label for="readOnly">&{'query.readOnly'}</label>*@
+            @*<input id="readOnly" name="readOnly" type="checkbox" #{if content.info.query.readOnly } checked #{/if} >*@
             </div>
             <div class="pull-right">
-                <input id="button" class="btn btn-primary" type="button" value="&{'query.submit'}">
+                <input id="button" class="btn btn-primary" type="button" value="@Messages("query.submit")">
             </div>
         </form>
     </div>
@@ -21,13 +22,13 @@
 
     <script type="text/javascript">
         $(function () {
-            $.get('@{Application.getContent()}', function(data) {
+            $.get('/content', function(data) {
                 processResponse(data);
             });
             $("#button").click(function () {
                 $.ajax({
                     type:"POST",
-                    url:"@{query()}",
+                    url:"/query",
                     data: $('#queryForm').serialize() ,
                     success:function (response) {
                         processResponse(response);
@@ -41,3 +42,4 @@
         });
     </script>
 </div>
+}

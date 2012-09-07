@@ -35,7 +35,7 @@ function databases(dbs) {
 }
 
 function changeDB(db) {
-    $.get('database', {database: db}, function(data) {
+    $.get('database/' + db, function(data) {
         processResponse(data);
     });
 }

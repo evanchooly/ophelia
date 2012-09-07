@@ -3,13 +3,12 @@
 # ~~~~
 
 # Home page
-GET     /                                       Application.index
+GET     /                               controllers.Application.index
+GET     /content                        controllers.Application.getContent
+GET     /database/:database             controllers.Application.database(database: String)
+GET     /changeHost/:dbHost/:dbPort     controllers.Application.changeHost(dbHost: String, dbPort: Integer)
 
-# Ignore favicon requests
-GET     /favicon.ico                            404
+POST    /query                          controllers.Application.query
 
-# Map static resources from the /app/public folder to the /public path
-GET     /public/                                staticDir:public
-
-# Catch all
-*       /{controller}/{action}                  {controller}.{action}
+# Map static resources from the /public folder to the /assets URL path
+GET     /assets/*file                   controllers.Assets.at(path="/public", file)

@@ -1,19 +1,19 @@
 package controllers;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.WriteResult;
+import org.bson.types.ObjectId;
+import org.codehaus.jackson.map.ObjectMapper;
+import utils.Messages;
+
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.WriteResult;
-import org.bson.types.ObjectId;
-import utils.Messages;
 
 public class Parser {
   private BasicDBObject db;
@@ -82,7 +82,8 @@ public class Parser {
     return sub;
   }
 
-  public ObjectMapper getMapper() {
+  public
+  ObjectMapper getMapper() {
     if (mapper == null) {
       mapper = new JacksonMapper();
 
