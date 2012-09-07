@@ -6,7 +6,7 @@
 GET     /                               controllers.Application.index
 GET     /content                        controllers.Application.getContent
 GET     /database/:database             controllers.Application.database(database: String)
-GET     /changeHost/:dbHost/:dbPort     controllers.Application.changeHost(dbHost: String, dbPort: Integer)
+GET     /changeHost/:dbHost/:dbPort     controllers.Application.changeHost(dbHost: String, dbPort: java.lang.Integer)
 
 POST    /query                          controllers.Application.query
 
