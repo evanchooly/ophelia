@@ -7,12 +7,9 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 import controllers.Parser;
+import dao.MongoModel;
 import org.codehaus.jackson.annotate.JsonIgnore;
-import play.db.ebean.Model;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -24,11 +21,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-@Entity
-@Table(name = "connection_info")
-public class ConnectionInfo extends Model {
-    @Id
-    public Long id;
+public class ConnectionInfo extends MongoModel<ConnectionInfo> {
     public String database;
     public String host = "127.0.0.1";
     public Integer port = 27017;
@@ -132,7 +125,7 @@ public class ConnectionInfo extends Model {
     public String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append("ConnectionInfo {");
-        sb.append(" id='").append(id).append('\'');
+        sb.append(" _id='").append(getId()).append('\'');
         sb.append(", database='").append(database).append('\'');
         sb.append(", host='").append(host).append('\'');
         sb.append(", port=").append(port);
@@ -141,5 +134,5 @@ public class ConnectionInfo extends Model {
         return sb.toString();
     }
 
-    public static Finder<Long,ConnectionInfo> find = new Finder<Long,ConnectionInfo>(Long.class, ConnectionInfo.class);
+    public static Finder<ConnectionInfo> find = new Finder<ConnectionInfo>(ConnectionInfo.class);
 }

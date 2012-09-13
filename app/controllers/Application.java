@@ -8,8 +8,8 @@ import com.mongodb.Mongo;
 import models.ConnectionInfo;
 import models.Query;
 import models.QueryResults;
+import org.bson.types.ObjectId;
 import play.mvc.Controller;
-import play.mvc.Http;
 import play.mvc.Result;
 
 import java.io.IOException;
@@ -122,7 +122,7 @@ public class Application extends Controller {
         if (id == null) {
             info = createConnection();
         } else {
-            info = ConnectionInfo.find.byId(Long.parseLong(id));
+            info = ConnectionInfo.find.byId(new ObjectId(id));
             if (info == null) {
                 info = createConnection();
             }
@@ -133,7 +133,7 @@ public class Application extends Controller {
     private static ConnectionInfo createConnection() {
         ConnectionInfo info = new ConnectionInfo();
         info.save();
-        session(INFO, info.id.toString());
+        session(INFO, info.getId().toString());
         return info;
     }
 

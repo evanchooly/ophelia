@@ -1,13 +1,7 @@
 package models;
 
-import play.data.validation.Constraints;
-
-import javax.persistence.Column;
-
 public class Query {
-    @Constraints.Required
     public String query;
-    @Column(name = "queryLimit")
     public Integer limit = 100;
     public Boolean readOnly = false;
 
