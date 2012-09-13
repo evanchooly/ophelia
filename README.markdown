@@ -18,6 +18,6 @@ How to run it
    feature/functionality feedback before tackling different deployment issues.  Running it via play is simple enough
    that I'm willing to let it go for now to focus on more interesting features for now
 
-Ophelia requires Java 7 and is built on play! 2 [framework](http://www.playframework.org/documentation/2.0.3/Installing).
+Ophelia requires Java 7 and is built on Play! 2 [framework](http://www.playframework.org/documentation/2.0.3/Installing).
 There are several interesting bits I have in mind but I'm ready for feedback.  If you find any bugs or have feature
 requests, please [file](https://github.com/evanchooly/ophelia/issues) an issue.
