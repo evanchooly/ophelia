@@ -4,7 +4,7 @@ import PlayProject._
 object ApplicationBuild extends Build {
 
   val appName = "ophelia"
-  val appVersion = "0.4"
+  val appVersion = "0.5"
 
   val appDependencies = Seq(
     "com.antwerkz.sofia" % "sofia-play" % "0.11",
