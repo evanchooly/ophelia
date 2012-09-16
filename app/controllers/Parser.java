@@ -99,9 +99,9 @@ public class Parser {
     return collection;
   }
 
-  public String getMethod() {
-    return method;
-  }
+//  public String getMethod() {
+//    return method;
+//  }
 
   public Object execute(DB db) {
     if (db != null) {
