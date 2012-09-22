@@ -2,6 +2,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.Mongo;
 import controllers.Parser;
+import org.jongo.Jongo;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -61,6 +62,8 @@ public class ParserTest {
     }
     @Test
     public void like() throws IOException {
+        Jongo jongo = new Jongo(db);
+        jongo.getCollection("bob").find("{ name : /like this/ }");
 //        Parser parser = new Parser("db.Collection.find( { name : /something like this/ } )");
 //        parser.execute(db);
     }

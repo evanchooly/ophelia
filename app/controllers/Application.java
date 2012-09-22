@@ -4,16 +4,15 @@ import com.mongodb.CommandResult;
 import com.mongodb.DB;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
-import com.mongodb.Mongo;
 import models.ConnectionInfo;
 import models.Query;
 import models.QueryResults;
 import org.bson.types.ObjectId;
 import play.mvc.Controller;
 import play.mvc.Result;
+import plugins.MongOphelia;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -24,14 +23,15 @@ import java.util.TreeMap;
 public class Application extends Controller {
     private static final String INFO = "connection-info";
 
-    public static Result index() throws UnknownHostException {
+    public static Result index() {
+        System.out.println("Application.index");
         return ok(views.html.index.render(generateContent()));
     }
 
-    private static QueryResults generateContent() throws UnknownHostException {
+    private static QueryResults generateContent() {
         QueryResults queryResults = new QueryResults();
         ConnectionInfo info = getConnectionInfo();
-        List<String> names = getMongo().getDatabaseNames();
+        List<String> names = MongOphelia.get().getDatabaseNames();
         queryResults.setDatabaseList(names);
         String database = getDatabase();
         if (database == null) {
@@ -43,7 +43,7 @@ public class Application extends Controller {
         return queryResults;
     }
 
-    private static Map<String, Object> loadCollections() throws UnknownHostException {
+    private static Map<String, Object> loadCollections() {
         TreeMap<String, Object> map = new TreeMap<>();
         DB db = getDB();
         if (db != null) {
@@ -55,16 +55,16 @@ public class Application extends Controller {
         return map;
     }
 
-    public static Result getContent() throws UnknownHostException {
+    public static Result getContent() {
         return ok(new JacksonMapper().valueToTree(generateContent()));
     }
 
-    public static Result database(String database) throws UnknownHostException {
+    public static Result database(String database) {
         getConnectionInfo().setDatabase(database);
         return ok(new JacksonMapper().valueToTree(generateContent()));
     }
 
-    public static Result changeHost(String dbHost, Integer dbPort) throws UnknownHostException {
+    public static Result changeHost(String dbHost, Integer dbPort) {
         ConnectionInfo info = getConnectionInfo();
         info.setHost(dbHost);
         info.setPort(dbPort);
@@ -88,6 +88,11 @@ public class Application extends Controller {
                         DBObject result = iterator.next();
                         list.add(result.toMap());
                     }
+                    if(list.isEmpty()) {
+                        Map<String, String> map = new TreeMap<>();
+                        map.put("message", "No results found");
+                        list.add(map);
+                    }
                     queryResults.setDbResults(list);
                 }
             } else if (execute instanceof Number) {
@@ -101,24 +106,19 @@ public class Application extends Controller {
         return ok(new JacksonMapper().valueToTree(queryResults));
     }
 
-    private static DB getDB() throws UnknownHostException {
-        DB db = getMongo().getDB(getDatabase());
+    private static DB getDB() {
+        DB db = MongOphelia.get().getDB(getDatabase());
         db.setReadOnly(getConnectionInfo().query.getReadOnly());
         return db;
     }
 
-    private static String getDatabase() throws UnknownHostException {
+    private static String getDatabase() {
         return getConnectionInfo().getDatabase();
-    }
-
-    private static Mongo getMongo() throws UnknownHostException {
-        ConnectionInfo info = getConnectionInfo();
-        return new Mongo(info.getHost(), info.getPort());
     }
 
     public static ConnectionInfo getConnectionInfo() {
         String id = session(INFO);
-        ConnectionInfo info = null;
+        ConnectionInfo info;
         if (id == null) {
             info = createConnection();
         } else {

@@ -5,16 +5,14 @@ import com.mongodb.CommandResult;
 import com.mongodb.DB;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
-import com.mongodb.Mongo;
 import controllers.Parser;
 import dao.MongoModel;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import plugins.MongOphelia;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -57,17 +55,9 @@ public class ConnectionInfo extends MongoModel<ConnectionInfo> {
 
     @JsonIgnore
     public DB getDB() {
-        DB db = getMongo().getDB(getDatabase());
+        DB db = MongOphelia.get().getDB(getDatabase());
         db.setReadOnly(query.getReadOnly());
         return db;
-    }
-
-    private Mongo getMongo() {
-        try {
-            return new Mongo(getHost(), getPort());
-        } catch (UnknownHostException e) {
-            throw new RuntimeException(e.getMessage(), e);
-        }
     }
 
     @SuppressWarnings("unchecked")
@@ -95,8 +85,7 @@ public class ConnectionInfo extends MongoModel<ConnectionInfo> {
     }
 
     public List<String> getDatabaseNames() {
-        Mongo mongo = getMongo();
-        return mongo != null ? mongo.getDatabaseNames() : Collections.<String>emptyList();
+        return MongOphelia.get().getDatabaseNames();
     }
 
     public Query getQuery() {

@@ -6,8 +6,7 @@ import org.bson.types.ObjectId;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.jongo.Jongo;
 import org.jongo.MongoCollection;
-
-import java.net.UnknownHostException;
+import plugins.MongOphelia;
 
 public class MongoModel<T> {
 
@@ -23,25 +22,16 @@ public class MongoModel<T> {
     }
 
     public static <R> R mongo(Operation<R> operation) {
-        Mongo mongo = null;
-        try {
-            mongo = new Mongo("127.0.0.1" , 27017);
-            MongoCollection collection = new Jongo(mongo.getDB("ophelia")).getCollection("connection_info");
-            return operation.execute(collection);
-        } catch (UnknownHostException e) {
-            throw new RuntimeException(e.getMessage(), e);
-        } finally {
-            if (mongo != null) {
-                mongo.close();
-            }
-        }
+        Mongo mongo = MongOphelia.get();
+        Jongo jongo = new Jongo(mongo.getDB("ophelia"));
+        return operation.execute(jongo.getCollection("connection_info"));
     }
 
     public void save() {
         mongo(new Operation<Void>() {
             @Override
             public Void execute(MongoCollection collection) {
-                if(_id == null) {
+                if (_id == null) {
                     _id = new ObjectId();
                 }
                 collection.save(MongoModel.this, WriteConcern.FSYNC_SAFE);
@@ -53,6 +43,7 @@ public class MongoModel<T> {
     public static class Finder<T> {
 
         private Class<T> clazz;
+
         public Finder(Class<T> clazz) {
             this.clazz = clazz;
         }
@@ -61,8 +52,7 @@ public class MongoModel<T> {
             return mongo(new Operation<T>() {
                 @Override
                 public T execute(MongoCollection collection) {
-                    T t = collection.findOne(id).as(clazz);
-                    return t;
+                    return collection.findOne(id).as(clazz);
                 }
             });
         }
