@@ -21,3 +21,8 @@ How to run it
 Ophelia requires Java 7 and is built on Play! 2 [framework](http://www.playframework.org/documentation/2.0.3/Installing).
 There are several interesting bits I have in mind but I'm ready for feedback.  If you find any bugs or have feature
 requests, please [file](https://github.com/evanchooly/ophelia/issues) an issue.
+
+Roadmap
+======
+
+Look [here](https://github.com/evanchooly/ophelia/issues?labels=enhancement&page=1&state=open) for the current plans.
