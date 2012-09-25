@@ -1,8 +1,9 @@
+package com.antwerkz.ophelia;
+
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.Mongo;
 import controllers.Parser;
-import org.jongo.Jongo;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -60,13 +61,15 @@ public class ParserTest {
         Parser parser = new Parser("db.Collection.find( { _id : ObjectId(\"4f54216718c69681f6f14e13\") })");
         parser.execute(db);
     }
+/*
     @Test
     public void like() throws IOException {
         Jongo jongo = new Jongo(db);
         jongo.getCollection("bob").find("{ name : /like this/ }");
-//        Parser parser = new Parser("db.Collection.find( { name : /something like this/ } )");
-//        parser.execute(db);
+        Parser parser = new Parser("db.Collection.find( { name : /something like this/ } )");
+        parser.execute(db);
     }
+*/
 
 
 }

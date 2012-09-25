@@ -22,16 +22,14 @@ public class Parser {
     private String method;
     private JacksonMapper mapper;
     private String query;
-    private Parser.ConsumingStringReader reader;
 
     public Parser(String queryString) throws IOException {
         this.query = scrub(queryString);
         if (this.query.endsWith(";")) {
             query = query.substring(0, query.length() - 1);
         }
-        reader = new ConsumingStringReader(query);
-        if (reader.getContents().startsWith("db.")) {
-            reader.consume(3);
+        if (query.startsWith("db.")) {
+            consume(3);
             parseQuery();
         } else {
             throw new InvalidQueryException(Messages.invalidQuery(query));
@@ -39,32 +37,27 @@ public class Parser {
     }
 
     private void parseQuery() throws IOException {
-        String preamble = reader.getContents().substring(0, reader.getContents().indexOf("("));
+        String preamble = query.substring(0, query.indexOf("("));
         collection = preamble.substring(0, preamble.lastIndexOf("."));
         method = preamble.substring(preamble.lastIndexOf(".") + 1);
-        reader.consume(preamble.length() + 1);
-        if (reader.getContents().startsWith("{")) {
+        consume(preamble.length() + 1);
+        if (query.startsWith("{")) {
             db = new BasicDBObject(parse());
         } else {
             db = new BasicDBObject();
         }
-        if (reader.getContents().startsWith(",")) {
-            reader.consume(1);
+        if (query.startsWith(",")) {
+            consume(1);
             keys = new BasicDBObject(parse());
         }
-        if (reader.getContents().startsWith(")")) {
-            reader.consume(1);
+        if (query.startsWith(")")) {
+            consume(1);
         }
     }
 
     @SuppressWarnings("unchecked")
-    private Map<String, Object> parse() {
-        Map<String, Object> map;
-        try {
-            map = getMapper().readValue(reader, LinkedHashMap.class);
-        } catch (IOException e) {
-            throw new InvalidQueryException(Messages.invalidQuery(query));
-        }
+    private Map<String, Object> parse() throws IOException {
+        Map<String, Object> map = getMapper().readValue(new ConsumingStringReader(query), LinkedHashMap.class);
         for (Entry<String, Object> o : map.entrySet()) {
             if (o.getValue() instanceof Map) {
                 Map<String, Object> value = (Map<String, Object>) o.getValue();
@@ -74,6 +67,19 @@ public class Parser {
             }
         }
         return map;
+    }
+
+    private String consume(int count) {
+        return consume(count, true);
+    }
+
+    private String consume(int count, boolean trim) {
+        String sub = query.substring(0, count);
+        query = query.substring(count);
+        if (trim) {
+            query = query.trim();
+        }
+        return sub;
     }
 
     public ObjectMapper getMapper() {
@@ -173,24 +179,8 @@ public class Parser {
     }
 
     private class ConsumingStringReader extends StringReader {
-        private String contents;
-
-        public ConsumingStringReader(final String contents) {
-            super(contents);
-            this.contents = contents;
-        }
-
-        private String consume(int count) {
-            return consume(count, true);
-        }
-
-        private String consume(int count, boolean trim) {
-            String sub = contents.substring(0, count);
-            contents = contents.substring(count);
-            if (trim) {
-                contents = contents.trim();
-            }
-            return sub;
+        public ConsumingStringReader(final String query) {
+            super(query);
         }
 
         @Override
@@ -200,8 +190,8 @@ public class Parser {
         }
 
         @Override
-        public int read(char[] buf, int off, int len) throws IOException {
-            buf[off] = (char) read();
+        public int read(char[] cbuf, int off, int len) throws IOException {
+            cbuf[off] = (char) read();
             return 1;
         }
 
@@ -209,13 +199,5 @@ public class Parser {
         public void close() {
         }
 
-        @Override
-        public String toString() {
-            return contents;
-        }
-
-        public String getContents() {
-            return contents;
-        }
     }
 }
