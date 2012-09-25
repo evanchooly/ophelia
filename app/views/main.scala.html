@@ -34,54 +34,60 @@
         <script src="@routes.Assets.at("js/ophelia.js")"></script>
     </head>
     <body>
-    <div class="navbar navbar-fixed-top">
-        <div class="navbar-inner">
-            <div class="container-fluid">
-                <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </a>
-                <a class="brand" href="#">@Messages("app.title")</a>
-
-                <div class="btn-group pull-right">
-                    <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-                        <i class="icon-home"></i> <span id="db">[[db goes here]]</span>
-                        <span class="caret"></span>
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container-fluid">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
                     </a>
-                    <ul class="dropdown-menu dropdown-form">
-                        <div id="dbList">
-                        </div>
-                    </ul>
+                    <a class="brand" href="#">@Messages("app.title")</a>
+
+                    <div class="btn-group pull-right">
+                        <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="icon-home"></i> <span id="db">[[db goes here]]</span>
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-form">
+                            <div id="dbList">
+                            </div>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="container-fluid">
-        <div class="row-fluid">
-            <div class="span3">
-                <div class="well sidebar-nav">
-                    <ul class="nav nav-list">
-                        <li class="nav-header">Collections</li>
-                        <li class="nav-pills">
-                            <table id="countTable">
-                            </table>
-                        </li>
-                    </ul>
+        <div class="container-fluid">
+            <div class="row-fluid">
+                <div class="span3">
+                    <div class="well sidebar-nav">
+                        <ul class="nav nav-list">
+                            <li class="nav-header">Collections</li>
+                            <li class="nav-pills">
+                                <table id="countTable">
+                                </table>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
+
+                @content
             </div>
 
-            @content
+            <hr>
+
         </div>
-
-
-        <hr>
-
         <footer>
-            <p>&copy; Justin Lee 2012</p>
+                                   &copy; Justin Lee 2012
+        <!--
+        <div class="navbar">
+                <div class="navbar-inner">
+                    <div class="brand">
+                    </div>
+                </div>
+            </div>
+            -->
         </footer>
-
-    </div>
     </body>
 </html>

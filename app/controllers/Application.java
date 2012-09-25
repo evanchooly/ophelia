@@ -24,7 +24,6 @@ public class Application extends Controller {
     private static final String INFO = "connection-info";
 
     public static Result index() {
-        System.out.println("Application.index");
         return ok(views.html.index.render(generateContent()));
     }
 

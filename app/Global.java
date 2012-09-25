@@ -13,8 +13,6 @@ public class Global extends GlobalSettings {
         return new Action.Simple() {
             public Result call(Http.Context ctx) throws Throwable {
                 Result result = delegate.call(ctx);
-                System.out.println("Global.call");
-                System.out.println("closing mongo");
                 MongOphelia.close();
                 return result;
             }
