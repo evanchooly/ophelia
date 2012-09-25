@@ -101,6 +101,8 @@ public class Application extends Controller {
             }
         } catch (InvalidQueryException e) {
             queryResults.setError(e.getMessage());
+        } catch (Exception e) {
+            queryResults.setError(e.getMessage());
         }
         return ok(new JacksonMapper().valueToTree(queryResults));
     }
