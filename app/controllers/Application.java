@@ -77,6 +77,11 @@ public class Application extends Controller {
 
         QueryResults queryResults = generateContent();
         try {
+            final Parser parser = new Parser(query.query);
+            if(query.showCount) {
+                Long count = parser.count(getDB());
+                queryResults.setResultCount(count);
+            }
             Object execute = new Parser(query.query).execute(getDB());
             if (execute instanceof DBCursor) {
                 DBCursor dbResults = (DBCursor) execute;

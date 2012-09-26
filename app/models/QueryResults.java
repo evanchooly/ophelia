@@ -12,6 +12,7 @@ public class QueryResults {
     public List<Map> dbResults;
     public String error;
     public ConnectionInfo info;
+    private Long resultCount;
 
     public Map<String, Object> getCollections() {
         return collections;
@@ -51,5 +52,13 @@ public class QueryResults {
 
     public void setInfo(ConnectionInfo info) {
         this.info = info;
+    }
+
+    public Long getResultCount() {
+        return resultCount;
+    }
+
+    public void setResultCount(Long resultCount) {
+        this.resultCount = resultCount;
     }
 }

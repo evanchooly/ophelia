@@ -1,30 +1,30 @@
 function clearResults() {
-    var holder = $("#resultsHolder");
-    var children = holder.children();
-    if (children) {
-        children.remove();
+    $("#error").css('display', 'none');
+    function clear(holder) {
+        var children = holder.children();
+        if (children) {
+            children.remove();
+        }
     }
+    clear($("#resultsHolder"));
+    clear($("#countHolder"));
 }
 
 function showDBError(error) {
-    clearResults();
     $("#error").text(error);
     $("#error").css('display', 'inherit');
-
-//    alert(error);
-//    var holder = $("#resultsHolder");
-//    var table = $("<table></table>");
-//    var row = $("<tr></tr>");
-//    var cell = $("<td></td>");
-//
-//    cell.attr("id", "error");
-//    cell.append(error);
-//    row.append(cell);
-//    table.append(row);
-//
-//    holder.append(table);
 }
 
+function showCount(count) {
+    var holder = $("#countHolder");
+    var table = $("<table></table>");
+    var row = $("<tr></tr>");
+    var cell = $("<td></td>");
+    cell.append("<pre>Result count: " + count + "</pre>");
+    row.append(cell);
+    table.append(row);
+    holder.append(table);
+}
 
 function showResults(results) {
     var holder = $("#resultsHolder");

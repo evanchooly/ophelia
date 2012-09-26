@@ -1,4 +1,5 @@
 handlers = {};
+handlers['resultCount'] = showCount;
 handlers['dbResults'] = showResults;
 handlers['collections'] = collections;
 handlers['databaseList'] = databases;
@@ -6,7 +7,6 @@ handlers['error'] = showDBError;
 handlers['info'] = database;
 
 function processResponse(response) {
-    $("#error").css('display', 'none');
     clearResults();
     for (var key in response) {
         var handler = handlers[key];

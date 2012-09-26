@@ -126,6 +126,11 @@ public class Parser {
         collection.drop();
     }
 
+    public Long count(DB db) {
+        DBCollection collection = db.getCollection(getCollection());
+        return collection.count(getDb());
+    }
+
     private Object doFind(DBCollection collection) {
         return collection.find(getDb(), keys).iterator();
     }
