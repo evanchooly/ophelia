@@ -1,6 +1,6 @@
 @(content: QueryResults)
-
 @main {
+
 
 <div class="span9">
     <div class="well query">
@@ -8,15 +8,18 @@
             <div id="error"></div>
             <textarea id="mongo" name="query" rows="5"></textarea>
             <div class="pull-left">
-                <label for="limit">@Messages("query.limit")</label>
+                <label for="limit">@Sofia.queryLimit()</label>
                 <input id="limit" name="limit" value="@{content.info.query.limit}">
-            <label for="showCount">@Messages("query.showCount")</label>
-            <input id="showCount" name="showCount" type="checkbox" #{if content.info.query.showCount } checked #{/if} >
-            @*<label for="readOnly">@Messages("query.readOnly")</label>*@
-            @*<input id="readOnly" name="readOnly" type="checkbox" #{if content.info.query.readOnly } checked #{/if} >*@
+                <label for="showCount">@Sofia.queryShowCount()</label>
+                <input id="showCount" name="showCount" type="checkbox" #{if content.info.query.showCount } checked #{/if} >
+                <label for="bookmark">@Sofia.queryBookmark()</label>
+                <input id="bookmark" name="bookmark" value="@{content.info.query.bookmark}">
+                @*<label for="readOnly">@Sofia.queryReadOnly()</label>
+                <input id="readOnly" name="readOnly" type="checkbox" #{if content.info.query.readOnly } checked #{/if} >
+                *@
             </div>
             <div class="pull-right">
-                <input id="button" class="btn btn-primary" type="button" value="@Messages("query.submit")">
+                <input id="button" class="btn btn-primary" type="button" value="@Sofia.querySubmit()">
             </div>
         </form>
     </div>

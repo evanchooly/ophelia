@@ -1,5 +1,6 @@
-package models;
+package controllers;
 
+import models.ConnectionInfo;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import java.util.List;

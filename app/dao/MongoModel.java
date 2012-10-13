@@ -1,16 +1,13 @@
 package dao;
 
-import com.mongodb.Mongo;
-import com.mongodb.WriteConcern;
+import com.google.code.morphia.Datastore;
+import com.google.code.morphia.annotations.Id;
 import org.bson.types.ObjectId;
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.jongo.Jongo;
-import org.jongo.MongoCollection;
 import plugins.MongOphelia;
 
 public class MongoModel<T> {
 
-    @JsonProperty("_id")
+    @Id
     private ObjectId _id;
 
     public ObjectId getId() {
@@ -22,19 +19,18 @@ public class MongoModel<T> {
     }
 
     public static <R> R mongo(Operation<R> operation) {
-        Mongo mongo = MongOphelia.get();
-        Jongo jongo = new Jongo(mongo.getDB("ophelia"));
-        return operation.execute(jongo.getCollection("connection_info"));
+        Datastore ds = MongOphelia.get();
+        return operation.execute(ds);
     }
 
     public void save() {
         mongo(new Operation<Void>() {
             @Override
-            public Void execute(MongoCollection collection) {
+            public Void execute(Datastore ds) {
                 if (_id == null) {
                     _id = new ObjectId();
                 }
-                collection.save(MongoModel.this, WriteConcern.FSYNC_SAFE);
+                ds.save(MongoModel.this);
                 return null;
             }
         });
@@ -51,15 +47,14 @@ public class MongoModel<T> {
         public T byId(final ObjectId id) {
             return mongo(new Operation<T>() {
                 @Override
-                public T execute(MongoCollection collection) {
-                    return collection.findOne(id).as(clazz);
+                public T execute(Datastore ds) {
+                    return ds.createQuery(clazz).field("_id").equal(id).get();
                 }
             });
         }
-
     }
 
     public interface Operation<R> {
-        R execute(MongoCollection collection);
+        R execute(Datastore ds);
     }
 }

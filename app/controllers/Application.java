@@ -6,7 +6,6 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import models.ConnectionInfo;
 import models.Query;
-import models.QueryResults;
 import org.bson.types.ObjectId;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -30,7 +29,7 @@ public class Application extends Controller {
     private static QueryResults generateContent() {
         QueryResults queryResults = new QueryResults();
         ConnectionInfo info = getConnectionInfo();
-        List<String> names = MongOphelia.get().getDatabaseNames();
+        List<String> names = MongOphelia.getDatabaseNames();
         queryResults.setDatabaseList(names);
         String database = getDatabase();
         if (database == null) {
@@ -73,10 +72,13 @@ public class Application extends Controller {
     public static Result query() throws IOException {
         ConnectionInfo info = getConnectionInfo();
         Query query = form(Query.class).bindFromRequest().get();
-        info.setQuery(query);
-
+        if(query.bookmark != null && !"".equals(query.bookmark)) {
+            query.save();
+        }
         QueryResults queryResults = generateContent();
         try {
+            info.setQuery(query);
+
             final Parser parser = new Parser(query.query);
             if(query.showCount) {
                 Long count = parser.count(getDB());
@@ -85,35 +87,35 @@ public class Application extends Controller {
             Object execute = new Parser(query.query).execute(getDB());
             if (execute instanceof DBCursor) {
                 DBCursor dbResults = (DBCursor) execute;
-                if (dbResults != null) {
-                    List<Map> list = new ArrayList<>();
-                    Iterator<DBObject> iterator = dbResults.iterator();
-                    while (list.size() < info.query.getLimit() && iterator.hasNext()) {
-                        DBObject result = iterator.next();
-                        list.add(result.toMap());
-                    }
-                    if(list.isEmpty()) {
-                        Map<String, String> map = new TreeMap<>();
-                        map.put("message", "No results found");
-                        list.add(map);
-                    }
-                    queryResults.setDbResults(list);
+                List<Map> list = new ArrayList<>();
+                Iterator<DBObject> iterator = dbResults.iterator();
+                while (list.size() < info.query.getLimit() && iterator.hasNext()) {
+                    DBObject result = iterator.next();
+                    list.add(result.toMap());
                 }
+                if(list.isEmpty()) {
+                    Map<String, String> map = new TreeMap<>();
+                    map.put("message", "No results found");
+                    list.add(map);
+                }
+                queryResults.setDbResults(list);
             } else if (execute instanceof Number) {
                 Map<String, Number> count = new TreeMap<>();
                 count.put("count", (Number) execute);
                 queryResults.setDbResults(Arrays.<Map>asList(count));
             }
-        } catch (InvalidQueryException e) {
-            queryResults.setError(e.getMessage());
         } catch (Exception e) {
-            queryResults.setError(e.getMessage());
+            String message = e.getMessage();
+            if(e.getCause() != null) {
+                message += " " + e.getCause().getMessage();
+            }
+            queryResults.setError(message);
         }
         return ok(new JacksonMapper().valueToTree(queryResults));
     }
 
     private static DB getDB() {
-        DB db = MongOphelia.get().getDB(getDatabase());
+        DB db = MongOphelia.get().getDB();
         db.setReadOnly(getConnectionInfo().query.getReadOnly());
         return db;
     }
@@ -138,6 +140,7 @@ public class Application extends Controller {
 
     private static ConnectionInfo createConnection() {
         ConnectionInfo info = new ConnectionInfo();
+        info.query.save();
         info.save();
         session(INFO, info.getId().toString());
         return info;

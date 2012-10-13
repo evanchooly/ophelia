@@ -34,12 +34,19 @@ footer {
 }
 
 .table {
-    margin-top: @padding;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.table tbody tr:hover td,
+.table tbody tr:hover th {
+    background-color: white;
 }
 
 .query {
     padding: @padding;
     margin: 0;
+    margin-bottom: 1em;
     text-align: right;
     padding-right: 2 * @padding;
 

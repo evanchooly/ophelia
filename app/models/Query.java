@@ -1,10 +1,23 @@
 package models;
 
-public class Query {
+import com.google.code.morphia.annotations.Entity;
+import dao.MongoModel;
+
+@Entity("queries")
+public class Query extends MongoModel<Query> {
+    public String bookmark;
     public String query;
     public Integer limit = 100;
     public Boolean readOnly = false;
     public Boolean showCount = true;
+
+    public String getBookmark() {
+        return bookmark;
+    }
+
+    public void setBookmark(String bookmark) {
+        this.bookmark = bookmark;
+    }
 
     public Integer getLimit() {
         return limit == null || limit < 1 ? 10000 : limit;

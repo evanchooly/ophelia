@@ -2,6 +2,7 @@ app.title=Ophelia
 query.limit=Limit:
 query.readOnly=Read Only:
 query.showCount=Show Count:
+query.bookmark=Bookmark:
 query.submit=Query
 
 invalid.query=Bad query: {0}

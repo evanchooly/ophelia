@@ -1,5 +1,7 @@
 package models;
 
+import com.google.code.morphia.annotations.Entity;
+import com.google.code.morphia.annotations.Reference;
 import com.mongodb.BasicDBObject;
 import com.mongodb.CommandResult;
 import com.mongodb.DB;
@@ -7,7 +9,6 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import controllers.Parser;
 import dao.MongoModel;
-import org.codehaus.jackson.annotate.JsonIgnore;
 import plugins.MongOphelia;
 
 import java.io.IOException;
@@ -19,10 +20,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+@Entity("connection_info")
 public class ConnectionInfo extends MongoModel<ConnectionInfo> {
     public String database;
     public String host = "127.0.0.1";
     public Integer port = 27017;
+    @Reference
     public Query query = new Query();
 
     public String getDatabase() {
@@ -43,7 +46,6 @@ public class ConnectionInfo extends MongoModel<ConnectionInfo> {
         save();
     }
 
-
     public Integer getPort() {
         return port;
     }
@@ -53,22 +55,15 @@ public class ConnectionInfo extends MongoModel<ConnectionInfo> {
         save();
     }
 
-    @JsonIgnore
-    public DB getDB() {
-        DB db = MongOphelia.get().getDB(getDatabase());
-        db.setReadOnly(query.getReadOnly());
-        return db;
-    }
-
     @SuppressWarnings("unchecked")
     public Iterator<BasicDBObject> parse(String query) throws IOException {
-        return (Iterator<BasicDBObject>) new Parser(query).execute(getDB());
+        return (Iterator<BasicDBObject>) new Parser(query).execute(MongOphelia.getDB());
     }
 
     public Map<String, Object> query(String query) throws IOException {
         Map<String, Object> content = new TreeMap<>();
         Parser parser = new Parser(query);
-        Object execute = parser.execute(getDB());
+        Object execute = parser.execute(MongOphelia.getDB());
         List<Map> list = null;
         if (execute instanceof DBCursor) {
             list = new ArrayList<>();
@@ -85,7 +80,7 @@ public class ConnectionInfo extends MongoModel<ConnectionInfo> {
     }
 
     public List<String> getDatabaseNames() {
-        return MongOphelia.get().getDatabaseNames();
+        return MongOphelia.getDatabaseNames();
     }
 
     public Query getQuery() {
@@ -99,7 +94,7 @@ public class ConnectionInfo extends MongoModel<ConnectionInfo> {
 
     public Map<String, Object> loadCollections() {
         TreeMap<String, Object> map = new TreeMap<>();
-        DB db = getDB();
+        DB db = MongOphelia.getDB();
         if (db != null) {
             Set<String> collections = db.getCollectionNames();
             for (String collection : collections) {

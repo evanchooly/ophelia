@@ -6,7 +6,7 @@ import com.mongodb.DBCollection;
 import com.mongodb.WriteResult;
 import org.bson.types.ObjectId;
 import org.codehaus.jackson.map.ObjectMapper;
-import utils.Messages;
+import utils.Sofia;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -32,7 +32,7 @@ public class Parser {
             consume(3);
             parseQuery();
         } else {
-            throw new InvalidQueryException(Messages.invalidQuery(query));
+            throw new InvalidQueryException(Sofia.invalidQuery(query));
         }
     }
 
@@ -116,7 +116,7 @@ public class Parser {
                 case "remove":
                     return doRemove(collection);
                 default:
-                    throw new InvalidQueryException(Messages.unknownQueryMethod(method));
+                    throw new InvalidQueryException(Sofia.unknownQueryMethod(method));
             }
         }
         return null;

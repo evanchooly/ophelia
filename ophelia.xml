@@ -1,0 +1,82 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.antwerkz</groupId>
+        <artifactId>sofia</artifactId>
+        <version>0.12-SNAPSHOT</version>
+        <relativePath>../sofia/</relativePath>
+    </parent>
+
+    <groupId>com.antwerkz.ophelia</groupId>
+    <artifactId>ophelia</artifactId>
+    <name>Ophelia</name>
+    <url>https://github.com/evanchooly/ophelia</url>
+
+    <packaging>jar</packaging>
+
+    <scm>
+        <connection>scm:git:git@github.com:evanchooly/ophelia.git</connection>
+        <developerConnection>scm:git:git@github.com:evanchooly/ophelia.git</developerConnection>
+        <url>git@github.com:evanchooly/ophelia.git</url>
+    </scm>
+
+    <repositories>
+        <repository>
+            <id>typesafe</id>
+            <url>http://repo.typesafe.com/typesafe/releases/</url>
+        </repository>
+    </repositories>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.5.1</version>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.5.1</version>
+                <configuration>
+                    <overWriteReleases>true</overWriteReleases>
+                    <overWriteSnapshots>true</overWriteSnapshots>
+                    <outputDirectory>lib</outputDirectory>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+
+                <configuration>
+                    <mainClass>com.antwerkz.sofia.play.SofiaPlugin</mainClass>
+                    <arguments>
+                        <argument>-Xmx512m</argument>
+                    </arguments>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.antwerkz.sofia</groupId>
+            <artifactId>sofia-play</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+</project>
