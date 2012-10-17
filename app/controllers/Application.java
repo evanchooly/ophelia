@@ -70,8 +70,8 @@ public class Application extends Controller {
     }
 
     public static Result query() throws IOException {
-        ConnectionInfo info = getConnectionInfo();
         Query query = form(Query.class).bindFromRequest().get();
+        ConnectionInfo info = getConnectionInfo();
         if(query.bookmark != null && !"".equals(query.bookmark)) {
             query.save();
         }

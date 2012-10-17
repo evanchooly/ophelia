@@ -3,8 +3,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.antwerkz</groupId>
-        <artifactId>sofia</artifactId>
+        <groupId>com.antwerkz.sofia</groupId>
+        <artifactId>sofia-parent</artifactId>
         <version>0.12-SNAPSHOT</version>
         <relativePath>../sofia/</relativePath>
     </parent>
@@ -61,6 +61,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
+                <version>1.2.1</version>
 
                 <configuration>
                     <mainClass>com.antwerkz.sofia.play.SofiaPlugin</mainClass>

@@ -4,6 +4,7 @@ import com.google.code.morphia.Datastore;
 import com.google.code.morphia.Morphia;
 import com.mongodb.DB;
 import com.mongodb.Mongo;
+import models.ConnectionInfo;
 
 import java.net.UnknownHostException;
 import java.util.List;
@@ -13,8 +14,7 @@ public class MongOphelia  {
     private static Morphia morphia = new Morphia();
 
     static {
-//        morphia.map(Query.class);
-//        morphia.map(ConnectionInfo.class);
+        morphia.mapPackage(ConnectionInfo.class.getPackage().getName());
     }
 
     public static Datastore get() {
