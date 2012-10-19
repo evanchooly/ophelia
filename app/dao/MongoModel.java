@@ -36,22 +36,14 @@ public class MongoModel<T> {
         });
     }
 
-    public static class Finder<T> {
-
-        private Class<T> clazz;
-
-        public Finder(Class<T> clazz) {
-            this.clazz = clazz;
-        }
-
-        public T byId(final ObjectId id) {
-            return mongo(new Operation<T>() {
-                @Override
-                public T execute(Datastore ds) {
-                    return ds.createQuery(clazz).field("_id").equal(id).get();
-                }
-            });
-        }
+    public void delete() {
+        mongo(new Operation<Void>() {
+            @Override
+            public Void execute(Datastore ds) {
+                ds.delete(MongoModel.this);
+                return null;
+            }
+        });
     }
 
     public interface Operation<R> {

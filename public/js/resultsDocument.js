@@ -7,7 +7,8 @@ function clearResults() {
         }
     }
     clear($("#resultsHolder"));
-    clear($("#countHolder"));
+    clear($("#countValue"));
+    $("#countHolder").css("display", "none")
 }
 
 function showDBError(error) {
@@ -16,14 +17,9 @@ function showDBError(error) {
 }
 
 function showCount(count) {
-    var holder = $("#countHolder");
-    var table = $("<table></table>");
-    var row = $("<tr></tr>");
-    var cell = $("<td></td>");
-    cell.append("<pre>Result count: " + count + "</pre>");
-    row.append(cell);
-    table.append(row);
-    holder.append(table);
+    $("#countHolder").css("display", "inherit");
+    var holder = $("#countValue");
+    holder.text(count);
 }
 
 function showResults(results) {

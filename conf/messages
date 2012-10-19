@@ -4,6 +4,8 @@ query.showCount=Show Count:
 query.bookmark=Bookmark:
 query.submit=Query
 
+result.count=Result count:
+
 invalid.query=Bad query: {0}
 invalidObjectId=Invalid ObjectId value: {0}
 unknown.query.method=Unknown or unsupported query method: {0}

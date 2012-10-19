@@ -6,16 +6,16 @@
     <div class="well query">
         <form id="queryForm">
             <div id="error"></div>
-            <textarea id="mongo" name="query" rows="5"></textarea>
+            <textarea id="mongo" name="queryString" rows="5"></textarea>
             <div class="pull-left">
                 <label for="limit">@Sofia.queryLimit()</label>
-                <input id="limit" name="limit" value="@{content.info.query.limit}">
+                <input id="limit" name="limit" value="@{content.info.limit}">
                 <label for="showCount">@Sofia.queryShowCount()</label>
-                <input id="showCount" name="showCount" type="checkbox" #{if content.info.query.showCount } checked #{/if} >
+                <input id="showCount" name="showCount" type="checkbox" #{if content.info.showCount } checked #{/if} >
                 <label for="bookmark">@Sofia.queryBookmark()</label>
-                <input id="bookmark" name="bookmark" value="@{content.info.query.bookmark}">
+                <input id="bookmark" name="bookmark">
                 @*<label for="readOnly">@Sofia.queryReadOnly()</label>
-                <input id="readOnly" name="readOnly" type="checkbox" #{if content.info.query.readOnly } checked #{/if} >
+                <input id="readOnly" name="readOnly" type="checkbox" #{if content.info.readOnly } checked #{/if} >
                 *@
             </div>
             <div class="pull-right">
@@ -23,7 +23,9 @@
             </div>
         </form>
     </div>
-    <div class="table" id="countHolder"></div>
+    <div class="table" id="countHolder">
+        @Sofia.resultCount() <span id="countValue"></span>
+    </div>
     <div class="table" id="resultsHolder"></div>
 
     <script type="text/javascript">

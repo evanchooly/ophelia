@@ -1,14 +1,15 @@
 package models;
 
 import com.google.code.morphia.annotations.Entity;
-import com.google.code.morphia.annotations.Reference;
 import com.mongodb.BasicDBObject;
 import com.mongodb.CommandResult;
 import com.mongodb.DB;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import controllers.Parser;
+import dao.Finder;
 import dao.MongoModel;
+import org.bson.types.ObjectId;
 import plugins.MongOphelia;
 
 import java.io.IOException;
@@ -22,11 +23,15 @@ import java.util.TreeMap;
 
 @Entity("connection_info")
 public class ConnectionInfo extends MongoModel<ConnectionInfo> {
+    private static final int DEFAULT_LIMIT = 100;
     public String database;
+    public String queryString;
     public String host = "127.0.0.1";
     public Integer port = 27017;
-    @Reference
-    public Query query = new Query();
+    public Integer limit = DEFAULT_LIMIT;
+    public Boolean readOnly = false;
+    public Boolean showCount = true;
+    public ObjectId queryId;
 
     public String getDatabase() {
         return database;
@@ -53,6 +58,26 @@ public class ConnectionInfo extends MongoModel<ConnectionInfo> {
     public void setPort(Integer port) {
         this.port = port;
         save();
+    }
+
+    public Integer getLimit() {
+        return limit == null || limit < 1 ? DEFAULT_LIMIT : limit;
+    }
+
+    public Boolean getReadOnly() {
+        return readOnly;
+    }
+
+    public void setReadOnly(Boolean readOnly) {
+        this.readOnly = readOnly == null ? false : readOnly;
+    }
+
+    public Boolean getShowCount() {
+        return showCount;
+    }
+
+    public void setShowCount(Boolean showCount) {
+        this.showCount = showCount;
     }
 
     @SuppressWarnings("unchecked")
@@ -83,12 +108,12 @@ public class ConnectionInfo extends MongoModel<ConnectionInfo> {
         return MongOphelia.getDatabaseNames();
     }
 
-    public Query getQuery() {
-        return query;
+    public String getQueryString() {
+        return queryString;
     }
 
-    public void setQuery(Query query) {
-        this.query = query;
+    public void setQueryString(String query) {
+        this.queryString = query;
         save();
     }
 
@@ -113,10 +138,13 @@ public class ConnectionInfo extends MongoModel<ConnectionInfo> {
         sb.append(", database='").append(database).append('\'');
         sb.append(", host='").append(host).append('\'');
         sb.append(", port=").append(port);
-        sb.append(", query='").append(query).append('\'');
+        sb.append(", queryId=").append(queryId);
+        sb.append(", queryString='").append(queryString).append('\'');
         sb.append('}');
         return sb.toString();
     }
 
-    public static Finder<ConnectionInfo> find = new Finder<ConnectionInfo>(ConnectionInfo.class);
+    public static Finder<ConnectionInfo> find() {
+        return new Finder<ConnectionInfo>(ConnectionInfo.class);
+    }
 }

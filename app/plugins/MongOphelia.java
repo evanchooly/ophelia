@@ -18,6 +18,14 @@ public class MongOphelia  {
     }
 
     public static Datastore get() {
+       return get("ophelia");
+    }
+
+    public static Datastore get(String database) {
+        return morphia.createDatastore(getMongo(), database);
+    }
+
+    public static Mongo getMongo() {
         Mongo mongo = pool.get();
         if(mongo == null) {
             try {
@@ -27,7 +35,7 @@ public class MongOphelia  {
             }
             pool.set(mongo);
         }
-        return morphia.createDatastore(mongo, "ophelia");
+        return mongo;
     }
 
     public static List<String> getDatabaseNames() {

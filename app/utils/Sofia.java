@@ -1,16 +1,10 @@
 package utils;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
-import java.text.MessageFormat;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.PropertyResourceBundle;
-import java.util.ResourceBundle;
+import java.io.*;
+import java.net.*;
+import java.text.*;
+import java.util.*;
+import java.security.*;
 import java.util.ResourceBundle.Control;
 
 
@@ -66,6 +60,10 @@ public class Sofia {
 
     public static String querySubmit(Locale... locale) {
         return getMessageValue("query.submit", locale);
+    }
+
+    public static String resultCount(Locale... locale) {
+        return getMessageValue("result.count", locale);
     }
 
     public static String unknownQueryMethod(Object arg0, Locale... locale) {

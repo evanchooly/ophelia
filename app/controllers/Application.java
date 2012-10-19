@@ -21,6 +21,9 @@ import java.util.TreeMap;
 
 public class Application extends Controller {
     private static final String INFO = "connection-info";
+    public static final String SESSION_KEY = "session-key";
+    public static final String ADMIN = "admin";
+    public static Boolean authenticated = Boolean.FALSE;
 
     public static Result index() {
         return ok(views.html.index.render(generateContent()));
@@ -37,13 +40,13 @@ public class Application extends Controller {
             info.setDatabase(database);
         }
         queryResults.setInfo(info);
-        queryResults.setCollections(loadCollections());
+        queryResults.setCollections(loadCollections(info));
         return queryResults;
     }
 
-    private static Map<String, Object> loadCollections() {
+    private static Map<String, Object> loadCollections(final ConnectionInfo info) {
         TreeMap<String, Object> map = new TreeMap<>();
-        DB db = getDB();
+        DB db = getDB(info.getDatabase());
         if (db != null) {
             for (String collection : db.getCollectionNames()) {
                 CommandResult stats = db.getCollection(collection).getStats();
@@ -70,30 +73,38 @@ public class Application extends Controller {
     }
 
     public static Result query() throws IOException {
-        Query query = form(Query.class).bindFromRequest().get();
-        ConnectionInfo info = getConnectionInfo();
-        if(query.bookmark != null && !"".equals(query.bookmark)) {
-            query.save();
-        }
-        QueryResults queryResults = generateContent();
+        QueryResults queryResults;
         try {
-            info.setQuery(query);
+            Query query = form(Query.class).bindFromRequest().get();
+            ConnectionInfo info = getConnectionInfo();
+            if (query.bookmark != null && !"".equals(query.bookmark)) {
+                Query saved = Query.find().byBookmark(query.bookmark);
+                if (saved != null || saved.equals(query)) {
+                    query.save();
+                    info.queryId = query.getId();
+                } else {
+                    throw new RuntimeException("Bookmark already exists");
+                }
+            }
+            info.setQueryString(query.queryString);
+            queryResults = generateContent();
+            info.setQueryString(query.queryString);
 
-            final Parser parser = new Parser(query.query);
-            if(query.showCount) {
-                Long count = parser.count(getDB());
+            final Parser parser = new Parser(query.queryString);
+            if (info.showCount) {
+                Long count = parser.count(getDB(info.getDatabase()));
                 queryResults.setResultCount(count);
             }
-            Object execute = new Parser(query.query).execute(getDB());
+            Object execute = new Parser(query.queryString).execute(getDB(info.getDatabase()));
             if (execute instanceof DBCursor) {
                 DBCursor dbResults = (DBCursor) execute;
                 List<Map> list = new ArrayList<>();
                 Iterator<DBObject> iterator = dbResults.iterator();
-                while (list.size() < info.query.getLimit() && iterator.hasNext()) {
+                while (list.size() < info.getLimit() && iterator.hasNext()) {
                     DBObject result = iterator.next();
                     list.add(result.toMap());
                 }
-                if(list.isEmpty()) {
+                if (list.isEmpty()) {
                     Map<String, String> map = new TreeMap<>();
                     map.put("message", "No results found");
                     list.add(map);
@@ -105,8 +116,9 @@ public class Application extends Controller {
                 queryResults.setDbResults(Arrays.<Map>asList(count));
             }
         } catch (Exception e) {
+            queryResults = new QueryResults();
             String message = e.getMessage();
-            if(e.getCause() != null) {
+            if (e.getCause() != null) {
                 message += " " + e.getCause().getMessage();
             }
             queryResults.setError(message);
@@ -114,9 +126,9 @@ public class Application extends Controller {
         return ok(new JacksonMapper().valueToTree(queryResults));
     }
 
-    private static DB getDB() {
-        DB db = MongOphelia.get().getDB();
-        db.setReadOnly(getConnectionInfo().query.getReadOnly());
+    private static DB getDB(String database) {
+        DB db = MongOphelia.get(database).getDB();
+        db.setReadOnly(getConnectionInfo().getReadOnly());
         return db;
     }
 
@@ -130,7 +142,7 @@ public class Application extends Controller {
         if (id == null) {
             info = createConnection();
         } else {
-            info = ConnectionInfo.find.byId(new ObjectId(id));
+            info = ConnectionInfo.find().byId(new ObjectId(id));
             if (info == null) {
                 info = createConnection();
             }
@@ -140,7 +152,6 @@ public class Application extends Controller {
 
     private static ConnectionInfo createConnection() {
         ConnectionInfo info = new ConnectionInfo();
-        info.query.save();
         info.save();
         session(INFO, info.getId().toString());
         return info;
