@@ -15,7 +15,6 @@ import java.io.IOException;
 public class JacksonMapper extends ObjectMapper {
     public JacksonMapper() {
         configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
-//        configure(SerializationConfig.Feature.WRITE_NULL_PROPERTIES, false);;
 
         SimpleModule module = new SimpleModule("jackson", Version.unknownVersion());
         module.addSerializer(new ObjectIdSerializer());

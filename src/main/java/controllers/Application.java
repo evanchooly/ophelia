@@ -7,10 +7,14 @@ import com.mongodb.DBObject;
 import models.ConnectionInfo;
 import models.Query;
 import org.bson.types.ObjectId;
-import play.mvc.Controller;
-import play.mvc.Result;
 import plugins.MongOphelia;
 
+import javax.servlet.http.HttpSession;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,34 +23,30 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class Application extends Controller {
+@Path("/")
+public class Application {
     private static final String INFO = "connection-info";
     public static final String SESSION_KEY = "session-key";
-    public static final String ADMIN = "admin";
     public static Boolean authenticated = Boolean.FALSE;
 
-    public static Result index() {
-        return ok(views.html.index.render(generateContent()));
-    }
-
-    private static QueryResults generateContent() {
+    private QueryResults generateContent(HttpSession session) {
         QueryResults queryResults = new QueryResults();
-        ConnectionInfo info = getConnectionInfo();
+        ConnectionInfo info = getConnectionInfo(session);
         List<String> names = MongOphelia.getDatabaseNames();
         queryResults.setDatabaseList(names);
-        String database = getDatabase();
+        String database = getDatabase(session);
         if (database == null) {
             database = names.get(0);
             info.setDatabase(database);
         }
         queryResults.setInfo(info);
-        queryResults.setCollections(loadCollections(info));
+        queryResults.setCollections(loadCollections(session, info));
         return queryResults;
     }
 
-    private static Map<String, Object> loadCollections(final ConnectionInfo info) {
+    private Map<String, Object> loadCollections(HttpSession session, final ConnectionInfo info) {
         TreeMap<String, Object> map = new TreeMap<>();
-        DB db = getDB(info.getDatabase());
+        DB db = getDB(info.getDatabase(), session);
         if (db != null) {
             for (String collection : db.getCollectionNames()) {
                 CommandResult stats = db.getCollection(collection).getStats();
@@ -56,27 +56,38 @@ public class Application extends Controller {
         return map;
     }
 
-    public static Result getContent() {
-        return ok(new JacksonMapper().valueToTree(generateContent()));
+    @GET()
+    @Path("/content")
+    @Produces("application/json")
+    public QueryResults getContent(@Context HttpSession session) {
+        return generateContent(session);
     }
 
-    public static Result database(String database) {
-        getConnectionInfo().setDatabase(database);
-        return ok(new JacksonMapper().valueToTree(generateContent()));
+    @GET()
+    @Path("/database")
+    @Produces("application/json")
+    public QueryResults database(@Context HttpSession session, String database) {
+        getConnectionInfo(session).setDatabase(database);
+        return generateContent(session);
     }
 
-    public static Result changeHost(String dbHost, Integer dbPort) {
-        ConnectionInfo info = getConnectionInfo();
+    @GET()
+    @Path("/host")
+    @Produces("application/json")
+    public QueryResults changeHost(@Context HttpSession session, String dbHost, Integer dbPort) {
+        ConnectionInfo info = getConnectionInfo(session);
         info.setHost(dbHost);
         info.setPort(dbPort);
-        return index();
+        return getContent(session);
     }
 
-    public static Result query() throws IOException {
+    @POST()
+    @Path("/query")
+    @Produces("application/json")
+    public QueryResults query(@Context HttpSession session, Query query) throws IOException {
         QueryResults queryResults;
         try {
-            Query query = form(Query.class).bindFromRequest().get();
-            ConnectionInfo info = getConnectionInfo();
+            ConnectionInfo info = getConnectionInfo(session);
             if (query.bookmark != null && !"".equals(query.bookmark)) {
                 Query saved = Query.find().byBookmark(query.bookmark);
                 if (saved != null || saved.equals(query)) {
@@ -87,15 +98,15 @@ public class Application extends Controller {
                 }
             }
             info.setQueryString(query.queryString);
-            queryResults = generateContent();
+            queryResults = generateContent(session);
             info.setQueryString(query.queryString);
 
             final Parser parser = new Parser(query.queryString);
             if (info.showCount) {
-                Long count = parser.count(getDB(info.getDatabase()));
+                Long count = parser.count(getDB(info.getDatabase(), session));
                 queryResults.setResultCount(count);
             }
-            Object execute = new Parser(query.queryString).execute(getDB(info.getDatabase()));
+            Object execute = new Parser(query.queryString).execute(getDB(info.getDatabase(), session));
             if (execute instanceof DBCursor) {
                 DBCursor dbResults = (DBCursor) execute;
                 List<Map> list = new ArrayList<>();
@@ -123,37 +134,37 @@ public class Application extends Controller {
             }
             queryResults.setError(message);
         }
-        return ok(new JacksonMapper().valueToTree(queryResults));
+        return queryResults;
     }
 
-    private static DB getDB(String database) {
+    private DB getDB(String database, HttpSession session) {
         DB db = MongOphelia.get(database).getDB();
-        db.setReadOnly(getConnectionInfo().getReadOnly());
+        db.setReadOnly(getConnectionInfo(session).getReadOnly());
         return db;
     }
 
-    private static String getDatabase() {
-        return getConnectionInfo().getDatabase();
+    private String getDatabase(HttpSession session) {
+        return getConnectionInfo(session).getDatabase();
     }
 
-    public static ConnectionInfo getConnectionInfo() {
-        String id = session(INFO);
+    public ConnectionInfo getConnectionInfo(HttpSession session) {
+        String id = (String) session.getAttribute(INFO);
         ConnectionInfo info;
         if (id == null) {
-            info = createConnection();
+            info = createConnection(session);
         } else {
             info = ConnectionInfo.find().byId(new ObjectId(id));
             if (info == null) {
-                info = createConnection();
+                info = createConnection(session);
             }
         }
         return info;
     }
 
-    private static ConnectionInfo createConnection() {
+    private static ConnectionInfo createConnection(HttpSession session) {
         ConnectionInfo info = new ConnectionInfo();
         info.save();
-        session(INFO, info.getId().toString());
+        session.setAttribute(INFO, info.getId().toString());
         return info;
     }
 

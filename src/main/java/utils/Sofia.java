@@ -1,10 +1,16 @@
 package utils;
 
-import java.io.*;
-import java.net.*;
-import java.text.*;
-import java.util.*;
-import java.security.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
+import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.PropertyResourceBundle;
+import java.util.ResourceBundle;
 import java.util.ResourceBundle.Control;
 
 
@@ -24,7 +30,7 @@ public class Sofia {
     private static ResourceBundle loadBundle(Locale locale) {
         ResourceBundle bundle = messages.get(locale);
         if(bundle == null) {
-            bundle = ResourceBundle.getBundle("messages", locale , new SofiaControl() );
+            bundle = ResourceBundle.getBundle("ophelia.properties", locale , new SofiaControl() );
             messages.put(locale, bundle);
         }
         return bundle;
