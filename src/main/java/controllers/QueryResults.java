@@ -1,10 +1,10 @@
 package controllers;
 
-import models.ConnectionInfo;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
-
 import java.util.List;
 import java.util.Map;
+
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import models.ConnectionInfo;
 
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class QueryResults {

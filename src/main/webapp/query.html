@@ -1,36 +1,34 @@
-@(content: QueryResults)
-@main {
-
-
 <div class="span9">
     <div class="well query">
         <form id="queryForm">
             <div id="error"></div>
             <textarea id="mongo" name="queryString" rows="5"></textarea>
+
             <div class="pull-left">
-                <label for="limit">@Sofia.queryLimit()</label>
-                <input id="limit" name="limit" value="@{content.info.limit}">
-                <label for="showCount">@Sofia.queryShowCount()</label>
-                <input id="showCount" name="showCount" type="checkbox" #{if content.info.showCount } checked #{/if} >
-                <label for="bookmark">@Sofia.queryBookmark()</label>
+                <label for="limit">{{sofia.queryLimit()}}</label>
+                <input id="limit" name="limit" ng-model="query.limit">
+                <label for="showCount">{{sofia.queryShowCount()}}</label>
+                <input id="showCount" name="showCount" type="checkbox" ng-model="query.showCount">
+                <label for="bookmark">{{sofia.queryBookmark()}}</label>
                 <input id="bookmark" name="bookmark">
-                @*<label for="readOnly">@Sofia.queryReadOnly()</label>
+                <!--
+                <label for="readOnly">{{sofia.queryReadOnly()}}</label>
                 <input id="readOnly" name="readOnly" type="checkbox" #{if content.info.readOnly } checked #{/if} >
-                *@
+                -->
             </div>
             <div class="pull-right">
-                <input id="button" class="btn btn-primary" type="button" value="@Sofia.querySubmit()">
+                <input id="button" class="btn btn-primary" type="button" value="{{sofia.querySubmit()}}">
             </div>
         </form>
     </div>
     <div class="table" id="countHolder">
-        @Sofia.resultCount() <span id="countValue"></span>
+        {{sofia.resultCount()}} <span id="countValue"></span>
     </div>
     <div class="table" id="resultsHolder"></div>
 
     <script type="text/javascript">
         $(function () {
-            $.get('/content', function(data) {
+            $.get('/content', function (data) {
                 processResponse(data);
             });
             $("#button").click(function () {
@@ -38,11 +36,11 @@
                 $.ajax({
                     type:"POST",
                     url:"/query",
-                    data: $('#queryForm').serialize(),
+                    data:$('#queryForm').serialize(),
                     success:function (response) {
                         processResponse(response);
                     },
-                    error:function(response) {
+                    error:function (response) {
                         $("#error").val(response.responseText);
                         $("#error").css('display', 'inherit');
                     }
@@ -51,4 +49,3 @@
         });
     </script>
 </div>
-}

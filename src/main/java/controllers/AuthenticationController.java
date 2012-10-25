@@ -1,13 +1,12 @@
 package controllers;
 
-import models.User;
-import org.bson.types.ObjectId;
-import play.mvc.Result;
-import twitter4j.TwitterException;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+
+import models.User;
+import org.bson.types.ObjectId;
+import twitter4j.TwitterException;
 
 public class AuthenticationController {
     private static final String CONTEXT_NAME = "-context";
@@ -57,26 +56,23 @@ public class AuthenticationController {
         }
     }
 
-    public static Result initUsers(String name) {
+    public static void initUsers(String name) {
         if (!User.find().initialized()) {
             new User(name, true).save();
         }
-        return null; //Application.index();
     }
 
-    public static Result addUser(String twitter) {
+    public static void addUser(String twitter) {
         if (!twitter.isEmpty()) {
             new User(twitter, false).save();
         }
-        return null; //Application.index();
     }
 
-    public static Result deleteUser(ObjectId id) {
+    public static void deleteUser(ObjectId id) {
         User user = User.find().byId(id);
         if (user != null) {
             user.delete();
         }
-        return null; //Application.index();
     }
 
     public static TwitterContext getTwitterContext() {
