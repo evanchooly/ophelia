@@ -9,12 +9,15 @@ import java.util.Map;
 import java.util.TreeMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 
 import com.mongodb.CommandResult;
 import com.mongodb.DB;
@@ -66,14 +69,14 @@ public class Application {
 
   @GET
   @Path("content")
-  @Produces("application/json")
+  @Produces(MediaType.APPLICATION_JSON)
   public QueryResults content(@Context HttpServletRequest request) {
     return generateContent(request.getSession());
   }
 
   @GET()
   @Path("/database/{database}")
-  @Produces("application/json")
+  @Produces(MediaType.APPLICATION_JSON)
   public QueryResults database(@Context HttpServletRequest request, @PathParam("database") String database) {
     HttpSession session = request.getSession();
     getConnectionInfo(session).setDatabase(database);
@@ -82,7 +85,7 @@ public class Application {
 
   @GET()
   @Path("/host/{host}/{port}")
-  @Produces("application/json")
+  @Produces(MediaType.APPLICATION_JSON)
   public QueryResults changeHost(@Context HttpServletRequest request, @PathParam("host") String dbHost,
     @PathParam("port") Integer dbPort) {
     ConnectionInfo info = getConnectionInfo(request.getSession());
@@ -91,12 +94,19 @@ public class Application {
     return content(request);
   }
 
-  @POST()
+  @POST
   @Path("/query")
-  @Produces("application/json")
-  public QueryResults query(@Context HttpServletRequest request, Query query) throws IOException {
+  @Produces(MediaType.APPLICATION_JSON)
+  @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+  public QueryResults query(@Context HttpServletRequest request,
+    @FormParam("queryString") String queryString,
+    @FormParam("limit") Integer limit,
+    @FormParam("showCount") Boolean showCount,
+    @FormParam("bookmark") String bookmark) throws IOException {
     QueryResults queryResults;
     try {
+      System.out.println("Application.query");
+      Query query = new Query();
       HttpSession session = request.getSession();
       ConnectionInfo info = getConnectionInfo(session);
       if (query.bookmark != null && !"".equals(query.bookmark)) {

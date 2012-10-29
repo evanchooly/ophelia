@@ -28,14 +28,14 @@
 
     <script type="text/javascript">
         $(function () {
-            $.get('/app/content', function (data) {
+            $.get('/ophelia/app/content', function (data) {
                 processResponse(data);
             });
             $("#button").click(function () {
                 clearResults();
                 $.ajax({
                     type:"POST",
-                    url:"/app/query",
+                    url:"/ophelia/app/query",
                     data:$('#queryForm').serialize(),
                     success:function (response) {
                         processResponse(response);

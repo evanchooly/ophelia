@@ -52,17 +52,14 @@
         <dependency>
             <groupId>org.glassfish.jersey.containers</groupId>
             <artifactId>jersey-container-servlet</artifactId>
-            <!-- use the following artifactId if you don't need servlet 2.x compatibility -->
-            <!-- artifactId>jersey-container-servlet</artifactId -->
             <version>${jersey.version}</version>
         </dependency>
-        <!-- uncomment this to get JSON support
         <dependency>
-            <groupId>org.glassfish.jersey.media</groupId>
-            <artifactId>jersey-media-moxy</artifactId>
+            <groupId>org.glassfish.jersey.test-framework.providers</groupId>
+            <artifactId>jersey-test-framework-provider-inmemory</artifactId>
             <version>${jersey.version}</version>
+            <scope>test</scope>
         </dependency>
-        -->
         <dependency>
             <groupId>com.antwerkz.sofia</groupId>
             <artifactId>sofia-play</artifactId>
@@ -118,7 +115,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
-            <version>1.6.4</version>
+            <version>1.5.6</version>
         </dependency>
         <dependency>
             <groupId>log4j</groupId>
