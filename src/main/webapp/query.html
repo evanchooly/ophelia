@@ -28,14 +28,14 @@
 
     <script type="text/javascript">
         $(function () {
-            $.get('/content', function (data) {
+            $.get('/app/content', function (data) {
                 processResponse(data);
             });
             $("#button").click(function () {
                 clearResults();
                 $.ajax({
                     type:"POST",
-                    url:"/query",
+                    url:"/app/query",
                     data:$('#queryForm').serialize(),
                     success:function (response) {
                         processResponse(response);
