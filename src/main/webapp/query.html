@@ -36,7 +36,7 @@
                 $.ajax({
                     type:"POST",
                     url:"/ophelia/app/query",
-                    data:$('#queryForm').serialize(),
+                    data:$('#queryForm').json(),
                     success:function (response) {
                         processResponse(response);
                     },

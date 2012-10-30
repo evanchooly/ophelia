@@ -98,22 +98,20 @@ public class Application {
   @Path("/query")
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-  public QueryResults query(@Context HttpServletRequest request,
-    @FormParam("queryString") String queryString,
-    @FormParam("limit") Integer limit,
-    @FormParam("showCount") Boolean showCount,
+  public QueryResults query(@Context HttpServletRequest request, ConnectionInfo submitted,
     @FormParam("bookmark") String bookmark) throws IOException {
     QueryResults queryResults;
     try {
-      System.out.println("Application.query");
       Query query = new Query();
+      query.queryString = submitted.getQueryString();
+      System.out.println("Application.query");
       HttpSession session = request.getSession();
       ConnectionInfo info = getConnectionInfo(session);
       if (query.bookmark != null && !"".equals(query.bookmark)) {
         Query saved = Query.find().byBookmark(query.bookmark);
         if (saved != null || saved.equals(query)) {
           query.save();
-          info.queryId = query.getId();
+          info.setQueryId(query.getId());
         } else {
           throw new RuntimeException("Bookmark already exists");
         }
@@ -122,7 +120,7 @@ public class Application {
       queryResults = generateContent(session);
       info.setQueryString(query.queryString);
       final Parser parser = new Parser(query.queryString);
-      if (info.showCount) {
+      if (info.getShowCount()) {
         Long count = parser.count(getDB(session, info.getDatabase()));
         queryResults.setResultCount(count);
       }
