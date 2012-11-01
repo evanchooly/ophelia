@@ -19,7 +19,6 @@ import com.mongodb.DBObject;
 import controllers.Parser;
 import dao.Finder;
 import dao.MongoModel;
-import org.bson.types.ObjectId;
 import plugins.MongOphelia;
 
 @Entity("connection_info")
@@ -39,7 +38,6 @@ public class ConnectionInfo extends MongoModel<ConnectionInfo> {
   private Boolean readOnly = false;
   @JsonProperty
   private Boolean showCount = true;
-  private ObjectId queryId;
 
   public String getDatabase() {
     return database;
@@ -142,14 +140,6 @@ public class ConnectionInfo extends MongoModel<ConnectionInfo> {
     return map;
   }
 
-  public ObjectId getQueryId() {
-    return queryId;
-  }
-
-  public void setQueryId(ObjectId queryId) {
-    this.queryId = queryId;
-  }
-
   @Override
   public String toString() {
     final StringBuilder sb = new StringBuilder();
@@ -158,7 +148,6 @@ public class ConnectionInfo extends MongoModel<ConnectionInfo> {
     sb.append(", database='").append(database).append('\'');
     sb.append(", host='").append(host).append('\'');
     sb.append(", port=").append(port);
-    sb.append(", queryId=").append(queryId);
     sb.append(", queryString='").append(queryString).append('\'');
     sb.append('}');
     return sb.toString();

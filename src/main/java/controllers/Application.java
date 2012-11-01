@@ -97,34 +97,36 @@ public class Application {
   @POST
   @Path("/query")
   @Produces(MediaType.APPLICATION_JSON)
-  @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-  public QueryResults query(@Context HttpServletRequest request, ConnectionInfo submitted,
+  @Consumes({MediaType.APPLICATION_FORM_URLENCODED, "application/x-www-form-urlencoded; charset=UTF-8"})
+  public QueryResults query(@Context HttpServletRequest request,
+    @FormParam("queryString") String queryString,
+    @FormParam("limit") Integer limit,
+    @FormParam("showCount") Boolean showCount,
     @FormParam("bookmark") String bookmark) throws IOException {
     QueryResults queryResults;
     try {
-      Query query = new Query();
-      query.queryString = submitted.getQueryString();
       System.out.println("Application.query");
       HttpSession session = request.getSession();
       ConnectionInfo info = getConnectionInfo(session);
-      if (query.bookmark != null && !"".equals(query.bookmark)) {
-        Query saved = Query.find().byBookmark(query.bookmark);
-        if (saved != null || saved.equals(query)) {
+      if (bookmark != null && !"".equals(bookmark)) {
+        Query saved = Query.find().byBookmark(bookmark);
+        if (saved != null) {
+          Query query = new Query();
+          query.setQueryString(queryString);
+          query.setBookmark(bookmark);
           query.save();
-          info.setQueryId(query.getId());
         } else {
           throw new RuntimeException("Bookmark already exists");
         }
       }
-      info.setQueryString(query.queryString);
+      info.setQueryString(queryString);
       queryResults = generateContent(session);
-      info.setQueryString(query.queryString);
-      final Parser parser = new Parser(query.queryString);
+      final Parser parser = new Parser(queryString);
       if (info.getShowCount()) {
         Long count = parser.count(getDB(session, info.getDatabase()));
         queryResults.setResultCount(count);
       }
-      Object execute = new Parser(query.queryString).execute(getDB(session, info.getDatabase()));
+      Object execute = parser.execute(getDB(session, info.getDatabase()));
       if (execute instanceof DBCursor) {
         DBCursor dbResults = (DBCursor) execute;
         List<Map> list = new ArrayList<>();

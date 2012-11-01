@@ -6,18 +6,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.Arrays;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.Provider;
 
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-@Provider
-@Consumes(MediaType.APPLICATION_JSON)
 public class JacksonBodyReader implements MessageBodyReader<Object> {
   private JacksonMapper mapper;
 
@@ -38,17 +33,9 @@ public class JacksonBodyReader implements MessageBodyReader<Object> {
     if (available > 0) {
       BufferedReader reader = new BufferedReader(new InputStreamReader(entityStream));
       String s = reader.readLine();
-      int index = s.indexOf("=");
-      httpHeaders.put(s.substring(0, index), Arrays.asList(s.substring(index + 1)));
-      System.out.println("s = " + s);
+      Object o = mapper.convertValue(s, type);
+      return o;
     }
-    /*
-        ObjectNode jsonObject = new ObjectNode(mapper.getNodeFactory());
-        for (Entry<String, List<String>> stringListEntry : httpHeaders.entrySet()) {
-    //      new
-        }
-    */
-    Object o = mapper.convertValue(httpHeaders, type);
-    return o;
+    return null;
   }
 }

@@ -28,24 +28,7 @@
 
     <script type="text/javascript">
         $(function () {
-            $.get('/ophelia/app/content', function (data) {
-                processResponse(data);
-            });
-            $("#button").click(function () {
-                clearResults();
-                $.ajax({
-                    type:"POST",
-                    url:"/ophelia/app/query",
-                    data:$('#queryForm').json(),
-                    success:function (response) {
-                        processResponse(response);
-                    },
-                    error:function (response) {
-                        $("#error").val(response.responseText);
-                        $("#error").css('display', 'inherit');
-                    }
-                });
-            });
+            initOphelia();
         });
     </script>
 </div>

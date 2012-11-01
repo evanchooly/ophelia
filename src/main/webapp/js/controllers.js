@@ -30,3 +30,33 @@ function OpheliaController($scope) {
         showCount:true
     }
 }
+function initOphelia() {
+    $.get('/ophelia/app/content', function (data) {
+        processResponse(data);
+    });
+    $("#button").click(function () {
+        clearResults();
+        $.ajax({
+            type:"POST",
+            url:"/ophelia/app/query",
+            data:$('#queryForm').serialize(),
+            contentType:'application/x-www-form-urlencoded',
+            success:function (response) {
+                processResponse(response);
+            },
+            error:function (response) {
+                $("#error").val(response.responseText);
+                $("#error").css('display', 'inherit');
+            }
+        });
+    });
+}
+function getMethods(obj) {
+    var res = [];
+    for (var m in obj) {
+        if (typeof obj[m] == "function") {
+            res.push(obj[m])
+        }
+    }
+    return res;
+}
