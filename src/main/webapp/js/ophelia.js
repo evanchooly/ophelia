@@ -5,7 +5,6 @@ handlers['collections'] = collections;
 handlers['databaseList'] = databases;
 handlers['error'] = showDBError;
 handlers['info'] = database;
-
 function processResponse(response) {
     clearResults();
     for (var key in response) {
@@ -17,7 +16,6 @@ function processResponse(response) {
         }
     }
 }
-
 function databases(dbs) {
     var list = $("#dbList");
     var children = list.children();
@@ -33,17 +31,15 @@ function databases(dbs) {
         list.append(li);
     }
 }
-
 function changeDB(db) {
-    $.get('database/' + db, function(data) {
+    $.get('ophelia/app/database/' + db, function (data) {
         processResponse(data);
     });
 }
-
 function collections(collections) {
     var table = $("#countTable");
     var children = table.children();
-    if(children) {
+    if (children) {
         children.remove();
     }
     for (var collection in collections) {
@@ -63,11 +59,9 @@ function collections(collections) {
     }
     dbClick();
 }
-
 function database(db) {
     $("#db").text(db.database);
 }
-
 function dbClick() {
     $(".dbName").click(function () {
         $("#mongo").val("db." + this.textContent + ".find()");
