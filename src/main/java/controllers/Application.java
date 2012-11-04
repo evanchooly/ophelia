@@ -105,7 +105,6 @@ public class Application {
     @FormParam("bookmark") String bookmark) throws IOException {
     QueryResults queryResults;
     try {
-      System.out.println("Application.query");
       HttpSession session = request.getSession();
       ConnectionInfo info = getConnectionInfo(session);
       if (bookmark != null && !"".equals(bookmark)) {

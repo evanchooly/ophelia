@@ -1,10 +1,10 @@
 function OpheliaController($scope) {
     $scope.databases = [];
-    $scope.database = 'bob';
+    $scope.database = '';
     $scope.view = 'query.html';
     $scope.sofia = {
         appTitle:function (locale) {
-            return locale === "US" ? "bob" : "Ophelia"
+            return "Ophelia"
         },
         collections:function () {
             return "Collections"
