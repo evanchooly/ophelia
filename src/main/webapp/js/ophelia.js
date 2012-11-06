@@ -1,21 +1,4 @@
-handlers = {};
-handlers['resultCount'] = showCount;
-handlers['dbResults'] = showResults;
-handlers['collections'] = collections;
-handlers['databaseList'] = databases;
-handlers['error'] = showDBError;
-handlers['info'] = database;
-function processResponse(response) {
-    clearResults();
-    for (var key in response) {
-        var handler = handlers[key];
-        if (handler) {
-            handler(response[key])
-        } else {
-            console.log("no handler for " + key);
-        }
-    }
-}
+
 function databases(dbs) {
     var list = $("#dbList");
     var children = list.children();
@@ -37,6 +20,7 @@ function changeDB(db) {
     });
 }
 function collections(collections) {
+    collections.push(collections);
     var table = $("#countTable");
     var children = table.children();
     if (children) {
@@ -67,3 +51,21 @@ function dbClick() {
         $("#mongo").val("db." + this.textContent + ".find()");
     });
 }
+
+function submitQuery2() {
+    clearResults();
+    $.ajax({
+        type:"POST",
+        url:"/ophelia/app/query",
+        data:$('#queryForm').serialize(),
+        contentType:'application/x-www-form-urlencoded',
+        success:function (response) {
+            processResponse(response);
+        },
+        error:function (response) {
+            $("#error").val(response.responseText);
+            $("#error").css('display', 'inherit');
+        }
+    });
+}
+

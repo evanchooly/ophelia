@@ -25,6 +25,8 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import models.ConnectionInfo;
 import models.Query;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import plugins.MongOphelia;
 
@@ -67,10 +69,29 @@ public class Application {
     return map;
   }
 
+  private List<Pair<String, Object>> loadCollections2(HttpSession session, final ConnectionInfo info) {
+    List<Pair<String, Object>> collections = new ArrayList<>();
+    DB db = getDB(session, info.getDatabase());
+    if (db != null) {
+      for (String collection : db.getCollectionNames()) {
+        CommandResult stats = db.getCollection(collection).getStats();
+        collections.add(new ImmutablePair<>(collection, stats.get("count")));
+      }
+    }
+    try {
+      String json = new JacksonMapper().writeValueAsString(collections);
+      System.out.println("json = " + json);
+    } catch (IOException e) {
+      throw new RuntimeException(e.getMessage(), e);
+    }
+    return collections;
+  }
+
   @GET
   @Path("content")
   @Produces(MediaType.APPLICATION_JSON)
   public QueryResults content(@Context HttpServletRequest request) {
+    System.out.println("Application.content");
     return generateContent(request.getSession());
   }
 

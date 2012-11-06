@@ -1,9 +1,28 @@
-function OpheliaController($scope) {
+function OpheliaController($scope, $http) {
+    handlers = {};
+    handlers['resultCount'] = showCount;
+    handlers['dbResults'] = showResults;
+    handlers['collections'] = updateCollections;
+    handlers['databaseList'] = databases;
+    handlers['error'] = showDBError;
+    handlers['info'] = database;
+
+    $http.defaults.headers.post['Content-Type'] = '';
+    $scope.view = 'query.html';
+    $scope.collections = [];
     $scope.databases = [];
     $scope.database = '';
-    $scope.view = 'query.html';
+    $scope.errorMessage = '';
+    $scope.query = {
+        bookmark:'',
+        queryString:'',
+        limit:100,
+        showCount:true
+    };
+    $scope.showCount = false;
+
     $scope.sofia = {
-        appTitle:function (locale) {
+        appTitle:function () {
             return "Ophelia"
         },
         collections:function () {
@@ -25,29 +44,61 @@ function OpheliaController($scope) {
             return "Result count:"
         }
     };
-    $scope.query = {
-        limit:100,
-        showCount:true
+
+    function clearResults() {
+        $scope.errorMessage = '';
+        $scope.showCount = false;
+        $("#countHolder").css("display", "none")
+    }
+
+    $scope.submitQuery = function () {
+        clearResults();
+        $http({
+            method:'POST',
+            url:'/ophelia/app/query',
+            data:$scope.query,
+            headers:{
+                "Content-Type":"application/x-www-form-urlencoded"
+            }
+        })
+            .success(function (data, status, headers, config) {
+                alert("success");
+                alert(data);
+                processResponse(data);
+            })
+            .error(function (data, status, headers, config) {
+                alert("error");
+                alert(data);
+//                angular.element('.errors').html(data.errors.join('<br>')).slideDown();
+                $scope.errorMessage = status.responseText;
+            });
+    };
+    $http.get('/ophelia/app/content')
+        .success(function (data, status, headers, config) {
+            processResponse(data);
+        })
+        .error(function (data, status, headers, config) {
+            alert(data);
+//                angular.element('.errors').html(data.errors.join('<br>')).slideDown();
+            $scope.errorMessage = status.responseText;
+        });
+
+    function processResponse(response) {
+        $scope.showCount = true;
+        for (var key in response) {
+            var handler = handlers[key];
+            if (handler) {
+                handler(response[key])
+            } else {
+                console.log("no handler for " + key);
+            }
+        }
+    }
+
+    function updateCollections(collections) {
+        $scope.collections = collections;
+        dbClick();
     }
 }
-function initOphelia() {
-    $.get('/ophelia/app/content', function (data) {
-        processResponse(data);
-    });
-    $("#button").click(function () {
-        clearResults();
-        $.ajax({
-            type:"POST",
-            url:"/ophelia/app/query",
-            data:$('#queryForm').serialize(),
-            contentType:'application/x-www-form-urlencoded',
-            success:function (response) {
-                processResponse(response);
-            },
-            error:function (response) {
-                $("#error").val(response.responseText);
-                $("#error").css('display', 'inherit');
-            }
-        });
-    });
-}
+
+

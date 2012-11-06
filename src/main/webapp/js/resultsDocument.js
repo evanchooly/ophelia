@@ -1,15 +1,3 @@
-function clearResults() {
-    $("#error").css('display', 'none');
-    function clear(holder) {
-        var children = holder.children();
-        if (children) {
-            children.remove();
-        }
-    }
-    clear($("#resultsHolder"));
-    clear($("#countValue"));
-    $("#countHolder").css("display", "none")
-}
 
 function showDBError(error) {
     $("#error").text(error);
