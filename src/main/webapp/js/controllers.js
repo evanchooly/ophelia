@@ -6,7 +6,6 @@ function OpheliaController($scope, $http) {
     handlers['databaseList'] = databases;
     handlers['error'] = showDBError;
     handlers['info'] = database;
-
     $http.defaults.headers.post['Content-Type'] = '';
     $scope.view = 'query.html';
     $scope.collections = [];
@@ -20,7 +19,6 @@ function OpheliaController($scope, $http) {
         showCount:true
     };
     $scope.showCount = false;
-
     $scope.sofia = {
         appTitle:function () {
             return "Ophelia"
@@ -44,7 +42,6 @@ function OpheliaController($scope, $http) {
             return "Result count:"
         }
     };
-
     function clearResults() {
         $scope.errorMessage = '';
         $scope.showCount = false;
@@ -58,17 +55,13 @@ function OpheliaController($scope, $http) {
             url:'/ophelia/app/query',
             data:$scope.query,
             headers:{
-                "Content-Type":"application/x-www-form-urlencoded"
+                "Content-Type":"application/json"
             }
         })
             .success(function (data, status, headers, config) {
-                alert("success");
-                alert(data);
                 processResponse(data);
             })
             .error(function (data, status, headers, config) {
-                alert("error");
-                alert(data);
 //                angular.element('.errors').html(data.errors.join('<br>')).slideDown();
                 $scope.errorMessage = status.responseText;
             });
@@ -82,7 +75,6 @@ function OpheliaController($scope, $http) {
 //                angular.element('.errors').html(data.errors.join('<br>')).slideDown();
             $scope.errorMessage = status.responseText;
         });
-
     function processResponse(response) {
         $scope.showCount = true;
         for (var key in response) {

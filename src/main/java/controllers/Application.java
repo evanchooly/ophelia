@@ -9,8 +9,6 @@ import java.util.Map;
 import java.util.TreeMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -19,14 +17,13 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.mongodb.CommandResult;
 import com.mongodb.DB;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import models.ConnectionInfo;
 import models.Query;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import plugins.MongOphelia;
 
@@ -69,24 +66,6 @@ public class Application {
     return map;
   }
 
-  private List<Pair<String, Object>> loadCollections2(HttpSession session, final ConnectionInfo info) {
-    List<Pair<String, Object>> collections = new ArrayList<>();
-    DB db = getDB(session, info.getDatabase());
-    if (db != null) {
-      for (String collection : db.getCollectionNames()) {
-        CommandResult stats = db.getCollection(collection).getStats();
-        collections.add(new ImmutablePair<>(collection, stats.get("count")));
-      }
-    }
-    try {
-      String json = new JacksonMapper().writeValueAsString(collections);
-      System.out.println("json = " + json);
-    } catch (IOException e) {
-      throw new RuntimeException(e.getMessage(), e);
-    }
-    return collections;
-  }
-
   @GET
   @Path("content")
   @Produces(MediaType.APPLICATION_JSON)
@@ -118,14 +97,16 @@ public class Application {
   @POST
   @Path("/query")
   @Produces(MediaType.APPLICATION_JSON)
-  @Consumes({MediaType.APPLICATION_FORM_URLENCODED, "application/x-www-form-urlencoded; charset=UTF-8"})
-  public QueryResults query(@Context HttpServletRequest request,
-    @FormParam("queryString") String queryString,
-    @FormParam("limit") Integer limit,
-    @FormParam("showCount") Boolean showCount,
-    @FormParam("bookmark") String bookmark) throws IOException {
+  //  @Consumes(MediaType.APPLICATION_JSON)
+  public QueryResults query(@Context HttpServletRequest request, String json) throws IOException {
     QueryResults queryResults;
     try {
+      ObjectNode node = (ObjectNode) mapper.readTree(json);
+      @SuppressWarnings("unchecked") Map<String, Object> treeMap = mapper.convertValue(node, TreeMap.class);
+      String queryString = (String) treeMap.get("queryString");
+      Integer limit = (Integer) treeMap.get("limit");
+      Boolean showCount = (Boolean) treeMap.get("showCount");
+      String bookmark = (String) treeMap.get("bookmark");
       HttpSession session = request.getSession();
       ConnectionInfo info = getConnectionInfo(session);
       if (bookmark != null && !"".equals(bookmark)) {
