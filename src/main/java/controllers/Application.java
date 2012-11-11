@@ -25,10 +25,13 @@ import com.mongodb.DBObject;
 import models.ConnectionInfo;
 import models.Query;
 import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import plugins.MongOphelia;
 
 @Path("app")
 public class Application {
+  private static final Logger logger = LoggerFactory.getLogger(Application.class);
   private static final String INFO = "connection-info";
   public static final String SESSION_KEY = "session-key";
   public static Boolean authenticated = Boolean.FALSE;
@@ -148,6 +151,7 @@ public class Application {
         queryResults.setDbResults(Arrays.<Map>asList(count));
       }
     } catch (Exception e) {
+      logger.error(e.getMessage(), e);
       queryResults = new QueryResults();
       String message = e.getMessage();
       if (e.getCause() != null) {

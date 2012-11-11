@@ -41,8 +41,8 @@
                 </div>
             </form>
         </div>
-        <div class="table" ng-show="$scope.count > -1">
-            {{sofia.resultCount()}} <span id="countValue"></span>
+        <div class="table" ng-show="showCount">
+            {{sofia.resultCount()}} <span id="countValue">{{count}}</span>
         </div>
         <div class="table">
             <table>

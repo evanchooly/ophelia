@@ -7,8 +7,8 @@ function OpheliaController($scope, $http) {
     handlers['error'] = showDBError;
     handlers['info'] = database;
     $http.defaults.headers.post['Content-Type'] = '';
-    $scope.view = 'query.html';
     resetState();
+    $scope.view = 'query.html';
     $scope.query = {
         bookmark:'',
         queryString:'',
@@ -38,6 +38,10 @@ function OpheliaController($scope, $http) {
             return "Result count:"
         }
     };
+    function clearResults() {
+        resetState();
+    }
+
     function resetState() {
         $scope.collections = [];
         $scope.count = -1;
@@ -46,10 +50,7 @@ function OpheliaController($scope, $http) {
         $scope.errorMessage = '';
         $scope.results = [];
         $scope.showCount = false;
-    }
-
-    function clearResults() {
-        resetState();
+        $scope.showList = false;
     }
 
     $scope.submitQuery = function () {
@@ -70,15 +71,22 @@ function OpheliaController($scope, $http) {
                 $scope.errorMessage = status.responseText;
             });
     };
-    $http.get('/ophelia/app/content')
-        .success(function (data, status, headers, config) {
-            processResponse(data);
-        })
-        .error(function (data, status, headers, config) {
-            alert(data);
+    $scope.update = function (db) {
+        get('/ophelia/app/database/' + db);
+        $scope.showList = false;
+    };
+    function get(url) {
+        $http.get(url)
+            .success(function (data, status, headers, config) {
+                processResponse(data);
+            })
+            .error(function (data, status, headers, config) {
+                alert(data);
 //                angular.element('.errors').html(data.errors.join('<br>')).slideDown();
-            $scope.errorMessage = status.responseText;
-        });
+                $scope.errorMessage = status.responseText;
+            });
+    }
+
     function processResponse(response) {
         for (var key in response) {
             var handler = handlers[key];
@@ -99,6 +107,7 @@ function OpheliaController($scope, $http) {
     }
 
     function showCount(count) {
+        $scope.showCount = true;
         $scope.count = count;
     }
 
@@ -130,5 +139,14 @@ function OpheliaController($scope, $http) {
                 return '<span class="' + cls + '">' + match + '</span>';
             });
         return text;
+    };
+    function databases(dbs) {
+        $scope.databases = dbs;
     }
+
+    function database(info) {
+        $scope.database = info.database;
+    }
+
+    get('/ophelia/app/content');
 }

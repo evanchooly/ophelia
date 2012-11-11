@@ -22,7 +22,6 @@
         <![endif]-->
 
         <link rel="shortcut icon" type="image/png" href="images/O.png">
-        <script src="js/jquery-1.7.2.min.js" type="text/javascript"></script>
         <script src="js/bootstrap.js"></script>
         <script src="js/ophelia.js"></script>
         <script src="js/angular-1.0.2/angular.js"></script>
@@ -44,13 +43,14 @@
                     <a class="brand" href="#">{{sofia.appTitle("US")}}</a>
 
                     <div class="btn-group pull-right">
-                        <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-                            <i class="icon-home"></i> <span id="db"></span>
+                        <a class="btn dropdown-toggle" href="#" ng-model="showList" ng-click="showList = true">
+                            <i class="icon-home"></i> <span id="db">{{database}}</span>
                             <span class="caret"></span>
                         </a>
-                        <ul class="dropdown-menu dropdown-form">
-                            <div id="dbList">
-                            </div>
+                        <ul class="dropdown-menu dropdown-form" ng-show="showList">
+                            <li ng-repeat="db in databases">
+                                <a ng-click="update(db);">{{db}}</a>
+                            </li>
                         </ul>
                     </div>
                 </div>
