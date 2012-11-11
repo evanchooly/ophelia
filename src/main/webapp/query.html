@@ -20,7 +20,7 @@
     <div class="span9 main-content">
         <div class=" well query">
             <form id="queryForm">
-                <div id="error"></div>
+                <div id="error" ng-show="$scope.errorMessage != ''"></div>
                 <textarea id="mongo" name="queryString" rows="5" ng-model="query.queryString"></textarea>
 
                 <div class="pull-left">
@@ -41,9 +41,17 @@
                 </div>
             </form>
         </div>
-        <div class="table" id="countHolder" ng-show="$scope.showCount">
+        <div class="table" ng-show="$scope.count > -1">
             {{sofia.resultCount()}} <span id="countValue"></span>
         </div>
-        <div class="table" id="resultsHolder"></div>
+        <div class="table">
+            <table>
+                <tr ng-repeat="row in results">
+                    <td>
+                        <pre ng-bind-html-unsafe="syntaxHighlight(row)"></pre>
+                    </td>
+                </tr>
+            </table>
+        </div>
     </div>
 </div>
