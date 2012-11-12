@@ -33,13 +33,11 @@ import plugins.MongOphelia;
 public class Application {
   private static final Logger logger = LoggerFactory.getLogger(Application.class);
   private static final String INFO = "connection-info";
-  public static final String SESSION_KEY = "session-key";
   public static Boolean authenticated = Boolean.FALSE;
   private JacksonMapper mapper = new JacksonMapper();
 
-  private QueryResults generateContent(HttpSession session) {
+  private QueryResults generateContent(HttpSession session, QueryResults queryResults) {
     try {
-      QueryResults queryResults = new QueryResults();
       ConnectionInfo info = getConnectionInfo(session);
       List<String> names = MongOphelia.getDatabaseNames();
       queryResults.setDatabaseList(names);
@@ -52,9 +50,10 @@ public class Application {
       queryResults.setCollections(loadCollections(session, info));
       return queryResults;
     } catch (Exception e) {
+      logger.error(e.getMessage(), e);
       e.printStackTrace();
     }
-    return new QueryResults();
+    return queryResults;
   }
 
   private Map<String, Object> loadCollections(HttpSession session, final ConnectionInfo info) {
@@ -74,7 +73,7 @@ public class Application {
   @Produces(MediaType.APPLICATION_JSON)
   public QueryResults content(@Context HttpServletRequest request) {
     System.out.println("Application.content");
-    return generateContent(request.getSession());
+    return generateContent(request.getSession(), new QueryResults());
   }
 
   @GET()
@@ -83,7 +82,7 @@ public class Application {
   public QueryResults database(@Context HttpServletRequest request, @PathParam("database") String database) {
     HttpSession session = request.getSession();
     getConnectionInfo(session).setDatabase(database);
-    return generateContent(session);
+    return generateContent(session, new QueryResults());
   }
 
   @GET()
@@ -102,7 +101,7 @@ public class Application {
   @Produces(MediaType.APPLICATION_JSON)
   //  @Consumes(MediaType.APPLICATION_JSON)
   public QueryResults query(@Context HttpServletRequest request, String json) throws IOException {
-    QueryResults queryResults;
+    QueryResults queryResults = new QueryResults();
     try {
       ObjectNode node = (ObjectNode) mapper.readTree(json);
       @SuppressWarnings("unchecked") Map<String, Object> treeMap = mapper.convertValue(node, TreeMap.class);
@@ -123,7 +122,7 @@ public class Application {
           throw new RuntimeException("Bookmark already exists");
         }
       }
-      queryResults = generateContent(session);
+      generateContent(session, queryResults);
       final Parser parser = new Parser(info.getQueryString());
       if (info.getShowCount()) {
         Long count = parser.count(getDB(session, info.getDatabase()));
@@ -151,8 +150,9 @@ public class Application {
       }
     } catch (Exception e) {
       logger.error(e.getMessage(), e);
-      queryResults = new QueryResults();
       String message = e.getMessage();
+      queryResults.setResultCount(null);
+      queryResults.setDbResults(null);
       if (e.getCause() != null) {
         message += " " + e.getCause().getMessage();
       }

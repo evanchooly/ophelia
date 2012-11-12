@@ -19,7 +19,7 @@
 
     <div class="span9 main-content">
         <div class=" well query">
-            <div id="error" ng-show="showError"></div>
+            <div id="error" ng-show="showError">{{errorMessage}}</div>
             <form id="queryForm">
                 <textarea id="mongo" name="queryString" rows="5" ng-model="query.queryString"></textarea>
 
