@@ -7,6 +7,12 @@
     <version>0.5-SNAPSHOT</version>
     <name>ophelia</name>
 
+    <scm>
+        <connection>scm:git:git@github.com:evanchooly/ophelia.git</connection>
+        <developerConnection>scm:git:git@github.com:evanchooly/ophelia.git</developerConnection>
+        <url>git@github.com:evanchooly/ophelia.git</url>
+    </scm>
+
     <repositories>
         <repository>
             <id>Morphia repository</id>
