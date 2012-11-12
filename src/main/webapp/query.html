@@ -19,13 +19,13 @@
 
     <div class="span9 main-content">
         <div class=" well query">
+            <div id="error" ng-show="showError"></div>
             <form id="queryForm">
-                <div id="error" ng-show="$scope.errorMessage != ''"></div>
                 <textarea id="mongo" name="queryString" rows="5" ng-model="query.queryString"></textarea>
 
                 <div class="pull-left">
                     <label for="limit">{{sofia.queryLimit()}}</label>
-                    <input id="limit" name="limit" ng-model="query.limit">
+                    <input id="limit" name="limit" type="number" ng-model="query.limit">
                     <label for="showCount">{{sofia.queryShowCount()}}</label>
                     <input id="showCount" name="showCount" type="checkbox" ng-model="query.showCount">
                     <label for="bookmark">{{sofia.queryBookmark()}}</label>

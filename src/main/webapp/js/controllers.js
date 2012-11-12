@@ -50,6 +50,7 @@ function OpheliaController($scope, $http) {
         $scope.errorMessage = '';
         $scope.results = [];
         $scope.showCount = false;
+        $scope.showError = false;
         $scope.showList = false;
     }
 
@@ -113,6 +114,7 @@ function OpheliaController($scope, $http) {
 
     function showDBError(error) {
         $scope.errorMessage = error;
+        $scope.showError = true;
     }
 
     $scope.syntaxHighlight = function (json) {

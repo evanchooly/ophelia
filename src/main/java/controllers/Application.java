@@ -106,26 +106,25 @@ public class Application {
     try {
       ObjectNode node = (ObjectNode) mapper.readTree(json);
       @SuppressWarnings("unchecked") Map<String, Object> treeMap = mapper.convertValue(node, TreeMap.class);
-      String queryString = (String) treeMap.get("queryString");
-      Integer limit = (Integer) treeMap.get("limit");
-      Boolean showCount = (Boolean) treeMap.get("showCount");
-      String bookmark = (String) treeMap.get("bookmark");
       HttpSession session = request.getSession();
       ConnectionInfo info = getConnectionInfo(session);
+      info.setQueryString((String) treeMap.get("queryString"));
+      info.setLimit((Integer) treeMap.get("limit"));
+      info.setShowCount((Boolean) treeMap.get("showCount"));
+      String bookmark = (String) treeMap.get("bookmark");
       if (bookmark != null && !"".equals(bookmark)) {
         Query saved = Query.find().byBookmark(bookmark);
         if (saved != null) {
           Query query = new Query();
-          query.setQueryString(queryString);
+          query.setQueryString(info.getQueryString());
           query.setBookmark(bookmark);
           query.save();
         } else {
           throw new RuntimeException("Bookmark already exists");
         }
       }
-      info.setQueryString(queryString);
       queryResults = generateContent(session);
-      final Parser parser = new Parser(queryString);
+      final Parser parser = new Parser(info.getQueryString());
       if (info.getShowCount()) {
         Long count = parser.count(getDB(session, info.getDatabase()));
         queryResults.setResultCount(count);
