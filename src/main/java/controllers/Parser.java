@@ -7,13 +7,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import com.antwerkz.sofia.Ophelia;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.WriteResult;
 import org.bson.types.ObjectId;
-import utils.Sofia;
 
 public class Parser {
   private BasicDBObject db;
@@ -32,7 +32,7 @@ public class Parser {
       consume(3);
       parseQuery();
     } else {
-      throw new InvalidQueryException(Sofia.invalidQuery(query));
+      throw new InvalidQueryException(Ophelia.invalidQuery(query));
     }
   }
 
@@ -98,9 +98,6 @@ public class Parser {
   public String getCollection() {
     return collection;
   }
-  //  public String getMethod() {
-  //    return method;
-  //  }
 
   public Object execute(DB db) {
     if (db != null) {
@@ -116,7 +113,7 @@ public class Parser {
         case "remove":
           return doRemove(collection);
         default:
-          throw new InvalidQueryException(Sofia.unknownQueryMethod(method));
+          throw new InvalidQueryException(Ophelia.unknownQueryMethod(method));
       }
     }
     return null;
