@@ -1,4 +1,8 @@
 function OpheliaController($scope, $http) {
+    contextPath = location.pathname;
+    if (contextPath == "/") {
+        contextPath = "";
+    }
     handlers = {};
     handlers['resultCount'] = showCount;
     handlers['dbResults'] = showResults;
@@ -58,7 +62,7 @@ function OpheliaController($scope, $http) {
         clearResults();
         $http({
             method:'POST',
-            url:'/ophelia/app/query',
+            url:contextPath + '/ophelia/app/query',
             data:$scope.query,
             headers:{
                 "Content-Type":"application/json"
@@ -73,7 +77,7 @@ function OpheliaController($scope, $http) {
             });
     };
     $scope.update = function (db) {
-        get('/ophelia/app/database/' + db);
+        get(contextPath + '/ophelia/app/database/' + db);
         $scope.showList = false;
     };
     function get(url) {
@@ -150,5 +154,5 @@ function OpheliaController($scope, $http) {
         $scope.database = info.database;
     }
 
-    get('/ophelia/app/content');
+    get(contextPath + '/ophelia/app/content');
 }
