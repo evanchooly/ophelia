@@ -1,7 +1,6 @@
 var app = angular.module('ophelia', ['ui']);
 function OpheliaController($scope, $http) {
     angular.module('ophelia', ['ui']);
-    $scope.modalShown = false;
     contextPath = location.pathname;
     if (contextPath == "/") {
         contextPath = "";
@@ -119,9 +118,13 @@ function OpheliaController($scope, $http) {
     $scope.syntaxHighlight = function (json) {
         // This function courtesy of StackOverflow user Pumbaa80
         // http://stackoverflow.com/questions/4810841/json-pretty-print-using-javascript
+        console.log("json = " + json);
+        delete json.$$hashKey
         if (typeof json != 'string') {
             json = JSON.stringify(json, undefined, 2);
         }
+        console.log("json = " + json);
+        console.log("json = " + json);
         json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
         var text = json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
             function (match) {
