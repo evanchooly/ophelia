@@ -5,15 +5,25 @@ import java.util.Map;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import models.ConnectionInfo;
+import models.Query;
 
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class QueryResults {
   public Map<String, Object> collections;
+  public List<Query> bookmarks;
   public List<String> databaseList;
   public List<Map> dbResults;
   public String error;
   public ConnectionInfo info;
   private Long resultCount;
+
+  public List<Query> getBookmarks() {
+    return bookmarks;
+  }
+
+  public void setBookmarks(List<Query> bookmarks) {
+    this.bookmarks = bookmarks;
+  }
 
   public Map<String, Object> getCollections() {
     return collections;

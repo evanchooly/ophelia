@@ -46,6 +46,7 @@ public class Application {
         database = names.get(0);
         info.setDatabase(database);
       }
+      queryResults.setBookmarks(loadBookmarks(null, database));
       queryResults.setInfo(info);
       queryResults.setCollections(loadCollections(session, info));
       return queryResults;
@@ -54,6 +55,10 @@ public class Application {
       e.printStackTrace();
     }
     return queryResults;
+  }
+
+  private List<Query> loadBookmarks(HttpSession session, String database) {
+    return Query.finder().findAll(database);
   }
 
   private Map<String, Object> loadCollections(HttpSession session, final ConnectionInfo info) {
@@ -72,7 +77,6 @@ public class Application {
   @Path("content")
   @Produces(MediaType.APPLICATION_JSON)
   public QueryResults content(@Context HttpServletRequest request) {
-    System.out.println("Application.content");
     return generateContent(request.getSession(), new QueryResults());
   }
 
@@ -99,24 +103,25 @@ public class Application {
   @POST
   @Path("/query")
   @Produces(MediaType.APPLICATION_JSON)
-  //  @Consumes(MediaType.APPLICATION_JSON)
   public QueryResults query(@Context HttpServletRequest request, String json) throws IOException {
     QueryResults queryResults = new QueryResults();
     try {
-      ObjectNode node = (ObjectNode) mapper.readTree(json);
-      @SuppressWarnings("unchecked") Map<String, Object> treeMap = mapper.convertValue(node, TreeMap.class);
       HttpSession session = request.getSession();
       ConnectionInfo info = getConnectionInfo(session);
+      String database = info.getDatabase();
+      ObjectNode node = (ObjectNode) mapper.readTree(json);
+      Map<String, Object> treeMap = mapper.convertValue(node, TreeMap.class);
       info.setQueryString((String) treeMap.get("queryString"));
       info.setLimit((Integer) treeMap.get("limit"));
       info.setShowCount((Boolean) treeMap.get("showCount"));
       String bookmark = (String) treeMap.get("bookmark");
       if (bookmark != null && !"".equals(bookmark)) {
-        Query saved = Query.find().byBookmark(bookmark);
-        if (saved != null) {
+        Query saved = Query.finder().byBookmarkAndDatabase(bookmark, database);
+        if (saved == null) {
           Query query = new Query();
           query.setQueryString(info.getQueryString());
           query.setBookmark(bookmark);
+          query.setDatabase(info.getDatabase());
           query.save();
         } else {
           throw new RuntimeException("Bookmark already exists");
@@ -125,10 +130,10 @@ public class Application {
       generateContent(session, queryResults);
       final Parser parser = new Parser(info.getQueryString());
       if (info.getShowCount()) {
-        Long count = parser.count(getDB(session, info.getDatabase()));
+        Long count = parser.count(getDB(session, database));
         queryResults.setResultCount(count);
       }
-      Object execute = parser.execute(getDB(session, info.getDatabase()));
+      Object execute = parser.execute(getDB(session, database));
       if (execute instanceof DBCursor) {
         DBCursor dbResults = (DBCursor) execute;
         List<Map> list = new ArrayList<>();
@@ -159,6 +164,20 @@ public class Application {
       queryResults.setError(message);
     }
     return queryResults;
+  }
+
+  @GET
+  @Path("/deleteBookmark/{id}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public QueryResults deleteBookmark(@Context HttpServletRequest request, @PathParam("id") String id) {
+    QueryResults queryResults = new QueryResults();
+    System.out.println("id = " + id);
+    try {
+      Query.finder().delete(new ObjectId(id));
+    } catch (IllegalArgumentException e) {
+      queryResults.setError(e.getMessage());
+    }
+    return generateContent(request.getSession(), queryResults);
   }
 
   private DB getDB(HttpSession session, String database) {

@@ -18,7 +18,7 @@
     </div>
 
     <div class="span9 main-content">
-        <div class=" well query">
+        <div class="well query">
             <div id="error" ng-show="showError">{{errorMessage}}</div>
             <form id="queryForm">
                 <textarea id="mongo" name="queryString" rows="5" ng-model="query.queryString"></textarea>
@@ -28,12 +28,10 @@
                     <input id="limit" name="limit" type="number" ng-model="query.limit">
                     <label for="showCount">{{sofia.queryShowCount()}}</label>
                     <input id="showCount" name="showCount" type="checkbox" ng-model="query.showCount">
-                    <label for="bookmark">{{sofia.queryBookmark()}}</label>
-                    <input id="bookmark" name="bookmark">
-                    <!--
-                    <label for="readOnly">{{sofia.queryReadOnly()}}</label>
-                    <input id="readOnly" name="readOnly" type="checkbox" #{if content.info.readOnly } checked #{/if} >
-                    -->
+                    <label for="bookmark">{{sofia.saveBookmark()}}</label>
+                    <input id="bookmark" name="bookmark" ng-model="query.bookmark">
+
+                    <a ng-click="modalShown=true" ng-show="bookmarks.length > 0">{{sofia.loadBookmark()}}</a>
                 </div>
                 <div class="pull-right">
                     <input id="button" class="btn btn-primary" type="button" value="{{sofia.querySubmit()}}"
@@ -53,5 +51,28 @@
                 </tr>
             </table>
         </div>
+    </div>
+</div>
+<div ui-modal ng-model="modalShown">
+    <div class="modal-body">
+        <div class="well sidebar-nav">
+            <ul class="nav nav-list">
+                <li class="nav-header">{{sofia.bookmarkLoadTitle()}}</li>
+                <li class="nav-pills">
+                    <table>
+                        <tr ng-repeat="bookmark in bookmarks">
+                            <td>
+                                <a class="bookmarkName" ng-click="useBookmark(bookmark);modalShown=false;"
+                                   title="{{bookmark['queryString']}}">{{bookmark['bookmark']}}</a>
+                            </td>
+                            <td><a ng-click="deleteBookmark(bookmark)" title="Delete">X</a></td>
+                        </tr>
+                    </table>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <a class="btn" ng-click="modalShown=false" href="">Close</a>
     </div>
 </div>

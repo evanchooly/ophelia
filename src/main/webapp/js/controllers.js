@@ -1,17 +1,11 @@
+var app = angular.module('ophelia', ['ui']);
 function OpheliaController($scope, $http) {
+    angular.module('ophelia', ['ui']);
+    $scope.modalShown = false;
     contextPath = location.pathname;
     if (contextPath == "/") {
         contextPath = "";
     }
-    handlers = {};
-    handlers['resultCount'] = showCount;
-    handlers['dbResults'] = showResults;
-    handlers['collections'] = updateCollections;
-    handlers['databaseList'] = databases;
-    handlers['error'] = showDBError;
-    handlers['info'] = database;
-    $http.defaults.headers.post['Content-Type'] = '';
-    resetState();
     $scope.view = 'query.html';
     $scope.query = {
         bookmark:'',
@@ -26,7 +20,13 @@ function OpheliaController($scope, $http) {
         collections:function () {
             return "Collections"
         },
-        queryBookmark:function () {
+        bookmarkLoadTitle:function () {
+            return "Load Bookmark"
+        },
+        loadBookmark:function () {
+            return "Load"
+        },
+        saveBookmark:function () {
             return "Bookmark:"
         },
         queryShowCount:function () {
@@ -42,11 +42,8 @@ function OpheliaController($scope, $http) {
             return "Result count:"
         }
     };
-    function clearResults() {
-        resetState();
-    }
-
     function resetState() {
+        $scope.bookmarks = [];
         $scope.collections = [];
         $scope.count = -1;
         $scope.databases = [];
@@ -56,10 +53,12 @@ function OpheliaController($scope, $http) {
         $scope.showCount = false;
         $scope.showError = false;
         $scope.showList = false;
+        $scope.query['bookmark'] = '';
     }
 
     $scope.submitQuery = function () {
-        clearResults();
+        var data = $scope.query;
+        data['database'] = $scope.database;
         $http({
             method:'POST',
             url:contextPath + '/ophelia/app/query',
@@ -72,7 +71,7 @@ function OpheliaController($scope, $http) {
                 processResponse(data);
             })
             .error(function (data, status, headers, config) {
-//                angular.element('.errors').html(data.errors.join('<br>')).slideDown();
+                angular.element('.errors').html(data.errors.join('<br>')).slideDown();
                 $scope.errorMessage = status.responseText;
             });
     };
@@ -93,32 +92,28 @@ function OpheliaController($scope, $http) {
     }
 
     function processResponse(response) {
+        resetState();
         for (var key in response) {
-            var handler = handlers[key];
-            if (handler) {
-                handler(response[key])
+            if (key == 'resultCount') {
+                $scope.showCount = true;
+                $scope.count = response[key];
+            } else if (key == 'dbResults') {
+                $scope.results = response[key];
+            } else if (key == 'bookmarks') {
+                $scope.bookmarks = response[key];
+            } else if (key == 'collections') {
+                $scope.collections = response[key];
+            } else if (key == 'databaseList') {
+                $scope.databases = response[key];
+            } else if (key == 'error') {
+                $scope.errorMessage = response[key];
+                $scope.showError = true;
+            } else if (key == 'info') {
+                $scope.database = response[key].database;
             } else {
                 console.log("no handler for " + key);
             }
         }
-    }
-
-    function updateCollections(collections) {
-        $scope.collections = collections;
-    }
-
-    function showResults(results) {
-        $scope.results = results;
-    }
-
-    function showCount(count) {
-        $scope.showCount = true;
-        $scope.count = count;
-    }
-
-    function showDBError(error) {
-        $scope.errorMessage = error;
-        $scope.showError = true;
     }
 
     $scope.syntaxHighlight = function (json) {
@@ -146,13 +141,16 @@ function OpheliaController($scope, $http) {
             });
         return text;
     };
-    function databases(dbs) {
-        $scope.databases = dbs;
-    }
-
-    function database(info) {
-        $scope.database = info.database;
-    }
-
+    $scope.useBookmark = function (bookmark) {
+        $scope.query.queryString = bookmark['queryString'];
+        $scope.modalShown = false;
+    };
+    $scope.deleteBookmark = function (bookmark) {
+        var url = contextPath + '/ophelia/app/deleteBookmark/' + bookmark['id'];
+        alert(url);
+        get(url);
+        $scope.modalShown = false;
+    };
+    resetState();
     get(contextPath + '/ophelia/app/content');
 }
