@@ -3,7 +3,7 @@
     <groupId>com.antwerkz.ophelia</groupId>
     <artifactId>ophelia</artifactId>
     <packaging>war</packaging>
-    <version>0.6-SNAPSHOT</version>
+    <version>0.7-SNAPSHOT</version>
     <name>ophelia</name>
 
     <scm>
