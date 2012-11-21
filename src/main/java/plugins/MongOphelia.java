@@ -24,7 +24,6 @@ public class MongOphelia implements Filter {
 
   @Override
   public void init(FilterConfig filterConfig) throws ServletException {
-    System.out.println("MongOphelia.init");
     morphia.mapPackage(ConnectionInfo.class.getPackage().getName());
   }
 

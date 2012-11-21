@@ -45,24 +45,28 @@ footer {
 .query {
     padding: @padding;
     margin: 0;
-    margin-bottom: 1em;
-    text-align: right;
+    margin-bottom: 1em; //    text-align: right;
     padding-right: 2 * @padding;
     padding-bottom: 2 * @padding;
 
     textarea {
-        width: 100%;
-    }
-}
-
-#queryForm {
-    #limit {
-        width: 3em;
-        margin-left: 1em;
+        float: left;
     }
 
-    * {
+    input[type="text"] {
+        width: 7em;
+    }
+    table {
         display: inline;
+    }
+
+    #limit {
+        width: 4em;
+    }
+
+    #query {
+        display: block;
+        clear: both;
     }
 }
 

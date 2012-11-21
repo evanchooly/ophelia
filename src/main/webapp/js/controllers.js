@@ -149,9 +149,7 @@ function OpheliaController($scope, $http) {
         $scope.modalShown = false;
     };
     $scope.deleteBookmark = function (bookmark) {
-        var url = contextPath + '/ophelia/app/deleteBookmark/' + bookmark['id'];
-        alert(url);
-        get(url);
+        get(contextPath + '/ophelia/app/deleteBookmark/' + bookmark['id']);
         $scope.modalShown = false;
     };
     resetState();
