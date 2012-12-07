@@ -3,6 +3,7 @@ package controllers;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -108,16 +109,17 @@ public class Application {
     try {
       HttpSession session = request.getSession();
       ConnectionInfo info = getConnectionInfo(session);
-      String database = info.getDatabase();
       ObjectNode node = (ObjectNode) mapper.readTree(json);
       Map<String, Object> treeMap = mapper.convertValue(node, TreeMap.class);
       info.setQueryString((String) treeMap.get("queryString"));
       info.setLimit((Integer) treeMap.get("limit"));
       info.setShowCount((Boolean) treeMap.get("showCount"));
+      info.setDatabase((String) treeMap.get("database"));
       String bookmark = (String) treeMap.get("bookmark");
+      String database = info.getDatabase();
+      Map<String, String> params = Collections.<String, String>emptyMap();
       if (bookmark != null && !"".equals(bookmark)) {
-        Query saved = Query.finder().byBookmarkAndDatabase(bookmark, database);
-        if (saved == null) {
+        if (Query.finder().byBookmarkAndDatabase(bookmark, database) == null) {
           Query query = new Query();
           query.setQueryString(info.getQueryString());
           query.setBookmark(bookmark);
@@ -128,10 +130,9 @@ public class Application {
         }
       }
       generateContent(session, queryResults);
-      final Parser parser = new Parser(info.getQueryString());
+      final Parser parser = new Parser(info.getQueryString(), params);
       if (info.getShowCount()) {
-        Long count = parser.count(getDB(session, database));
-        queryResults.setResultCount(count);
+        queryResults.setResultCount(parser.count(getDB(session, database)));
       }
       Object execute = parser.execute(getDB(session, database));
       if (execute instanceof DBCursor) {
@@ -139,8 +140,7 @@ public class Application {
         List<Map> list = new ArrayList<>();
         Iterator<DBObject> iterator = dbResults.iterator();
         while (list.size() < info.getLimit() && iterator.hasNext()) {
-          DBObject result = iterator.next();
-          list.add(result.toMap());
+          list.add(iterator.next().toMap());
         }
         if (list.isEmpty()) {
           Map<String, String> map = new TreeMap<>();

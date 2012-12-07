@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.antwerkz.ophelia</groupId>
     <artifactId>ophelia</artifactId>
@@ -19,6 +20,7 @@
         </repository>
     </repositories>
     <build>
+        <defaultGoal>install</defaultGoal>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -33,17 +35,20 @@
             <plugin>
                 <groupId>com.antwerkz.sofia</groupId>
                 <artifactId>sofia-maven</artifactId>
-                <version>0.12</version>
+                <version>${sofia.version}</version>
                 <executions>
                     <execution>
                         <goals>
-                            <goal>sofia</goal>
+                            <goal>generate</goal>
                         </goals>
-                        <configuration>
-                            <inputFile>src/main/resources/ophelia.properties</inputFile>
-                        </configuration>
                     </execution>
                 </executions>
+                <configuration>
+                    <inputFile>src/main/resources/ophelia.properties</inputFile>
+                    <loggingType>slf4j</loggingType>
+                    <javascript>true</javascript>
+                    <jsOutputFile>src/main/webapp/js/ophelia.js</jsOutputFile>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.tomcat.maven</groupId>
@@ -63,11 +68,6 @@
             <artifactId>jersey-test-framework-provider-inmemory</artifactId>
             <version>${jersey.version}</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.antwerkz.sofia</groupId>
-            <artifactId>sofia-play</artifactId>
-            <version>0.12</version>
         </dependency>
         <dependency>
             <groupId>org.mongodb</groupId>
@@ -131,5 +131,6 @@
         <jersey.version>2.0-m09</jersey.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <morphia.version>0.99</morphia.version>
+        <sofia.version>0.13</sofia.version>
     </properties>
 </project>

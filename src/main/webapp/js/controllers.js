@@ -10,37 +10,10 @@ function OpheliaController($scope, $http) {
         bookmark:'',
         queryString:'',
         limit:100,
-        showCount:true
+        showCount:true,
+        params:{}
     };
-    $scope.sofia = {
-        appTitle:function () {
-            return "Ophelia"
-        },
-        collections:function () {
-            return "Collections"
-        },
-        bookmarkLoadTitle:function () {
-            return "Load Bookmark"
-        },
-        loadBookmark:function () {
-            return "Load"
-        },
-        saveBookmark:function () {
-            return "Bookmark:"
-        },
-        queryShowCount:function () {
-            return "Show Count:"
-        },
-        queryLimit:function () {
-            return "Limit:"
-        },
-        querySubmit:function () {
-            return "Query"
-        },
-        resultCount:function () {
-            return "Result count:"
-        }
-    };
+    $scope.sofia = sofia;
     function resetState() {
         $scope.bookmarks = [];
         $scope.collections = [];
@@ -77,6 +50,29 @@ function OpheliaController($scope, $http) {
     $scope.update = function (db) {
         get(contextPath + '/ophelia/app/database/' + db);
         $scope.showList = false;
+    };
+    $scope.queryChange = function () {
+        var index = 0;
+        var end = 0;
+        var query = $scope.query['queryString'];
+        var newParams = {};
+        var added = false;
+        while ((index = query.indexOf("{{", index)) != -1 && (end = query.indexOf("}}", index)) != -1) {
+            var name = query.substring(index + 2, end);
+            newParams[name] = 'name';
+            index = end;
+            added = true;
+        }
+        for (var key in newParams) {
+            if (!$scope.query.params[key]) {
+                $scope.query.params[key] = '';
+            }
+        }
+        for (var key in $scope.query.params) {
+            if (!newParams[key]) {
+                delete $scope.query.params[key];
+            }
+        }
     };
     function get(url) {
         $http.get(url)

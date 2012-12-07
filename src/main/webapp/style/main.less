@@ -10,6 +10,7 @@
 @number: red;
 @boolean: blue;
 @null: magenta;
+@queryBox: 30em;
 
 table {
     width: 100%;
@@ -51,13 +52,34 @@ footer {
 
     textarea {
         float: left;
+        width: @queryBox;
+    }
+
+    #queryParameters { //        width: @queryBox;
+        margin-left: 2em;
     }
 
     input[type="text"] {
         width: 7em;
     }
+
+    col {
+        vertical-align: top;
+    }
+
+    .queryColumn {
+        width: 10%;
+        padding-right: 2em;
+    }
+
+    .paramsColumn {
+        padding-left: 2em;
+    }
+
     table {
-        display: inline;
+        td {
+            vertical-align: top;
+        }
     }
 
     #limit {

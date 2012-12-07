@@ -7,7 +7,9 @@
                     <table id="countTable">
                         <tr ng-repeat="(key, value) in collections">
                             <td>
-                                <div class="dbName" ng-click="query.queryString='db.' + key + '.find()'">{{key}}</div>
+                                <div class="dbName" ng-click="query.queryString='db.' + key + '.find( {\n\n} )'">
+                                    {{key}}
+                                </div>
                             </td>
                             <td class="count"><span class="countContent">{{value}}</span></td>
                         </tr>
@@ -17,18 +19,35 @@
         </div>
     </div>
 
-    <div class="span6 main-content">
+    <div class="span9 main-content">
         <div class="well query">
             <div id="error" ng-show="showError">{{errorMessage}}</div>
             <form id="queryForm">
-                <textarea id="mongo" name="queryString" rows="5" ng-model="query.queryString"></textarea>
-
                 <table>
                     <tr>
-                        <td><label for="bookmark">{{sofia.saveBookmark()}}</label></td>
+                        <td class="queryColumn" rowspan="4">
+                            <textarea id="mongo" name="queryString" rows="5" ng-model="query.queryString"
+                                      ng-change="queryChange()"></textarea>
+                        </td>
+                        <td><label for="bookmark">{{sofia.queryBookmark()}} (<a ng-click="modalShown=true"
+                                                                                ng-show="bookmarks.length > 0">{{sofia.load()}}</a>)
+                        </label>
+                        </td>
                         <td>
                             <input id="bookmark" name="bookmark" type="text" ng-model="query.bookmark">
-                            <a ng-click="modalShown=true" ng-show="bookmarks.length > 0">{{sofia.loadBookmark()}}</a>
+                        </td>
+                        <td class="paramsColumn" rowspan="4">
+                            <table id="queryParameters">
+                                <thead>
+                                    <tr>
+                                        <td colspan="2"><span class="nav-header">{{sofia.parameters()}}</span></td>
+                                    </tr>
+                                    <tr ng-repeat="(name, value) in query.params">
+                                        <td>{{name}}</td>
+                                        <td><input type="text" value="{{value}}"></td>
+                                    </tr>
+                                </thead>
+                            </table>
                         </td>
                     </tr>
                     <tr>
@@ -63,7 +82,7 @@
     <div class="modal-body">
         <div class="well sidebar-nav">
             <ul class="nav nav-list">
-                <li class="nav-header">{{sofia.bookmarkLoadTitle()}}</li>
+                <li class="nav-header">{{sofia.loadBookmark()}}</li>
                 <li class="nav-pills">
                     <table>
                         <tr ng-repeat="bookmark in bookmarks">
@@ -79,6 +98,6 @@
         </div>
     </div>
     <div class="modal-footer">
-        <a class="btn" ng-click="modalShown=false" href="">Close</a>
+        <a class="btn" ng-click="modalShown=false" href="">{{sofia.close()}}</a>
     </div>
 </div>

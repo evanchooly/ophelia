@@ -23,32 +23,35 @@ public class Parser {
   private JacksonMapper mapper;
   private String query;
 
-  public Parser(String queryString) throws IOException {
+  public Parser(String queryString, Map<String, String> params) throws IOException {
     this.query = scrub(queryString);
+    for (Entry<String, String> entry : params.entrySet()) {
+      query = query.replace("{{" + entry.getKey() + "}}", entry.getValue());
+    }
     if (this.query.endsWith(";")) {
       query = query.substring(0, query.length() - 1);
     }
     if (query.startsWith("db.")) {
       consume(3);
-      parseQuery();
+      parseQuery(params);
     } else {
       throw new InvalidQueryException(Ophelia.invalidQuery(query));
     }
   }
 
-  private void parseQuery() throws IOException {
+  private void parseQuery(Map<String, String> params) throws IOException {
     String preamble = query.substring(0, query.indexOf("("));
     collection = preamble.substring(0, preamble.lastIndexOf("."));
     method = preamble.substring(preamble.lastIndexOf(".") + 1);
     consume(preamble.length() + 1);
     if (query.startsWith("{")) {
-      db = new BasicDBObject(parse());
+      db = new BasicDBObject(parse(params));
     } else {
       db = new BasicDBObject();
     }
     if (query.startsWith(",")) {
       consume(1);
-      keys = new BasicDBObject(parse());
+      keys = new BasicDBObject(parse(params));
     }
     if (query.startsWith(")")) {
       consume(1);
@@ -56,7 +59,7 @@ public class Parser {
   }
 
   @SuppressWarnings("unchecked")
-  private Map<String, Object> parse() throws IOException {
+  private Map<String, Object> parse(Map<String, String> params) throws IOException {
     ObjectMapper mapper = getMapper();
     Map<String, Object> map = mapper.readValue(new ConsumingStringReader(query), LinkedHashMap.class);
     for (Entry<String, Object> o : map.entrySet()) {
