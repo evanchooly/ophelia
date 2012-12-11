@@ -143,6 +143,7 @@ function OpheliaController($scope, $http) {
     $scope.useBookmark = function (bookmark) {
         $scope.query.queryString = bookmark['queryString'];
         $scope.modalShown = false;
+        $scope.queryChange();
     };
     $scope.deleteBookmark = function (bookmark) {
         get(contextPath + '/ophelia/app/deleteBookmark/' + bookmark['id']);

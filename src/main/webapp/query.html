@@ -29,15 +29,16 @@
                             <textarea id="mongo" name="queryString" rows="5" ng-model="query.queryString"
                                       ng-change="queryChange()"></textarea>
                         </td>
-                        <td><label for="bookmark">{{sofia.queryBookmark()}} (<a ng-click="modalShown=true"
-                                                                                ng-show="bookmarks.length > 0">{{sofia.load()}}</a>)
+                        <td><label for="bookmark">{{sofia.queryBookmark()}}
+                            <span ng-show="bookmarks.length > 0">(<a
+                                    ng-click="modalShown=true">{{sofia.load()}}</a>)</span>
                         </label>
                         </td>
                         <td>
                             <input id="bookmark" name="bookmark" type="text" ng-model="query.bookmark">
                         </td>
                         <td class="paramsColumn" rowspan="4">
-                            <table id="queryParameters">
+                            <table id="queryParameters" ng-hide="query.params.length === 0">
                                 <thead>
                                     <tr>
                                         <td colspan="2"><span class="nav-header">{{sofia.parameters()}}</span></td>
