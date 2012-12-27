@@ -1,4 +1,4 @@
-package dao;
+package com.antwerkz.ophelia.dao;
 
 import com.google.code.morphia.Datastore;
 import org.bson.types.ObjectId;

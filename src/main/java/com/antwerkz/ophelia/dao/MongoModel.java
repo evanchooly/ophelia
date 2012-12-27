@@ -1,9 +1,9 @@
-package dao;
+package com.antwerkz.ophelia.dao;
 
+import com.antwerkz.ophelia.plugins.MongOphelia;
 import com.google.code.morphia.Datastore;
 import com.google.code.morphia.annotations.Id;
 import org.bson.types.ObjectId;
-import plugins.MongOphelia;
 
 public class MongoModel<T> {
 

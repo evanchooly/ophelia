@@ -1,41 +1,41 @@
 sofia = {
-    appTitle:function () {
+    appTitle: function () {
         return "Ophelia";
     },
-    close:function () {
+    close: function () {
         return "Close";
     },
-    collections:function () {
+    collections: function () {
         return "Collections";
     },
-    invalidQuery:function (arg0) {
+    invalidQuery: function (arg0) {
         return "Bad query: {0}";
     },
-    load:function () {
+    load: function () {
         return "Load";
     },
-    loadBookmark:function () {
+    loadBookmark: function () {
         return "Load Bookmark";
     },
-    parameters:function () {
+    parameters: function () {
         return "Parameters";
     },
-    queryBookmark:function () {
+    queryBookmark: function () {
         return "Bookmark:";
     },
-    queryLimit:function () {
+    queryLimit: function () {
         return "Limit:";
     },
-    queryShowCount:function () {
+    queryShowCount: function () {
         return "Show Count:";
     },
-    querySubmit:function () {
+    querySubmit: function () {
         return "Query";
     },
-    resultCount:function () {
+    resultCount: function () {
         return "Result count:";
     },
-    unknownQueryMethod:function (arg0) {
+    unknownQueryMethod: function (arg0) {
         return "Unknown or unsupported query method: {0}";
     }
 };

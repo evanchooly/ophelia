@@ -1,12 +1,12 @@
-package controllers;
+package com.antwerkz.ophelia.controllers;
+
+import com.antwerkz.ophelia.models.User;
+import org.bson.types.ObjectId;
+import twitter4j.TwitterException;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-
-import models.User;
-import org.bson.types.ObjectId;
-import twitter4j.TwitterException;
 
 public class AuthenticationController {
     private static final String CONTEXT_NAME = "-context";

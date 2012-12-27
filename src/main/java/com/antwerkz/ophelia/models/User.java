@@ -1,8 +1,8 @@
-package models;
+package com.antwerkz.ophelia.models;
 
+import com.antwerkz.ophelia.dao.Finder;
+import com.antwerkz.ophelia.dao.MongoModel;
 import com.google.code.morphia.Datastore;
-import dao.Finder;
-import dao.MongoModel;
 
 public class User extends MongoModel<User> {
     public String name;
