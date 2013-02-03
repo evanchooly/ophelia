@@ -1,13 +1,33 @@
 package com.antwerkz.ophelia.models;
 
+import java.util.Map;
+
 import com.antwerkz.ophelia.dao.MongoModel;
 import com.google.code.morphia.annotations.Entity;
 
 @Entity("queries")
 public class Query extends MongoModel<Query> {
+    private static final int DEFAULT_LIMIT = 100;
     private String bookmark;
     private String database;
     private String queryString;
+    private Integer limit;
+    private Boolean readOnly;
+    private Boolean showCount;
+    private Boolean explain;
+    private Map<String, String> params;
+
+    public Query() {
+        readOnly = false;
+        showCount = true;
+        explain = false;
+        limit = DEFAULT_LIMIT;
+    }
+
+    public Query(String queryString) {
+        this();
+        this.queryString = queryString;
+    }
 
     public String getBookmark() {
         return bookmark;
@@ -31,6 +51,50 @@ public class Query extends MongoModel<Query> {
 
     public void setQueryString(String queryString) {
         this.queryString = queryString;
+    }
+
+    public Integer getLimit() {
+        return limit == null || limit < 1 ? DEFAULT_LIMIT : limit;
+    }
+
+    public void setLimit(Integer limit) {
+        this.limit = limit;
+    }
+
+    public Boolean getReadOnly() {
+        return readOnly;
+    }
+
+    public void setReadOnly(Boolean readOnly) {
+        this.readOnly = coerce(readOnly);
+    }
+
+    public Boolean getShowCount() {
+        return showCount;
+    }
+
+    public void setShowCount(Boolean showCount) {
+        this.showCount = coerce(showCount);
+    }
+
+    private boolean coerce(final Boolean value) {
+        return value == null ? false : value;
+    }
+
+    public Boolean getExplain() {
+        return explain;
+    }
+
+    public void setExplain(Boolean explain) {
+        this.explain = coerce(explain);
+    }
+
+    public Map<String, String> getParams() {
+        return params;
+    }
+
+    public void setParams(final Map<String, String> params) {
+        this.params = params;
     }
 
     @Override

@@ -47,6 +47,7 @@
                     <inputFile>src/main/resources/ophelia.properties</inputFile>
                     <loggingType>slf4j</loggingType>
                     <javascript>true</javascript>
+                    <outputDirectory>src/main/java</outputDirectory>
                     <jsOutputFile>src/main/webapp/js/ophelia.js</jsOutputFile>
                 </configuration>
             </plugin>

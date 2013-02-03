@@ -37,7 +37,27 @@ public class QueryCriteria {
         return new TypeSafeFieldEnd<>(query, query.criteria("database"));
     }
 
+    public TypeSafeFieldEnd<? extends CriteriaContainer, com.antwerkz.ophelia.models.Query, java.lang.Boolean> explain() {
+        return new TypeSafeFieldEnd<>(query, query.criteria("explain"));
+    }
+
+    public TypeSafeFieldEnd<? extends CriteriaContainer, com.antwerkz.ophelia.models.Query, java.lang.Integer> limit() {
+        return new TypeSafeFieldEnd<>(query, query.criteria("limit"));
+    }
+
+    public TypeSafeFieldEnd<? extends CriteriaContainer, com.antwerkz.ophelia.models.Query, java.util.Map<java.lang.String, java.lang.String>> params() {
+        return new TypeSafeFieldEnd<>(query, query.criteria("params"));
+    }
+
     public TypeSafeFieldEnd<? extends CriteriaContainer, com.antwerkz.ophelia.models.Query, java.lang.String> queryString() {
         return new TypeSafeFieldEnd<>(query, query.criteria("queryString"));
+    }
+
+    public TypeSafeFieldEnd<? extends CriteriaContainer, com.antwerkz.ophelia.models.Query, java.lang.Boolean> readOnly() {
+        return new TypeSafeFieldEnd<>(query, query.criteria("readOnly"));
+    }
+
+    public TypeSafeFieldEnd<? extends CriteriaContainer, com.antwerkz.ophelia.models.Query, java.lang.Boolean> showCount() {
+        return new TypeSafeFieldEnd<>(query, query.criteria("showCount"));
     }
 }

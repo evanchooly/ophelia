@@ -2,6 +2,9 @@ sofia = {
     appTitle: function () {
         return "Ophelia";
     },
+    bookmarkExists: function () {
+        return "Bookmark already exists";
+    },
     close: function () {
         return "Close";
     },
@@ -16,6 +19,9 @@ sofia = {
     },
     loadBookmark: function () {
         return "Load Bookmark";
+    },
+    noResults: function () {
+        return "No results found";
     },
     parameters: function () {
         return "Parameters";

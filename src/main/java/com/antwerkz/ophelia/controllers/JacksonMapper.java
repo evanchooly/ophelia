@@ -1,14 +1,17 @@
 package com.antwerkz.ophelia.controllers;
 
+import java.io.IOException;
+
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.Version;
-import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.bson.types.ObjectId;
-
-import java.io.IOException;
 
 public class JacksonMapper extends ObjectMapper {
     public JacksonMapper() {
@@ -16,13 +19,6 @@ public class JacksonMapper extends ObjectMapper {
         configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         SimpleModule module = new SimpleModule("jackson", Version.unknownVersion());
         module.addSerializer(new ObjectIdSerializer());
-        module.addDeserializer(Boolean.class, new JsonDeserializer<Boolean>() {
-            @Override
-            public Boolean deserialize(JsonParser jp, DeserializationContext ctxt)
-                    throws IOException, JsonProcessingException {
-                return null;
-            }
-        });
         registerModule(module);
     }
 
@@ -34,7 +30,7 @@ public class JacksonMapper extends ObjectMapper {
 
         @Override
         public void serialize(ObjectId id, JsonGenerator generator, SerializerProvider provider)
-                throws IOException, JsonProcessingException {
+            throws IOException, JsonProcessingException {
             generator.writeString(id.toString());
         }
     }
