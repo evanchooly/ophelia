@@ -4,7 +4,7 @@
     <head>
         <title>@Sofia.appTitle()</title>
         <!-- Le styles -->
-        <link href="style/bootstrap.css" rel="stylesheet">
+        <!--<link href="style/bootstrap.css" rel="stylesheet">-->
         <style type="text/css">
             body {
                 padding-top: 60px;
@@ -48,7 +48,7 @@
                     <a class="brand" href="#">{{sofia.appTitle("US")}}</a>
 
                     <div class="btn-group pull-right">
-                        <a class="btn dropdown-toggle" href="#" ng-model="showList" ng-click="showList = true">
+                        <a class="btn dropdown-toggle" href="#" ng-model="showList" ng-click="showList = !showList">
                             <i class="icon-home"></i> <span id="db">{{database}}</span>
                             <span class="caret"></span>
                         </a>

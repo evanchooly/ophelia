@@ -1,3 +1,5 @@
+@import "my-bootstrap";
+
 @padding: 1em;
 @cornerRadius: 8px;
 @highlightBG: blue;
@@ -13,181 +15,210 @@
 @queryBox: 30em;
 
 table {
-    width: 100%;
+  width: 100%;
+}
+
+.navigation {
+  .navbar;
+  .navbar-fixed-top;
 }
 
 footer {
-    .navbar-inner {
-        -webkit-border-radius: 0;
-        -moz-border-radius: 0;
-        border-radius: 0;
-    }
+  .navbar-inner {
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    border-radius: 0;
+  }
 
-    .brand {
-        font-size: 13px;
-    }
+  .brand {
+    font-size: 13px;
+  }
 }
 
 .table td {
-    border: none;
-    padding: 0;
+  border: none;
+  padding: 0;
 }
 
 .table {
-    margin-top: 0;
-    margin-bottom: 0;
+  margin-top: 0;
+  margin-bottom: 0;
 }
 
 .table tbody tr:hover td,
 .table tbody tr:hover th {
-    background-color: white;
+  background-color: white;
+}
+
+input[type="button"] {
+  .btn;
 }
 
 .query {
-    padding: @padding;
-    margin: 0;
-    margin-bottom: 1em; //    text-align: right;
-    padding-right: 2 * @padding;
-    padding-bottom: 2 * @padding;
+  .well;
 
-    textarea {
-        float: left;
-        width: @queryBox;
-    }
+  padding: @padding;
+  margin: 0;
+  margin-bottom: 1em; //    text-align: right;
+  padding-right: 2 * @padding;
+  padding-bottom: 2 * @padding;
 
-    #queryParameters {
-        margin-left: 2em;
-    }
+  textarea {
+    float: left;
+    width: @queryBox;
+  }
 
-    input[type="text"] {
-        width: 7em;
-    }
+  #queryParameters {
+    margin-left: 2em;
+  }
 
-    col {
-        vertical-align: top;
-    }
+  input[type="text"] {
+    width: 7em;
+  }
 
-    .queryColumn {
-        width: 10%;
-        padding-right: 2em;
-    }
+  col {
+    vertical-align: top;
+  }
 
-    .paramsColumn {
-        padding-left: 2em;
-    }
+  .queryColumn {
+    width: 10%;
+    padding-right: 2em;
+  }
 
-    table {
-        td {
-            vertical-align: top;
-        }
-    }
-
-    #limit {
-        width: 4em;
+  #query-buttons {
+    * {
+      margin-left: 5px;
+      float: right;
     }
 
     #query {
-        display: block;
-        clear: both;
+      .btn-primary;
+      float: left;
+      margin: 0;
     }
+
+    #explain {
+      .btn-warning;
+    }
+
+    #bookmark {
+      .btn-primary;
+      background: green;
+    }
+  }
+
+  .paramsColumn {
+    padding-left: 2em;
+  }
+
+  table {
+    td {
+      vertical-align: top;
+    }
+  }
+
+  #limit {
+    width: 4em;
+  }
 }
 
 .string {
-    color: @string;
+  color: @string;
 }
 
 .number {
-    color: @number;
+  color: @number;
 }
 
 .boolean {
-    color: @boolean;
+  color: @boolean;
 }
 
 .null {
-    color: @null;
+  color: @null;
 }
 
 .key {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 #error {
-    text-align: center;
-    padding: 0.7em;
-    margin-left: 1em;
-    background-color: #FF6666;
-    -webkit-border-radius: @cornerRadius;
-    -webkit-border-bottom-left-radius: 0px;
-    -webkit-border-bottom-right-radius: 0px;
-    -moz-border-radius: @cornerRadius;
-    -moz-border-bottom-left-radius: 0px;
-    -moz-border-bottom-right-radius: 0px;
-    border-radius: @cornerRadius;
-    border-bottom-left-radius: 0px;
-    border-bottom-right-radius: 0px;
+  text-align: center;
+  padding: 0.7em;
+  margin-left: 1em;
+  background-color: #FF6666;
+  -webkit-border-radius: @cornerRadius;
+  -webkit-border-bottom-left-radius: 0px;
+  -webkit-border-bottom-right-radius: 0px;
+  -moz-border-radius: @cornerRadius;
+  -moz-border-bottom-left-radius: 0px;
+  -moz-border-bottom-right-radius: 0px;
+  border-radius: @cornerRadius;
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
 }
 
 .result {
-    color: @highlightBG;
-    word-wrap: normal; //    max-height: 3em;
+  color: @highlightBG;
+  word-wrap: normal; //    max-height: 3em;
 //    min-width: 10em;
 //    overflow-y: scroll;
-    overflow-style: move;
+  overflow-style: move;
 }
 
 #countHolder {
-    display: none;
+  display: none;
 }
 
 #countValue {
-    display: inline;
+  display: inline;
 }
 
 #countTable {
-    width: 100%;
+  width: 100%;
 }
 
 .count {
-    text-align: right;
-    width: 100%;
+  text-align: right;
+  width: 100%;
 }
 
 td.count {
-    text-align: right;
+  text-align: right;
 }
 
 .countContent {
-    text-align: right;
-    -webkit-border-radius: @cornerRadius;
-    -moz-border-radius: @cornerRadius;
-    border-radius: @cornerRadius; //    background-color: @highlightBG;
+  text-align: right;
+  -webkit-border-radius: @cornerRadius;
+  -moz-border-radius: @cornerRadius;
+  border-radius: @cornerRadius; //    background-color: @highlightBG;
 //    color: @highlightFG;
-    padding-left: 0.5em;
-    padding-right: 0.5em;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
 }
 
 .dropdown-menu {
-    li a {
-        padding-left: 0px;
-    }
+  li a {
+    padding-left: 0px;
+  }
 
-    input {
-        background-color: #c1c1c1;
-        font-weight: bold;
-    }
+  input {
+    background-color: #c1c1c1;
+    font-weight: bold;
+  }
 }
 
 .dropdown-menu.dropdown-form {
-    display: block;
+  display: block;
 }
 
 .dropdown-form {
-    padding: 15px;
-    left: auto;
-    right: 0;
+  padding: 15px;
+  left: auto;
+  right: 0;
 }
 
 .main-content {
-    margin-left: 1em;
+  .span9;
+  margin-left: 1em;
 }

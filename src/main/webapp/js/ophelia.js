@@ -27,7 +27,10 @@ sofia = {
         return "Parameters";
     },
     queryBookmark: function () {
-        return "Bookmark:";
+        return "Bookmark";
+    },
+    queryExplain: function () {
+        return "Explain";
     },
     queryLimit: function () {
         return "Limit:";

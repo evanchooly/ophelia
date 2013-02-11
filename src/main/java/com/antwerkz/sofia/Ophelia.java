@@ -78,6 +78,10 @@ public class Ophelia {
         return getMessageValue("query.bookmark", locale);
     }
 
+    public static String queryExplain(Locale... locale) {
+        return getMessageValue("query.explain", locale);
+    }
+
     public static String queryLimit(Locale... locale) {
         return getMessageValue("query.limit", locale);
     }

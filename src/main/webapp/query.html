@@ -20,45 +20,56 @@
     </div>
 
     <div class="span9 main-content">
-        <div class="well query">
+        <div class="query">
             <div id="error" ng-show="showError">{{errorMessage}}</div>
             <form id="queryForm">
                 <table>
                     <tr>
                         <td class="queryColumn" rowspan="4">
                             <textarea id="mongo" name="queryString" rows="5" ng-model="query.queryString"></textarea>
-                            <!--ng-change="queryChange()"></textarea>-->
-                        </td>
-                        <td><label for="bookmark">{{sofia.queryBookmark()}}
-                            <span ng-show="bookmarks.length > 0">(<a
-                                    ng-click="modalShown=true">{{sofia.load()}}</a>)</span>
-                        </label>
-                        </td>
-                        <td>
-                            <input id="bookmark" name="bookmark" type="text" ng-model="query.bookmark">
+
+                            <div id="query-buttons">
+                                <input id="query" type="button" value="{{sofia.querySubmit()}}"
+                                       ng-click="submitQuery()">
+                                <!--
+                                                                <input id="explain" type="button" value="{{sofia.queryExplain()}}"
+                                                                       ng-click="explain()">
+                                -->
+                                <input id="bookmark" type="button" value="{{sofia.queryBookmark()}}"
+                                       ng-click="bookmark()">
+                            </div>
                         </td>
                         <!--
-                                                <td class="paramsColumn" rowspan="4">
-                                                    <table id="queryParameters" ng-hide="query.params.length == 0">
-                                                        <thead>
-                                                            <tr>
-                                                                <td colspan="2"><span class="nav-header">{{sofia.parameters()}}</span></td>
-                                                            </tr>
-                                                            <tr ng-repeat="param in query.params">
-                                                                <td>{{param.key}}</td>
-                                                                <td><input type="text" ></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>fixed</td>
-                                                                <td><input type="text" ></td>
-                                                            </tr>
-                                                            <tr ng-repeat="(name, value) in query.params">
-                                                                <td>{{name}}</td>
-                                                                <td><input type="text" ng-model="query.params[name]"></td>
-                                                            </tr>
-                                                        </thead>
-                                                    </table>
-                                                </td>
+                            <td>
+                                <label for="bookmark">{{sofia.queryBookmark()}}
+                                    <span ng-show="bookmarks.length > 0">(<a
+                                        ng-click="modalShown=true">{{sofia.load()}}</a>)</span>
+                                </label>
+                            </td>
+                            <td>
+                                <input id="bookmark" name="bookmark" type="text" ng-model="query.bookmark">
+                            </td>
+                            <td class="paramsColumn" rowspan="4">
+                                <table id="queryParameters" ng-hide="query.params.length == 0">
+                                    <thead>
+                                        <tr>
+                                            <td colspan="2"><span class="nav-header">{{sofia.parameters()}}</span></td>
+                                        </tr>
+                                        <tr ng-repeat="param in query.params">
+                                            <td>{{param.key}}</td>
+                                            <td><input type="text" ></td>
+                                        </tr>
+                                        <tr>
+                                            <td>fixed</td>
+                                            <td><input type="text" ></td>
+                                        </tr>
+                                        <tr ng-repeat="(name, value) in query.params">
+                                            <td>{{name}}</td>
+                                            <td><input type="text" ng-model="query.params[name]"></td>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </td>
                         -->
                     </tr>
                     <tr>
@@ -70,9 +81,6 @@
                         <td><input id="showCount" name="showCount" type="checkbox" ng-model="query.showCount"></td>
                     </tr>
                 </table>
-                <input id="query" class="btn btn-primary" type="button" value="{{sofia.querySubmit()}}"
-                       ng-click="submitQuery()">
-
             </form>
         </div>
         <div class="table" ng-show="showCount">

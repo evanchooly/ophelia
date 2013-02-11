@@ -36,8 +36,10 @@ public class Parser {
         this.query = query;
         this.params = query.getParams();
         this.queryString = scrub(query.getQueryString());
-        for (Entry<String, String> entry : this.params.entrySet()) {
-            queryString = queryString.replace("{{" + entry.getKey() + "}}", entry.getValue());
+        if (params != null) {
+            for (Entry<String, String> entry : this.params.entrySet()) {
+                queryString = queryString.replace("{{" + entry.getKey() + "}}", entry.getValue());
+            }
         }
         if (this.queryString.endsWith(";")) {
             queryString = queryString.substring(0, queryString.length() - 1);
