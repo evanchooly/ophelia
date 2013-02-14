@@ -17,7 +17,6 @@ import javax.ws.rs.core.MediaType;
 import com.antwerkz.ophelia.models.ConnectionInfo;
 import com.antwerkz.ophelia.models.Query;
 import com.antwerkz.ophelia.plugins.MongOphelia;
-import com.antwerkz.sofia.Ophelia;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.mongodb.DB;
 import org.bson.types.ObjectId;
@@ -33,12 +32,12 @@ public class Application {
     private QueryResults generateContent(HttpSession session, QueryResults queryResults) {
         try {
             ConnectionInfo info = getConnectionInfo(session);
-            queryResults.setDatabaseList(MongOphelia.getDatabaseNames());
-            String database = getDatabase(session);
+            String database = info.getDatabase();
             if (database == null) {
                 database = MongOphelia.getDatabaseNames().get(0);
                 info.setDatabase(database);
             }
+            queryResults.setDatabaseList(MongOphelia.getDatabaseNames());
             queryResults.setBookmarks(loadBookmarks(database));
             queryResults.setInfo(info);
             queryResults.setCollections(loadCollections(info));
@@ -101,15 +100,7 @@ public class Application {
             HttpSession session = request.getSession();
             ObjectNode node = (ObjectNode) mapper.readTree(json);
             Query query = mapper.convertValue(node, Query.class);
-            String bookmark = query.getBookmark();
             String database = query.getDatabase();
-            if (bookmark != null && !"".equals(bookmark)) {
-                if (Query.finder().byBookmarkAndDatabase(bookmark, database) == null) {
-                    query.save();
-                } else {
-                    throw new RuntimeException(Ophelia.bookmarkExists());
-                }
-            }
             generateContent(session, queryResults);
             final Parser parser = new Parser(query);
             if (query.getShowCount()) {
@@ -145,10 +136,6 @@ public class Application {
 
     private DB getDB(String database) {
         return MongOphelia.get(database).getDB();
-    }
-
-    private String getDatabase(HttpSession session) {
-        return getConnectionInfo(session).getDatabase();
     }
 
     public ConnectionInfo getConnectionInfo(HttpSession session) {

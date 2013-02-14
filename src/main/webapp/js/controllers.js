@@ -7,11 +7,11 @@ function OpheliaController($scope, $http) {
     }
     $scope.view = 'query.html';
     $scope.query = {
-        bookmark:'',
-        queryString:'',
-        limit:100,
-        showCount:true,
-        params:{}
+        bookmark: '',
+        queryString: '',
+        limit: 100,
+        showCount: true,
+        params: {}
     };
     $scope.sofia = sofia;
     function resetState() {
@@ -32,58 +32,60 @@ function OpheliaController($scope, $http) {
         var data = $scope.query;
         data['database'] = $scope.database;
         $http({
-            method:'POST',
-            url:contextPath + '/ophelia/app/query',
-            data:$scope.query,
-            headers:{
-                "Content-Type":"application/json"
+            method: 'POST',
+            url: contextPath + '/ophelia/app/query',
+            data: $scope.query,
+            headers: {
+                "Content-Type": "application/json"
             }
         })
-            .success(function (data, status, headers, config) {
-                processResponse(data);
-            })
-            .error(function (data, status, headers, config) {
-                angular.element('.errors').html(data.errors.join('<br>')).slideDown();
-                $scope.errorMessage = status.responseText;
-            });
+                .success(function (data, status, headers, config) {
+                    processResponse(data);
+                })
+                .error(function (data, status, headers, config) {
+                    angular.element('.errors').html(data.errors.join('<br>')).slideDown();
+                    $scope.errorMessage = status.responseText;
+                });
     };
     $scope.update = function (db) {
         get(contextPath + '/ophelia/app/database/' + db);
         $scope.showList = false;
     };
-    $scope.queryChange = function () {
-        var index = 0;
-        var end = 0;
-        var query = $scope.query['queryString'];
-        var newParams = {};
-        var added = false;
-        while ((index = query.indexOf("{{", index)) != -1 && (end = query.indexOf("}}", index)) != -1) {
-            var name = query.substring(index + 2, end);
-            newParams[name] = 'name';
-            index = end;
-            added = true;
-        }
-        for (var key in newParams) {
-            if (!$scope.query.params[key]) {
-                $scope.query.params[key] = '';
-            }
-        }
-        for (var key in $scope.query.params) {
-            if (!newParams[key]) {
-                delete $scope.query.params[key];
-            }
-        }
-    };
+    /*
+     $scope.queryChange = function () {
+     var index = 0;
+     var end = 0;
+     var query = $scope.query['queryString'];
+     var newParams = {};
+     var added = false;
+     while ((index = query.indexOf("{{", index)) != -1 && (end = query.indexOf("}}", index)) != -1) {
+     var name = query.substring(index + 2, end);
+     newParams[name] = 'name';
+     index = end;
+     added = true;
+     }
+     for (var key in newParams) {
+     if (!$scope.query.params[key]) {
+     $scope.query.params[key] = '';
+     }
+     }
+     for (var key in $scope.query.params) {
+     if (!newParams[key]) {
+     delete $scope.query.params[key];
+     }
+     }
+     };
+     */
     function get(url) {
         $http.get(url)
-            .success(function (data, status, headers, config) {
-                processResponse(data);
-            })
-            .error(function (data, status, headers, config) {
-                alert(data);
+                .success(function (data, status, headers, config) {
+                    processResponse(data);
+                })
+                .error(function (data, status, headers, config) {
+                    alert(data);
 //                angular.element('.errors').html(data.errors.join('<br>')).slideDown();
-                $scope.errorMessage = status.responseText;
-            });
+                    $scope.errorMessage = status.responseText;
+                });
     }
 
     function processResponse(response) {
@@ -123,27 +125,27 @@ function OpheliaController($scope, $http) {
         console.log("json = " + json);
         json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
         var text = json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
-            function (match) {
-                var cls = 'number';
-                if (/^"/.test(match)) {
-                    if (/:$/.test(match)) {
-                        cls = 'key';
-                    } else {
-                        cls = 'string';
+                function (match) {
+                    var cls = 'number';
+                    if (/^"/.test(match)) {
+                        if (/:$/.test(match)) {
+                            cls = 'key';
+                        } else {
+                            cls = 'string';
+                        }
+                    } else if (/true|false/.test(match)) {
+                        cls = 'boolean';
+                    } else if (/null/.test(match)) {
+                        cls = 'null';
                     }
-                } else if (/true|false/.test(match)) {
-                    cls = 'boolean';
-                } else if (/null/.test(match)) {
-                    cls = 'null';
-                }
-                return '<span class="' + cls + '">' + match + '</span>';
-            });
+                    return '<span class="' + cls + '">' + match + '</span>';
+                });
         return text;
     };
     $scope.useBookmark = function (bookmark) {
         $scope.query.queryString = bookmark['queryString'];
         $scope.modalShown = false;
-        $scope.queryChange();
+//        $scope.queryChange();
     };
     $scope.deleteBookmark = function (bookmark) {
         get(contextPath + '/ophelia/app/deleteBookmark/' + bookmark['id']);
