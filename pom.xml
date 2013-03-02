@@ -77,6 +77,7 @@
                         <exclude>LICENSE</exclude>
                         <exclude>README</exclude>
                         <exclude>target/**</exclude>
+                        <exclude>**/criteria/**</exclude>
                         <exclude>**/xsd/**</exclude>
                         <exclude>**/angular*/**</exclude>
                         <exclude>**/*bootstrap*.*</exclude>
