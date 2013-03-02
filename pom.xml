@@ -83,6 +83,8 @@
                         <exclude>**/*bootstrap*.*</exclude>
                         <exclude>**/jquery*.js</exclude>
                         <exclude>**/less*.js</exclude>
+                        <exclude>**/ophelia.js</exclude>
+                        <exclude>**/sofia/Ophelia.java</exclude>
                     </excludes>
                     <useDefaultExcludes>true</useDefaultExcludes>
                     <useDefaultMapping>true</useDefaultMapping>
