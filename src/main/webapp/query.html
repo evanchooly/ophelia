@@ -1,15 +1,13 @@
 <div class="row-fluid">
     <div class="span3">
-        <div class="well sidebar-nav">
+        <div class="well sidebar-nav collections">
             <ul class="nav nav-list">
                 <li class="nav-header">{{sofia.collections()}}</li>
                 <li class="nav-pills">
                     <table id="countTable">
                         <tr ng-repeat="(key, value) in collections">
-                            <td>
-                                <div class="dbName" ng-click="query.queryString='db.' + key + '.find( {\n\n} )'">
-                                    {{key}}
-                                </div>
+                            <td class="dbName">
+                                <div ng-click="query.queryString='db.' + key + '.find( {\n\n} )'">{{key}}</div>
                             </td>
                             <td class="count"><span class="countContent">{{value}}</span></td>
                         </tr>
@@ -22,21 +20,21 @@
     <div class="span9 main-content">
         <div class="query">
             <div id="error" ng-show="showError">{{errorMessage}}</div>
-            <form id="queryForm">
+            <form id="queryForm" action="/ophelia/ophelia/app/export" ng-model="query" method="post">
                 <table>
                     <tr>
                         <td class="queryColumn" rowspan="4">
                             <textarea id="mongo" name="queryString" rows="5" ng-model="query.queryString"></textarea>
 
                             <div id="query-buttons">
-                                <input id="query" type="button" value="{{sofia.querySubmit()}}"
+                                <input id="queryButton" type="button" value="{{sofia.querySubmit()}}"
                                        ng-click="submitQuery()">
-                                <!--
-                                                                <input id="explain" type="button" value="{{sofia.queryExplain()}}"
-                                                                       ng-click="explain()">
-                                -->
-                                <input id="bookmark" type="button" value="{{sofia.queryBookmark()}}"
-                                       ng-click="bookmark()">
+                                <input id="explainButton" type="button" value="{{sofia.queryExplain()}}"
+                                       ng-click="explain()">
+                                <input id="exportButton" type="submit" value="{{sofia.queryExport()}}">
+                                <input type="hidden" name="database" value="{{query.database}}"
+                                       ng-model="query.database"/>
+                                <!--<input id="bookmark" type="button" value="{{sofia.queryBookmark()}}" ng-click="showSaveBookmark=true;">-->
                             </div>
                         </td>
                         <!--
@@ -97,6 +95,27 @@
         </div>
     </div>
 </div>
+<div id="bookmarkModal" ng-show="showSaveBookmark">
+    <div class="modal-header">
+        <button type="button" class="close" ng-click="showSaveBookmark=false;">×</button>
+        <h3 id="myModalLabel">{{sofia.bookmarks()}}</h3>
+    </div>
+    <div class="modal-body">
+        <form>
+            <table>
+                <tr>
+                    <td class="formLabel">{{sofia.queryBookmark()}}</td>
+                    <td><input type="text" name="name" ng-model="newBookmark"></td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button class="cancelButton" ng-click="showSaveBookmark=false;">{{sofia.cancel()}}</button>
+        <button class="saveButton" ng-click="saveBookmark(newBookmark)">{{sofia.save()}}</button>
+    </div>
+</div>
+
 <div ui-modal ng-model="modalShown">
     <div class="modal-body">
         <div class="well sidebar-nav">
@@ -109,14 +128,15 @@
                                 <a class="bookmarkName" ng-click="useBookmark(bookmark);modalShown=false;"
                                    title="{{bookmark['queryString']}}">{{bookmark['bookmark']}}</a>
                             </td>
-                            <td><a ng-click="deleteBookmark(bookmark)" title="Delete">X</a></td>
+                            <td><a ng-click="deleteBookmark(bookmark)" title="{{sofia.delete()}}">X</a></td>
                         </tr>
                     </table>
                 </li>
             </ul>
         </div>
     </div>
-    <div class="modal-footer">
-        <a class="btn" ng-click="modalShown=false" href="">{{sofia.close()}}</a>
-    </div>
+
+    <!--<div class="modal-footer">-->
+    <!--<a class="btn" ng-click="modalShown=false" href="">{{sofia.close()}}</a>-->
+    <!--</div>-->
 </div>

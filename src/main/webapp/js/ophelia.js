@@ -5,11 +5,20 @@ sofia = {
     bookmarkExists: function () {
         return "Bookmark already exists";
     },
+    bookmarks: function () {
+        return "Bookmarks";
+    },
+    cancel: function () {
+        return "Cancel";
+    },
     close: function () {
         return "Close";
     },
     collections: function () {
         return "Collections";
+    },
+    count: function () {
+        return "Count";
     },
     invalidQuery: function (arg0) {
         return "Bad query: {0}";
@@ -32,6 +41,9 @@ sofia = {
     queryExplain: function () {
         return "Explain";
     },
+    queryExport: function () {
+        return "Export";
+    },
     queryLimit: function () {
         return "Limit:";
     },
@@ -43,6 +55,9 @@ sofia = {
     },
     resultCount: function () {
         return "Result count:";
+    },
+    save: function () {
+        return "Save";
     },
     unknownQueryMethod: function (arg0) {
         return "Unknown or unsupported query method: {0}";

@@ -89,8 +89,20 @@ public class ParserTest {
             + "\"count\" : 1,"
             + "\"info\" : {\"x\" : 203,"
             + "\"y\" : 102}})");
-        query.setExplain(true);
         Parser parser = new Parser(query);
+        Assert.assertFalse(parser.explain(db).get(0).isEmpty());
+    }
+
+    @Test
+    public void export() throws IOException {
+        Query query = new Query("db.UnitTest.insert({"
+            + "\"name\" : \"MongoDB\","
+            + "\"type\" : \"database\","
+            + "\"count\" : 1,"
+            + "\"info\" : {\"x\" : 203,"
+            + "\"y\" : 102}})");
+        Parser parser = new Parser(query);
+        parser.setLimit(null);
         Assert.assertFalse(parser.execute(db).get(0).isEmpty());
     }
 

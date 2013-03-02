@@ -1,39 +1,75 @@
 var app = angular.module('ophelia', ['ui']);
 function OpheliaController($scope, $http) {
     angular.module('ophelia', ['ui']);
-    contextPath = location.pathname;
+    var contextPath = location.pathname;
     if (contextPath == "/") {
         contextPath = "";
     }
     $scope.view = 'query.html';
     $scope.query = {
-        bookmark: '',
         queryString: '',
+        database: '',
         limit: 100,
         showCount: true,
         params: {}
     };
+    $scope.showSaveBookmark = false;
     $scope.sofia = sofia;
     function resetState() {
         $scope.bookmarks = [];
         $scope.collections = [];
         $scope.count = -1;
-        $scope.databases = [];
         $scope.database = '';
+        $scope.databases = [];
         $scope.errorMessage = '';
         $scope.results = [];
         $scope.showCount = false;
         $scope.showError = false;
         $scope.showList = false;
+        $scope.showSaveBookmark = false;
         $scope.query['bookmark'] = '';
     }
 
+    /*
+     $scope.export = function () {
+     $http({
+     method: 'POST',
+     url: contextPath + '/ophelia/app/export',
+     data: $scope.query,
+     headers: {
+     "Content-Type": "application/json"
+     }
+     })
+     .success(function (data, status, headers, config) {
+     processResponse(data);
+     })
+     .error(function (data, status, headers, config) {
+     angular.element('.errors').html(data.errors.join('<br>')).slideDown();
+     $scope.errorMessage = status.responseText;
+     });
+     };
+     */
     $scope.submitQuery = function () {
-        var data = $scope.query;
-        data['database'] = $scope.database;
         $http({
             method: 'POST',
             url: contextPath + '/ophelia/app/query',
+            data: $scope.query,
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+                .success(function (data, status, headers, config) {
+                    processResponse(data);
+                })
+                .error(function (data, status, headers, config) {
+                    angular.element('.errors').html(data.errors.join('<br>')).slideDown();
+                    $scope.errorMessage = status.responseText;
+                });
+    };
+    $scope.explain = function () {
+        $http({
+            method: 'POST',
+            url: contextPath + '/ophelia/app/explain',
             data: $scope.query,
             headers: {
                 "Content-Type": "application/json"
@@ -83,7 +119,6 @@ function OpheliaController($scope, $http) {
                 })
                 .error(function (data, status, headers, config) {
                     alert(data);
-//                angular.element('.errors').html(data.errors.join('<br>')).slideDown();
                     $scope.errorMessage = status.responseText;
                 });
     }
@@ -106,7 +141,7 @@ function OpheliaController($scope, $http) {
                 $scope.errorMessage = response[key];
                 $scope.showError = true;
             } else if (key == 'info') {
-                $scope.database = response[key].database;
+                $scope.query.database = response[key].database;
             } else {
                 console.log("no handler for " + key);
             }
@@ -124,7 +159,7 @@ function OpheliaController($scope, $http) {
         console.log("json = " + json);
         console.log("json = " + json);
         json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-        var text = json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
+        return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
                 function (match) {
                     var cls = 'number';
                     if (/^"/.test(match)) {
@@ -140,17 +175,38 @@ function OpheliaController($scope, $http) {
                     }
                     return '<span class="' + cls + '">' + match + '</span>';
                 });
-        return text;
     };
-    $scope.useBookmark = function (bookmark) {
-        $scope.query.queryString = bookmark['queryString'];
-        $scope.modalShown = false;
-//        $scope.queryChange();
-    };
-    $scope.deleteBookmark = function (bookmark) {
-        get(contextPath + '/ophelia/app/deleteBookmark/' + bookmark['id']);
-        $scope.modalShown = false;
-    };
+    /*
+     $scope.useBookmark = function (bookmark) {
+     $scope.query.queryString = bookmark['queryString'];
+     $scope.modalShown = false;
+     //        $scope.queryChange();
+     };
+     $scope.deleteBookmark = function (bookmark) {
+     get(contextPath + contextPath + '/ophelia/app/deleteBookmark/' + bookmark['id']);
+     $scope.modalShown = false;
+     };
+     $scope.saveBookmark = function (bookmark) {
+     $scope.query.bookmark = bookmark;
+     $http({
+     method: 'POST',
+     url: contextPath + '/ophelia/app/bookmark',
+     data:  $scope.query,
+     headers: {
+     "Content-Type": "application/json"
+     }
+     })
+     .success(function (data, status, headers, config) {
+     $scope.showSaveBookmark = false;
+     processResponse(data);
+     })
+     .error(function (data, status, headers, config) {
+     $scope.showSaveBookmark = false;
+     angular.element('.errors').html(data.errors.join('<br>')).slideDown();
+     $scope.errorMessage = status.responseText;
+     });
+     };
+     */
     resetState();
     get(contextPath + '/ophelia/app/content');
 }

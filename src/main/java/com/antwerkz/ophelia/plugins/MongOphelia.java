@@ -1,16 +1,21 @@
 package com.antwerkz.ophelia.plugins;
 
+import java.io.IOException;
+import java.net.UnknownHostException;
+import java.util.List;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.annotation.WebFilter;
+
 import com.antwerkz.ophelia.models.ConnectionInfo;
 import com.google.code.morphia.Datastore;
 import com.google.code.morphia.Morphia;
 import com.mongodb.DB;
 import com.mongodb.Mongo;
-
-import javax.servlet.*;
-import javax.servlet.annotation.WebFilter;
-import java.io.IOException;
-import java.net.UnknownHostException;
-import java.util.List;
 
 @WebFilter("/ophelia/*")
 public class MongOphelia implements Filter {
@@ -20,6 +25,7 @@ public class MongOphelia implements Filter {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         morphia.mapPackage(ConnectionInfo.class.getPackage().getName());
+        get().ensureIndexes();
     }
 
     @Override
@@ -28,7 +34,7 @@ public class MongOphelia implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-            throws IOException, ServletException {
+        throws IOException, ServletException {
         chain.doFilter(request, response);
         if (pool.get() != null) {
             pool.get().close();

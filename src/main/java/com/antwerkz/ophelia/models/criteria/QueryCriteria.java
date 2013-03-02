@@ -37,10 +37,6 @@ public class QueryCriteria {
         return new TypeSafeFieldEnd<>(query, query.criteria("database"));
     }
 
-    public TypeSafeFieldEnd<? extends CriteriaContainer, com.antwerkz.ophelia.models.Query, java.lang.Boolean> explain() {
-        return new TypeSafeFieldEnd<>(query, query.criteria("explain"));
-    }
-
     public TypeSafeFieldEnd<? extends CriteriaContainer, com.antwerkz.ophelia.models.Query, java.lang.Integer> limit() {
         return new TypeSafeFieldEnd<>(query, query.criteria("limit"));
     }

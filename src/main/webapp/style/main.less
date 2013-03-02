@@ -2,6 +2,7 @@
 
 @padding: 1em;
 @cornerRadius: 8px;
+@borderColor: darkgrey;
 @highlightBG: blue;
 @highlightFG: white;
 @navGradientTop: #08c;
@@ -14,8 +15,18 @@
 @null: magenta;
 @queryBox: 30em;
 
+.borders {
+  -webkit-border-radius: @cornerRadius;
+  -moz-border-radius: @cornerRadius;
+  border-radius: @cornerRadius;
+}
+
 table {
   width: 100%;
+}
+
+form {
+  margin: 0;
 }
 
 .navigation {
@@ -52,6 +63,22 @@ footer {
 
 input[type="button"] {
   .btn;
+}
+
+.collections {
+  ul {
+    padding-left: 0;
+  }
+
+  table {
+    max-width: 90%;
+  }
+
+  .dbName {
+    margin: 0;
+    max-width: 80%;
+    overflow: hidden;
+  }
 }
 
 .query {
@@ -91,13 +118,13 @@ input[type="button"] {
       float: right;
     }
 
-    #query {
+    #queryButton {
       .btn-primary;
       float: left;
       margin: 0;
     }
 
-    #explain {
+    #explainButton {
       .btn-warning;
     }
 
@@ -147,15 +174,7 @@ input[type="button"] {
   padding: 0.7em;
   margin-left: 1em;
   background-color: #FF6666;
-  -webkit-border-radius: @cornerRadius;
-  -webkit-border-bottom-left-radius: 0px;
-  -webkit-border-bottom-right-radius: 0px;
-  -moz-border-radius: @cornerRadius;
-  -moz-border-bottom-left-radius: 0px;
-  -moz-border-bottom-right-radius: 0px;
-  border-radius: @cornerRadius;
-  border-bottom-left-radius: 0px;
-  border-bottom-right-radius: 0px;
+
 }
 
 .result {
@@ -187,12 +206,17 @@ td.count {
   text-align: right;
 }
 
+.dbName {
+  max-width: 70%;
+}
+
 .countContent {
+  .borders;
   text-align: right;
   -webkit-border-radius: @cornerRadius;
   -moz-border-radius: @cornerRadius;
-  border-radius: @cornerRadius; //    background-color: @highlightBG;
-//    color: @highlightFG;
+  border-radius: @cornerRadius; //  background-color: @highlightBG;
+//  color: @highlightFG;
   padding-left: 0.5em;
   padding-right: 0.5em;
 }
@@ -221,4 +245,55 @@ td.count {
 .main-content {
   .span9;
   margin-left: 1em;
+}
+
+#bookmarkModal {
+  .borders;
+  border: 1px @borderColor solid;
+  background-color: #f5f5f5;
+  margin-left: auto;
+  margin-right: auto; //  width: 40%;
+  position: absolute;
+  left: 40%;
+  top: 150px;
+  opacity: 100%;
+}
+
+.formLabel {
+  padding-right: 1em;
+}
+
+.cancelButton {
+  .btn;
+  .btn-warning;
+}
+
+.saveButton {
+  .btn;
+  .btn-primary;
+}
+
+#exportButton {
+  .btn;
+  .btn-warning;
+
+  @exportColor: #009400;
+  @exportPrimaryBorderColor: #00BA00;
+  @exportSecondaryBorderColor: #0D780D;
+  @exportGradientStart: #34BA34;
+
+  background-color: @exportColor;
+  *background-color: @exportPrimaryBorderColor;
+  background-image: -ms-linear-gradient(top, @exportGradientStart, @exportPrimaryBorderColor);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(@exportGradientStart), to(@exportPrimaryBorderColor));
+  background-image: -webkit-linear-gradient(top, @exportGradientStart, @exportPrimaryBorderColor);
+  background-image: -o-linear-gradient(top, @exportGradientStart, @exportPrimaryBorderColor);
+  background-image: -moz-linear-gradient(top, @exportGradientStart, @exportPrimaryBorderColor);
+  background-image: linear-gradient(top, @exportGradientStart, @exportPrimaryBorderColor);
+  background-repeat: repeat-x;
+  border-color: @exportPrimaryBorderColor @exportPrimaryBorderColor @exportSecondaryBorderColor;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  filter: progid:dximagetransform.microsoft.gradient(startColorstr = '@exportGradientStart', endColorstr = '@exportBorderColor', GradientType = 0);
+  filter: progid:dximagetransform.microsoft.gradient(enabled = false);
+
 }

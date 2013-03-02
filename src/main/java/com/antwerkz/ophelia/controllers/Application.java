@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.TreeMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -13,17 +15,20 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
 
 import com.antwerkz.ophelia.models.ConnectionInfo;
 import com.antwerkz.ophelia.models.Query;
 import com.antwerkz.ophelia.plugins.MongOphelia;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.mongodb.DB;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Path("app")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
 public class Application {
     private static final Logger logger = LoggerFactory.getLogger(Application.class);
     private static final String INFO = "connection-info";
@@ -38,7 +43,6 @@ public class Application {
                 info.setDatabase(database);
             }
             queryResults.setDatabaseList(MongOphelia.getDatabaseNames());
-            queryResults.setBookmarks(loadBookmarks(database));
             queryResults.setInfo(info);
             queryResults.setCollections(loadCollections(info));
             return queryResults;
@@ -94,28 +98,61 @@ public class Application {
     @POST
     @Path("/query")
     @Produces(MediaType.APPLICATION_JSON)
-    public QueryResults query(@Context HttpServletRequest request, String json) throws IOException {
-        QueryResults queryResults = new QueryResults();
+    public QueryResults query(@Context HttpServletRequest request, Query query) throws IOException {
+        QueryResults queryResults;
         try {
-            HttpSession session = request.getSession();
-            ObjectNode node = (ObjectNode) mapper.readTree(json);
-            Query query = mapper.convertValue(node, Query.class);
-            String database = query.getDatabase();
-            generateContent(session, queryResults);
+            queryResults = new QueryResults();
+            generateContent(request.getSession(), queryResults);
             final Parser parser = new Parser(query);
             if (query.getShowCount()) {
-                queryResults.setResultCount(parser.count(getDB(database)));
+                queryResults.setResultCount(parser.count(getDB(query.getDatabase())));
             }
-            queryResults.setDbResults(parser.execute(getDB(database)));
+            queryResults.setDbResults(parser.execute(getDB(query.getDatabase())));
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            String message = e.getMessage();
-            queryResults.setResultCount(null);
-            queryResults.setDbResults(null);
-            if (e.getCause() != null) {
-                message += " " + e.getCause().getMessage();
-            }
-            queryResults.setError(message);
+            queryResults = new QueryResults();
+            queryResults.setError(e.getMessage());
+        }
+        return queryResults;
+    }
+
+    @POST
+    @Path("/export")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response export(@Context HttpServletRequest request, @FormParam("queryString") String queryString,
+        @FormParam("database") String database)
+        throws IOException {
+        try {
+            Query query = new Query(queryString);
+            query.setDatabase(database);
+            final Parser parser = new Parser(query);
+            parser.setLimit(null);
+            ResponseBuilder response = Response.ok(parser.export(getDB(query.getDatabase())));
+            response.type(MediaType.APPLICATION_JSON);
+            response.header("Content-Disposition",
+                String.format("attachment; filename=\"%s.json\"", parser.getCollection()));
+            return response.build();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return Response.serverError().build();
+        }
+    }
+
+    @POST
+    @Path("/explain")
+    @Produces(MediaType.APPLICATION_JSON)
+    public QueryResults explain(@Context HttpServletRequest request, Query query) throws IOException {
+        QueryResults queryResults;
+        try {
+            queryResults = new QueryResults();
+            generateContent(request.getSession(), queryResults);
+            final Parser parser = new Parser(query);
+            queryResults.setDbResults(parser.explain(getDB(query.getDatabase())));
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            queryResults = new QueryResults();
+            queryResults.setError(e.getMessage());
         }
         return queryResults;
     }
@@ -130,6 +167,20 @@ public class Application {
             Query.finder().delete(new ObjectId(id));
         } catch (IllegalArgumentException e) {
             queryResults.setError(e.getMessage());
+        }
+        return generateContent(request.getSession(), queryResults);
+    }
+
+    @POST
+    @Path("/bookmark")
+    public QueryResults bookmark(@Context HttpServletRequest request, Query query) throws IOException {
+        QueryResults queryResults = new QueryResults();
+//        Query query = mapper.readValue(json, Query.class);
+        System.out.println("query = " + query);
+        try {
+            query.save();
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage(), e);
         }
         return generateContent(request.getSession(), queryResults);
     }
@@ -151,4 +202,5 @@ public class Application {
         session.setAttribute(INFO, info);
         return info;
     }
+
 }

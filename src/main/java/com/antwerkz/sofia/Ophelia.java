@@ -46,12 +46,24 @@ public class Ophelia {
         return getMessageValue("bookmark.exists", locale);
     }
 
+    public static String bookmarks(Locale... locale) {
+        return getMessageValue("bookmarks", locale);
+    }
+
+    public static String cancel(Locale... locale) {
+        return getMessageValue("cancel", locale);
+    }
+
     public static String close(Locale... locale) {
         return getMessageValue("close", locale);
     }
 
     public static String collections(Locale... locale) {
         return getMessageValue("collections", locale);
+    }
+
+    public static String count(Locale... locale) {
+        return getMessageValue("count", locale);
     }
 
     public static String invalidQuery(Object arg0, Locale... locale) {
@@ -82,6 +94,10 @@ public class Ophelia {
         return getMessageValue("query.explain", locale);
     }
 
+    public static String queryExport(Locale... locale) {
+        return getMessageValue("query.export", locale);
+    }
+
     public static String queryLimit(Locale... locale) {
         return getMessageValue("query.limit", locale);
     }
@@ -96,6 +112,10 @@ public class Ophelia {
 
     public static String resultCount(Locale... locale) {
         return getMessageValue("result.count", locale);
+    }
+
+    public static String save(Locale... locale) {
+        return getMessageValue("save", locale);
     }
 
     public static String unknownQueryMethod(Object arg0, Locale... locale) {

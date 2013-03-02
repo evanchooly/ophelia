@@ -1,20 +1,24 @@
 package com.antwerkz.ophelia.controllers;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.SerializationFeature;
-
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
-import java.io.*;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.Map;
+import javax.ws.rs.ext.Provider;
 
-//@Provider
-//@Consumes(MediaType.APPLICATION_JSON)
-public class JacksonBodyReader implements MessageBodyReader<Map<String, String>> {
+import com.antwerkz.ophelia.models.Query;
+import com.fasterxml.jackson.databind.SerializationFeature;
+
+@Provider
+@Consumes(MediaType.APPLICATION_JSON)
+public class JacksonBodyReader implements MessageBodyReader<Query> {
     private JacksonMapper mapper;
 
     public JacksonBodyReader() {
@@ -24,19 +28,17 @@ public class JacksonBodyReader implements MessageBodyReader<Map<String, String>>
 
     @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return false;
+        return Query.class.equals(type);
     }
 
     @Override
-    public Map<String, String> readFrom(Class<Map<String, String>> type, Type genericType, Annotation[] annotations,
-                                        MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
-            throws IOException, WebApplicationException {
-        int available = entityStream.available();
-        if (available > 0) {
+    public Query readFrom(Class<Query> type, Type genericType, Annotation[] annotations,
+        MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
+        throws IOException, WebApplicationException {
+        if (entityStream.available() > 0) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(entityStream));
-            String s = reader.readLine();
-            JsonNode o = mapper.readTree(new StringReader(s));
-            return null;
+            String content = reader.readLine();
+            return mapper.readValue(content, Query.class);
         }
         return null;
     }

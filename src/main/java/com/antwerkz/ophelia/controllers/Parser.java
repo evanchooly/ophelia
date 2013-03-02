@@ -1,9 +1,12 @@
 package com.antwerkz.ophelia.controllers;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -29,18 +32,10 @@ public class Parser {
     private String method;
     private JacksonMapper mapper;
     private String queryString;
-    private Query query;
-    private Map<String, String> params;
+    private Integer limit;
 
     public Parser(Query query) throws IOException {
-        this.query = query;
-        this.params = query.getParams();
         this.queryString = scrub(query.getQueryString());
-        if (params != null) {
-            for (Entry<String, String> entry : this.params.entrySet()) {
-                queryString = queryString.replace("{{" + entry.getKey() + "}}", entry.getValue());
-            }
-        }
         if (this.queryString.endsWith(";")) {
             queryString = queryString.substring(0, queryString.length() - 1);
         }
@@ -50,34 +45,41 @@ public class Parser {
         } else {
             throw new InvalidQueryException(Ophelia.invalidQuery(query));
         }
+        limit = query.getLimit();
     }
 
-    public Long count(DB db) {
-        return db.getCollection(getCollection()).count(getQueryExpression());
+    private String scrub(String query) throws IOException {
+        String scrubbed = scrubObjectIds(query);
+        scrubbed = scrubObjectIds(scrubbed);
+        return scrubbed;
     }
 
-    public List<Map> execute(DB db) {
-        if (db != null) {
-            DBCollection collection = db.getCollection(getCollection());
-            if (query.getExplain()) {
-                return explain(collection);
-            } else {
-                switch (method) {
-                    case "drop":
-                        doDrop(collection);
-                        return null;
-                    case "insert":
-                        return insert(collection);
-                    case "find":
-                        return find(collection);
-                    case "remove":
-                        return remove(collection);
-                    default:
-                        throw new InvalidQueryException(Ophelia.unknownQueryMethod(method));
-                }
+    private String scrubObjectIds(String query) throws IOException {
+        int index = -1;
+        while ((index = query.indexOf("ObjectId(\"", index + 1)) != -1) {
+            String slug = query.substring(index - 4, index);
+            if (slug.equals("new ")) {
+                index -= 4;
             }
+            query = String.format("%s%s%s", query.substring(0, index),
+                extractValue(query, index),
+                query.substring(query.indexOf(")", index) + 1));
+            index = query.indexOf(")", index);
         }
-        return null;
+        return query;
+    }
+
+    private String extractValue(String value, int index) throws IOException {
+        int first = value.indexOf("\"", index) + 1;
+        int last = value.indexOf("\"", first + 1);
+        String id = value.substring(first, last);
+        Map<String, String> oid = new TreeMap<>();
+        oid.put("$oid", id);
+        return new ObjectMapper().writeValueAsString(oid);
+    }
+
+    private String consume(int count) {
+        return consume(count, true);
     }
 
     private void parseQuery() throws IOException {
@@ -114,8 +116,27 @@ public class Parser {
         return map;
     }
 
-    private String consume(int count) {
-        return consume(count, true);
+    public String getCollection() {
+        return collection;
+    }
+
+    public Integer getLimit() {
+        return limit;
+    }
+
+    public void setLimit(final Integer limit) {
+        this.limit = limit;
+    }
+
+    public ObjectMapper getMapper() {
+        if (mapper == null) {
+            mapper = new JacksonMapper();
+        }
+        return mapper;
+    }
+
+    private BasicDBObject getQueryExpression() {
+        return queryExpression;
     }
 
     private String consume(int count, boolean trim) {
@@ -127,47 +148,43 @@ public class Parser {
         return sub;
     }
 
-    public ObjectMapper getMapper() {
-        if (mapper == null) {
-            mapper = new JacksonMapper();
+    public Long count(DB db) {
+        return db.getCollection(getCollection()).count(getQueryExpression());
+    }
 
+    public List<Map> execute(DB db) {
+        if (db != null) {
+            DBCollection collection = db.getCollection(getCollection());
+            switch (method) {
+                case "drop":
+                    doDrop(collection);
+                    return null;
+                case "insert":
+                    return insert(collection);
+                case "find":
+                    return find(collection);
+                case "remove":
+                    return remove(collection);
+                case "count":
+                    return count(collection);
+                default:
+                    throw new InvalidQueryException(Ophelia.unknownQueryMethod(method));
+            }
         }
-        return mapper;
+        return null;
     }
 
-    private BasicDBObject getQueryExpression() {
-        return queryExpression;
-    }
-
-    private String getCollection() {
-        return collection;
+    public MongoInputStream export(final DB db) {
+        if (!"find".equals(method)) {
+            throw new IllegalArgumentException("Only find queries may be exported");
+        }
+        DBCollection collection = db.getCollection(getCollection());
+        DBCursor dbObjects = collection.find(getQueryExpression(), keys);
+        return new MongoInputStream(dbObjects);
     }
 
     private void doDrop(DBCollection collection) {
         collection.drop();
-    }
-
-    private List<Map> find(DBCollection collection) {
-        return extract((DBCursor) collection.find(getQueryExpression(), keys).iterator());
-    }
-
-    private List<Map> extract(DBCursor execute) {
-        List<Map> list = new ArrayList<>();
-        Iterator<DBObject> iterator = execute.iterator();
-        while (list.size() < query.getLimit() && iterator.hasNext()) {
-            list.add(iterator.next().toMap());
-        }
-        if (list.isEmpty()) {
-            Map<String, String> map = new TreeMap<>();
-            map.put("message", Ophelia.noResults());
-            list.add(map);
-        }
-        return list;
-    }
-
-    private List<Map> explain(DBCollection collection) {
-        DBObject explain = collection.find(getQueryExpression(), keys).explain();
-        return Arrays.asList(explain.toMap());
     }
 
     private List<Map> insert(DBCollection collection) {
@@ -179,6 +196,34 @@ public class Parser {
         return wrap(insert.getN());
     }
 
+    private List<Map> wrap(int number) {
+        Map<String, Number> count = new TreeMap<>();
+        count.put("count", number);
+        return Arrays.<Map>asList(count);
+    }
+
+    private List<Map> find(DBCollection collection) {
+        DBCursor dbObjects = collection.find(getQueryExpression(), keys);
+        return extract((DBCursor) dbObjects.iterator());
+    }
+
+    private List<Map> extract(DBCursor execute) {
+        if (limit != null) {
+            execute.skip(0).batchSize(limit);
+        }
+        Iterator<DBObject> iterator = execute.iterator();
+        List<Map> list = new ArrayList<>();
+        while (iterator.hasNext()) {
+            list.add(iterator.next().toMap());
+        }
+        if (list.isEmpty()) {
+            Map<String, String> map = new TreeMap<>();
+            map.put("message", Ophelia.noResults());
+            list.add(map);
+        }
+        return list;
+    }
+
     private List<Map> remove(DBCollection collection) {
         WriteResult remove = collection.remove(getQueryExpression());
         String error = remove.getError();
@@ -188,40 +233,20 @@ public class Parser {
         return wrap(remove.getN());
     }
 
-    private String scrub(String query) throws IOException {
-        String scrubbed = scrubObjectIds(query);
-        scrubbed = scrubObjectIds(scrubbed);
-        return scrubbed;
+    @SuppressWarnings("unchecked")
+    private List<Map> count(final DBCollection collection) {
+        Map map = new HashMap();
+        map.put(Ophelia.count(), collection.count(getQueryExpression()));
+        return Arrays.asList(map);
     }
 
-    private String scrubObjectIds(String query) throws IOException {
-        int index = -1;
-        while ((index = query.indexOf("ObjectId(\"", index + 1)) != -1) {
-            String slug = query.substring(index - 4, index);
-            if (slug.equals("new ")) {
-                index -= 4;
-            }
-            query = String.format("%s%s%s", query.substring(0, index),
-                extractValue(query, index),
-                query.substring(query.indexOf(")", index) + 1));
-            index = query.indexOf(")", index);
-        }
-        return query;
+    public List<Map> explain(DB db) {
+        return db == null ? null : explain(db.getCollection(getCollection()));
     }
 
-    private List<Map> wrap(int number) {
-        Map<String, Number> count = new TreeMap<>();
-        count.put("count", number);
-        return Arrays.<Map>asList(count);
-    }
-
-    private String extractValue(String value, int index) throws IOException {
-        int first = value.indexOf("\"", index) + 1;
-        int last = value.indexOf("\"", first + 1);
-        String id = value.substring(first, last);
-        Map<String, String> oid = new TreeMap<>();
-        oid.put("$oid", id);
-        return new ObjectMapper().writeValueAsString(oid);
+    private List<Map> explain(DBCollection collection) {
+        DBObject explain = collection.find(getQueryExpression(), keys).explain();
+        return Arrays.asList(explain.toMap());
     }
 
     private class ConsumingStringReader extends StringReader {
@@ -244,6 +269,40 @@ public class Parser {
         @Override
         public void close() {
         }
+    }
 
+    private static class MongoInputStream extends InputStream {
+        private DBCursor cursor;
+        private ByteArrayInputStream bytes = new ByteArrayInputStream("{".getBytes());
+        private boolean commaSent = true;
+        private boolean closed = false;
+
+        public MongoInputStream(final DBCursor dbObjects) {
+            cursor = dbObjects;
+        }
+
+        @Override
+        public int available() throws IOException {
+            return bytes.available() > 0 ? bytes.available() : (cursor.hasNext() ? 1 : 0);
+        }
+
+        @Override
+        public int read() throws IOException {
+            if (bytes.available() == 0) {
+                if (!commaSent && cursor.hasNext()) {
+                    bytes = new ByteArrayInputStream(", ".getBytes());
+                    commaSent = true;
+                } else if (cursor.hasNext()) {
+                    commaSent = false;
+                    bytes = new ByteArrayInputStream(new JacksonMapper().writeValueAsBytes(cursor.next()));
+                } else if (!closed) {
+                    bytes = new ByteArrayInputStream("}".getBytes());
+                    closed = true;
+                } else {
+                    return -1;
+                }
+            }
+            return bytes.read();
+        }
     }
 }

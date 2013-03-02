@@ -4,8 +4,13 @@ import java.util.Map;
 
 import com.antwerkz.ophelia.dao.MongoModel;
 import com.google.code.morphia.annotations.Entity;
+import com.google.code.morphia.annotations.Index;
+import com.google.code.morphia.annotations.Indexes;
 
 @Entity("queries")
+@Indexes(
+    @Index(name = "names", value = "database, bookmark", unique = true, dropDups = true)
+)
 public class Query extends MongoModel<Query> {
     private static final int DEFAULT_LIMIT = 100;
     private String bookmark;
@@ -14,13 +19,11 @@ public class Query extends MongoModel<Query> {
     private Integer limit;
     private Boolean readOnly;
     private Boolean showCount;
-    private Boolean explain;
     private Map<String, String> params;
 
     public Query() {
         readOnly = false;
         showCount = true;
-        explain = false;
         limit = DEFAULT_LIMIT;
     }
 
@@ -81,14 +84,6 @@ public class Query extends MongoModel<Query> {
         return value == null ? false : value;
     }
 
-    public Boolean getExplain() {
-        return explain;
-    }
-
-    public void setExplain(Boolean explain) {
-        this.explain = coerce(explain);
-    }
-
     public Map<String, String> getParams() {
         return params;
     }
@@ -120,6 +115,21 @@ public class Query extends MongoModel<Query> {
         int result = bookmark != null ? bookmark.hashCode() : 0;
         result = 31 * result + (queryString != null ? queryString.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("Query");
+        sb.append("{bookmark='").append(bookmark).append('\'');
+        sb.append(", database='").append(database).append('\'');
+        sb.append(", limit=").append(limit);
+        sb.append(", readOnly=").append(readOnly);
+        sb.append(", showCount=").append(showCount);
+        sb.append(", queryString='").append(queryString).append('\'');
+        sb.append(", params=").append(params);
+        sb.append('}');
+        return sb.toString();
     }
 
     public static QueryFinder finder() {
