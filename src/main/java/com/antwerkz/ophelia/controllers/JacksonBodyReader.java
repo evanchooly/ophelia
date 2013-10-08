@@ -28,33 +28,33 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 
-import com.antwerkz.ophelia.models.Query;
+import com.antwerkz.ophelia.models.MongoCommand;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 @Provider
 @Consumes(MediaType.APPLICATION_JSON)
-public class JacksonBodyReader implements MessageBodyReader<Query> {
-    private JacksonMapper mapper;
+public class JacksonBodyReader implements MessageBodyReader<MongoCommand> {
+  private JacksonMapper mapper;
 
-    public JacksonBodyReader() {
-        mapper = new JacksonMapper();
-        mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
-    }
+  public JacksonBodyReader() {
+    mapper = new JacksonMapper();
+    mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+  }
 
-    @Override
-    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return Query.class.equals(type);
-    }
+  @Override
+  public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+    return MongoCommand.class.equals(type);
+  }
 
-    @Override
-    public Query readFrom(Class<Query> type, Type genericType, Annotation[] annotations,
-        MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
-        throws IOException, WebApplicationException {
-        if (entityStream.available() > 0) {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(entityStream));
-            String content = reader.readLine();
-            return mapper.readValue(content, Query.class);
-        }
-        return null;
+  @Override
+  public MongoCommand readFrom(Class<MongoCommand> type, Type genericType, Annotation[] annotations,
+      MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
+      throws IOException, WebApplicationException {
+    if (entityStream.available() > 0) {
+      BufferedReader reader = new BufferedReader(new InputStreamReader(entityStream));
+      String content = reader.readLine();
+      return mapper.readValue(content, MongoCommand.class);
     }
+    return null;
+  }
 }

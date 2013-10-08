@@ -19,72 +19,78 @@ import java.util.List;
 import java.util.Map;
 
 import com.antwerkz.ophelia.models.ConnectionInfo;
-import com.antwerkz.ophelia.models.Query;
+import com.antwerkz.ophelia.models.MongoCommand;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class QueryResults {
-    public Map<String, Object> collections;
-    public List<Query> bookmarks;
-    public List<String> databaseList;
-    public List<Map> dbResults;
-    public String error;
-    public ConnectionInfo info;
-    private Long resultCount;
+  public Map<String, Object> collections;
 
-    public List<Query> getBookmarks() {
-        return bookmarks;
-    }
+  public List<MongoCommand> bookmarks;
 
-    public void setBookmarks(List<Query> bookmarks) {
-        this.bookmarks = bookmarks;
-    }
+  public List<String> databaseList;
 
-    public Map<String, Object> getCollections() {
-        return collections;
-    }
+  public List<Map> dbResults;
 
-    public void setCollections(Map<String, Object> collections) {
-        this.collections = collections;
-    }
+  public String error;
 
-    public List<String> getDatabaseList() {
-        return databaseList;
-    }
+  public ConnectionInfo info;
 
-    public void setDatabaseList(List<String> databaseList) {
-        this.databaseList = databaseList;
-    }
+  private Long resultCount;
 
-    public List<Map> getDbResults() {
-        return dbResults;
-    }
+  public List<MongoCommand> getBookmarks() {
+    return bookmarks;
+  }
 
-    public void setDbResults(List<Map> dbResults) {
-        this.dbResults = dbResults;
-    }
+  public void setBookmarks(List<MongoCommand> bookmarks) {
+    this.bookmarks = bookmarks;
+  }
 
-    public String getError() {
-        return error;
-    }
+  public Map<String, Object> getCollections() {
+    return collections;
+  }
 
-    public void setError(String error) {
-        this.error = error;
-    }
+  public void setCollections(Map<String, Object> collections) {
+    this.collections = collections;
+  }
 
-    public ConnectionInfo getInfo() {
-        return info;
-    }
+  public List<String> getDatabaseList() {
+    return databaseList;
+  }
 
-    public void setInfo(ConnectionInfo info) {
-        this.info = info;
-    }
+  public void setDatabaseList(List<String> databaseList) {
+    this.databaseList = databaseList;
+  }
 
-    public Long getResultCount() {
-        return resultCount;
-    }
+  public List<Map> getDbResults() {
+    return dbResults;
+  }
 
-    public void setResultCount(Long resultCount) {
-        this.resultCount = resultCount;
-    }
+  public void setDbResults(List<Map> dbResults) {
+    this.dbResults = dbResults;
+  }
+
+  public String getError() {
+    return error;
+  }
+
+  public void setError(String error) {
+    this.error = error;
+  }
+
+  public ConnectionInfo getInfo() {
+    return info;
+  }
+
+  public void setInfo(ConnectionInfo info) {
+    this.info = info;
+  }
+
+  public Long getResultCount() {
+    return resultCount;
+  }
+
+  public void setResultCount(Long resultCount) {
+    this.resultCount = resultCount;
+  }
 }

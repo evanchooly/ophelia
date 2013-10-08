@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.antwerkz.ophelia</groupId>
     <artifactId>ophelia</artifactId>
@@ -120,12 +121,12 @@
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongo-java-driver</artifactId>
-            <version>2.9.1</version>
+            <version>2.11.3</version>
         </dependency>
         <dependency>
-            <groupId>org.jongo</groupId>
-            <artifactId>jongo</artifactId>
-            <version>0.2</version>
+            <groupId>org.webjars</groupId>
+            <artifactId>less</artifactId>
+            <version>1.4.2</version>
         </dependency>
         <dependency>
             <groupId>org.twitter4j</groupId>
@@ -133,12 +134,12 @@
             <version>2.2.5</version>
         </dependency>
         <dependency>
-            <groupId>com.google.code.morphia</groupId>
+            <groupId>org.mongodb.morphia</groupId>
             <artifactId>morphia</artifactId>
             <version>${morphia.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.google.code.morphia</groupId>
+            <groupId>org.mongodb.morphia</groupId>
             <artifactId>morphia-logging-slf4j</artifactId>
             <version>${morphia.version}</version>
         </dependency>
@@ -177,7 +178,7 @@
         <dependency>
             <groupId>com.antwerkz.critter</groupId>
             <artifactId>critter</artifactId>
-            <version>1.0</version>
+            <version>1.2.1</version>
         </dependency>
         <dependency>
             <groupId>org.bsc.maven</groupId>
@@ -188,7 +189,7 @@
     <properties>
         <jersey.version>2.0-m09</jersey.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <morphia.version>0.99</morphia.version>
+        <morphia.version>0.105</morphia.version>
         <sofia.version>0.13</sofia.version>
     </properties>
 </project>

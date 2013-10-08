@@ -27,70 +27,72 @@ import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 
 import com.antwerkz.ophelia.models.ConnectionInfo;
-import com.google.code.morphia.Datastore;
-import com.google.code.morphia.Morphia;
 import com.mongodb.DB;
 import com.mongodb.Mongo;
+import com.mongodb.MongoClient;
+import org.mongodb.morphia.Datastore;
+import org.mongodb.morphia.Morphia;
 
 @WebFilter("/ophelia/*")
 public class MongOphelia implements Filter {
-    private static ThreadLocal<Mongo> pool = new ThreadLocal<>();
-    private static Morphia morphia = new Morphia();
+  private static ThreadLocal<Mongo> pool = new ThreadLocal<>();
 
-    @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-        morphia.mapPackage(ConnectionInfo.class.getPackage().getName());
-        get().ensureIndexes();
-    }
+  private static Morphia morphia = new Morphia();
 
-    @Override
-    public void destroy() {
-    }
+  @Override
+  public void init(FilterConfig filterConfig) throws ServletException {
+    morphia.mapPackage(ConnectionInfo.class.getPackage().getName());
+    get().ensureIndexes();
+  }
 
-    @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-        throws IOException, ServletException {
-        chain.doFilter(request, response);
-        if (pool.get() != null) {
-            pool.get().close();
-            pool.set(null);
-        }
-    }
+  @Override
+  public void destroy() {
+  }
 
-    public static Datastore get() {
-        return get("ophelia");
+  @Override
+  public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+      throws IOException, ServletException {
+    chain.doFilter(request, response);
+    if (pool.get() != null) {
+      pool.get().close();
+      pool.set(null);
     }
+  }
 
-    public static Datastore get(String database) {
-        return morphia.createDatastore(getMongo(), database);
-    }
+  public static Datastore get() {
+    return get("ophelia");
+  }
 
-    public static Mongo getMongo() {
-        Mongo mongo = pool.get();
-        if (mongo == null) {
-            try {
-                mongo = new Mongo();
-            } catch (UnknownHostException e) {
-                throw new RuntimeException(e.getMessage(), e);
-            }
-            pool.set(mongo);
-        }
-        return mongo;
-    }
+  public static Datastore get(String database) {
+    return morphia.createDatastore(getMongo(), database);
+  }
 
-    public static List<String> getDatabaseNames() {
-        return get().getDB().getMongo().getDatabaseNames();
+  public static Mongo getMongo() {
+    Mongo mongo = pool.get();
+    if (mongo == null) {
+      try {
+        mongo = new MongoClient();
+      } catch (UnknownHostException e) {
+        throw new RuntimeException(e.getMessage(), e);
+      }
+      pool.set(mongo);
     }
+    return mongo;
+  }
 
-    public static void close() {
-        Mongo mongo = pool.get();
-        if (mongo != null) {
-            mongo.close();
-            pool.remove();
-        }
-    }
+  public static List<String> getDatabaseNames() {
+    return get().getDB().getMongo().getDatabaseNames();
+  }
 
-    public static DB getDB() {
-        return get().getDB();
+  public static void close() {
+    Mongo mongo = pool.get();
+    if (mongo != null) {
+      mongo.close();
+      pool.remove();
     }
+  }
+
+  public static DB getDB() {
+    return get().getDB();
+  }
 }
