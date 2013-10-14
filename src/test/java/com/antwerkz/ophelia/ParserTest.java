@@ -17,16 +17,22 @@ package com.antwerkz.ophelia;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import com.antwerkz.ophelia.controllers.JacksonMapper;
 import com.antwerkz.ophelia.controllers.Parser;
 import com.antwerkz.ophelia.models.MongoCommand;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
+import org.bson.types.ObjectId;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -128,5 +134,28 @@ public class ParserTest {
     ObjectNode node = (ObjectNode) mapper.readTree(json);
     MongoCommand mongoCommand = mapper.convertValue(node, MongoCommand.class);
     Assert.assertTrue(mongoCommand.getShowCount());
+  }
+
+  @Test
+  public void limits() throws IOException {
+    DBCollection collection = db.getCollection("limits");
+    collection.drop();
+    List<DBObject> list = new ArrayList<>();
+    for (int x = 0; x < 100; x++) {
+      BasicDBObject objects = new BasicDBObject();
+      objects.put("_id", new ObjectId());
+      objects.put("bobby", "mcgee");
+      objects.put("count", x);
+      list.add(objects);
+    }
+    collection.insert(list);
+    MongoCommand mongoCommand = new MongoCommand(
+        "db.limits.find({ \"bobby\" : { $ne : \"george\" }}).sort({\"count\" : -1})");
+    mongoCommand.setLimit(5);
+    Assert.assertEquals(new Parser(mongoCommand).execute(db).size(), 5);
+    mongoCommand.setLimit(6000);
+    Assert.assertEquals(new Parser(mongoCommand).execute(db).size(), MongoCommand.DEFAULT_LIMIT);
+    Assert.assertEquals(new Parser(new MongoCommand("db.limits.find({ \"bobby\" : { $ne : \"george\" }})"
+        + ".sort({\"count\" : -1}).limit(10)")).execute(db).size(), 10);
   }
 }

@@ -22,7 +22,6 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +29,7 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import com.antwerkz.ophelia.models.MongoCommand;
+import static com.antwerkz.ophelia.models.MongoCommand.DEFAULT_LIMIT;
 import com.antwerkz.sofia.Ophelia;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
@@ -197,7 +197,6 @@ public class Parser {
 
   public List<Map> execute(DB db) {
     if (db != null) {
-      Object eval = db.eval(mongoCommand.getQueryString());
       DBCollection collection = db.getCollection(getCollection());
       switch (method) {
         case "drop":
@@ -206,7 +205,7 @@ public class Parser {
         case "insert":
           return insert(collection);
         case "find":
-          return find(collection);
+          return find(db, collection);
         case "remove":
           return remove(collection);
         case "count":
@@ -246,24 +245,37 @@ public class Parser {
     return Arrays.<Map>asList(count);
   }
 
-  private List<Map> find(DBCollection collection) {
-    DBCursor dbObjects = collection.find(getQueryExpression(), keys);
-    return extract((DBCursor) dbObjects.iterator());
+  private List<Map> find(final DB db, DBCollection collection) {
+    DBObject eval = (DBObject) db.eval(mongoCommand.getQueryString());
+    DBCursor query = collection.find(
+        (DBObject) extract(eval, "_query", "query"),
+        (DBObject) eval.get("_fields"));
+    query.sort((DBObject) extract(eval, "_query", "orderby"));
+    query.batchSize(((Double) eval.get("_batchSize")).intValue());
+    int limit = ((Double) eval.get("_limit")).intValue();
+    if (limit == 0) {
+      limit = mongoCommand.getLimit();
+    }
+    query.limit(limit == 0 ? DEFAULT_LIMIT : Math.min(limit, DEFAULT_LIMIT));
+    query.skip(((Double) eval.get("_skip")).intValue());
+    return extract((DBCursor) query.iterator());
+  }
+
+  private Object extract(final DBObject eval, final String first, final String second) {
+    return ((DBObject) eval.get(first)).get(second);
   }
 
   private List<Map> extract(DBCursor execute) {
-    if (limit != null) {
-      execute.skip(0).batchSize(limit);
-    }
-    Iterator<DBObject> iterator = execute.iterator();
     List<Map> list = new ArrayList<>();
-    while (iterator.hasNext()) {
-      list.add(iterator.next().toMap());
-    }
-    if (list.isEmpty()) {
-      Map<String, String> map = new TreeMap<>();
-      map.put("message", Ophelia.noResults());
-      list.add(map);
+    try (DBCursor cursor = execute) {
+      for (final DBObject dbObject : cursor) {
+        list.add(dbObject.toMap());
+      }
+      if (list.isEmpty()) {
+        Map<String, String> map = new TreeMap<>();
+        map.put("message", Ophelia.noResults());
+        list.add(map);
+      }
     }
     return list;
   }

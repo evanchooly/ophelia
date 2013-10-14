@@ -1,104 +1,91 @@
 package com.antwerkz.ophelia.models.criteria;
 
-import java.util.List;
-
-import com.antwerkz.critter.TypeSafeFieldEnd;
-import com.antwerkz.critter.criteria.BaseCriteria;
 import com.antwerkz.ophelia.models.MongoCommand;
-import com.mongodb.WriteConcern;
-import org.mongodb.morphia.Datastore;
-import org.mongodb.morphia.query.UpdateOperations;
-import org.mongodb.morphia.query.UpdateResults;
 
-public class MongoCommandCriteria extends BaseCriteria<MongoCommand> {
+public class MongoCommandCriteria extends com.antwerkz.critter.criteria.BaseCriteria<MongoCommand> {
   private String prefix = "";
 
-  public MongoCommandCriteria(Datastore ds) {
+  public MongoCommandCriteria(org.mongodb.morphia.Datastore ds) {
     super(ds, MongoCommand.class);
   }
 
-  public TypeSafeFieldEnd<MongoCommandCriteria, MongoCommand, org.bson.types.ObjectId> _id() {
-    return new TypeSafeFieldEnd<MongoCommandCriteria, MongoCommand, org.bson.types.ObjectId>(this, query,
-        prefix + "_id");
+  public com.antwerkz.critter.TypeSafeFieldEnd<MongoCommandCriteria, MongoCommand, org.bson.types.ObjectId> _id() {
+    return new com.antwerkz.critter.TypeSafeFieldEnd<>(this, query, prefix + "_id");
   }
 
   public MongoCommandCriteria _id(org.bson.types.ObjectId value) {
-    new TypeSafeFieldEnd<MongoCommandCriteria, MongoCommand, org.bson.types.ObjectId>(this, query, prefix + "_id")
-        .equal(value);
+    new com.antwerkz.critter.TypeSafeFieldEnd<MongoCommandCriteria, MongoCommand, org.bson.types.ObjectId>(this, query,
+        prefix + "_id").equal(value);
     return this;
   }
 
-  public TypeSafeFieldEnd<MongoCommandCriteria, MongoCommand, java.lang.String> bookmark() {
-    return new TypeSafeFieldEnd<MongoCommandCriteria, MongoCommand, java.lang.String>(this, query, prefix + "bookmark");
+  public com.antwerkz.critter.TypeSafeFieldEnd<MongoCommandCriteria, MongoCommand, java.lang.String> bookmark() {
+    return new com.antwerkz.critter.TypeSafeFieldEnd<>(this, query, prefix + "bookmark");
   }
 
   public MongoCommandCriteria bookmark(java.lang.String value) {
-    new TypeSafeFieldEnd<MongoCommandCriteria, MongoCommand, java.lang.String>(this, query, prefix + "bookmark")
-        .equal(value);
+    new com.antwerkz.critter.TypeSafeFieldEnd<MongoCommandCriteria, MongoCommand, java.lang.String>(this, query,
+        prefix + "bookmark").equal(value);
     return this;
   }
 
-  public TypeSafeFieldEnd<MongoCommandCriteria, MongoCommand, java.lang.String> database() {
-    return new TypeSafeFieldEnd<MongoCommandCriteria, MongoCommand, java.lang.String>(this, query, prefix + "database");
+  public com.antwerkz.critter.TypeSafeFieldEnd<MongoCommandCriteria, MongoCommand, java.lang.String> database() {
+    return new com.antwerkz.critter.TypeSafeFieldEnd<>(this, query, prefix + "database");
   }
 
   public MongoCommandCriteria database(java.lang.String value) {
-    new TypeSafeFieldEnd<MongoCommandCriteria, MongoCommand, java.lang.String>(this, query, prefix + "database")
-        .equal(value);
+    new com.antwerkz.critter.TypeSafeFieldEnd<MongoCommandCriteria, MongoCommand, java.lang.String>(this, query,
+        prefix + "database").equal(value);
     return this;
   }
 
-  public TypeSafeFieldEnd<MongoCommandCriteria, MongoCommand, java.lang.Integer> limit() {
-    return new TypeSafeFieldEnd<MongoCommandCriteria, MongoCommand, java.lang.Integer>(this, query, prefix + "limit");
+  public com.antwerkz.critter.TypeSafeFieldEnd<MongoCommandCriteria, MongoCommand, java.lang.Integer> limit() {
+    return new com.antwerkz.critter.TypeSafeFieldEnd<>(this, query, prefix + "limit");
   }
 
   public MongoCommandCriteria limit(java.lang.Integer value) {
-    new TypeSafeFieldEnd<MongoCommandCriteria, MongoCommand, java.lang.Integer>(this, query, prefix + "limit")
-        .equal(value);
+    new com.antwerkz.critter.TypeSafeFieldEnd<MongoCommandCriteria, MongoCommand, java.lang.Integer>(this, query,
+        prefix + "limit").equal(value);
     return this;
   }
 
-  public TypeSafeFieldEnd<MongoCommandCriteria, MongoCommand, java.util.Map<java.lang.String, java.lang.String>> params() {
-    return new TypeSafeFieldEnd<MongoCommandCriteria, MongoCommand, java.util.Map<java.lang.String, java.lang.String>>(
-        this, query, prefix + "params");
+  public com.antwerkz.critter.TypeSafeFieldEnd<MongoCommandCriteria, MongoCommand, java.util.Map<java.lang.String, java.lang.String>> params() {
+    return new com.antwerkz.critter.TypeSafeFieldEnd<>(this, query, prefix + "params");
   }
 
   public MongoCommandCriteria params(java.util.Map<java.lang.String, java.lang.String> value) {
-    new TypeSafeFieldEnd<MongoCommandCriteria, MongoCommand, java.util.Map<java.lang.String, java.lang.String>>(this,
-        query, prefix + "params").equal(value);
+    new com.antwerkz.critter.TypeSafeFieldEnd<MongoCommandCriteria, MongoCommand, java.util.Map<java.lang.String, java.lang.String>>(
+        this, query, prefix + "params").equal(value);
     return this;
   }
 
-  public TypeSafeFieldEnd<MongoCommandCriteria, MongoCommand, java.lang.String> queryString() {
-    return new TypeSafeFieldEnd<MongoCommandCriteria, MongoCommand, java.lang.String>(this, query,
-        prefix + "queryString");
+  public com.antwerkz.critter.TypeSafeFieldEnd<MongoCommandCriteria, MongoCommand, java.lang.String> queryString() {
+    return new com.antwerkz.critter.TypeSafeFieldEnd<>(this, query, prefix + "queryString");
   }
 
   public MongoCommandCriteria queryString(java.lang.String value) {
-    new TypeSafeFieldEnd<MongoCommandCriteria, MongoCommand, java.lang.String>(this, query, prefix + "queryString")
-        .equal(value);
+    new com.antwerkz.critter.TypeSafeFieldEnd<MongoCommandCriteria, MongoCommand, java.lang.String>(this, query,
+        prefix + "queryString").equal(value);
     return this;
   }
 
-  public TypeSafeFieldEnd<MongoCommandCriteria, MongoCommand, java.lang.Boolean> readOnly() {
-    return new TypeSafeFieldEnd<MongoCommandCriteria, MongoCommand, java.lang.Boolean>(this, query,
-        prefix + "readOnly");
+  public com.antwerkz.critter.TypeSafeFieldEnd<MongoCommandCriteria, MongoCommand, java.lang.Boolean> readOnly() {
+    return new com.antwerkz.critter.TypeSafeFieldEnd<>(this, query, prefix + "readOnly");
   }
 
   public MongoCommandCriteria readOnly(java.lang.Boolean value) {
-    new TypeSafeFieldEnd<MongoCommandCriteria, MongoCommand, java.lang.Boolean>(this, query, prefix + "readOnly")
-        .equal(value);
+    new com.antwerkz.critter.TypeSafeFieldEnd<MongoCommandCriteria, MongoCommand, java.lang.Boolean>(this, query,
+        prefix + "readOnly").equal(value);
     return this;
   }
 
-  public TypeSafeFieldEnd<MongoCommandCriteria, MongoCommand, java.lang.Boolean> showCount() {
-    return new TypeSafeFieldEnd<MongoCommandCriteria, MongoCommand, java.lang.Boolean>(this, query,
-        prefix + "showCount");
+  public com.antwerkz.critter.TypeSafeFieldEnd<MongoCommandCriteria, MongoCommand, java.lang.Boolean> showCount() {
+    return new com.antwerkz.critter.TypeSafeFieldEnd<>(this, query, prefix + "showCount");
   }
 
   public MongoCommandCriteria showCount(java.lang.Boolean value) {
-    new TypeSafeFieldEnd<MongoCommandCriteria, MongoCommand, java.lang.Boolean>(this, query, prefix + "showCount")
-        .equal(value);
+    new com.antwerkz.critter.TypeSafeFieldEnd<MongoCommandCriteria, MongoCommand, java.lang.Boolean>(this, query,
+        prefix + "showCount").equal(value);
     return this;
   }
 
@@ -107,25 +94,25 @@ public class MongoCommandCriteria extends BaseCriteria<MongoCommand> {
   }
 
   public class MongoCommandUpdater {
-    UpdateOperations<MongoCommand> updateOperations;
+    org.mongodb.morphia.query.UpdateOperations<MongoCommand> updateOperations;
 
     public MongoCommandUpdater() {
       updateOperations = ds.createUpdateOperations(MongoCommand.class);
     }
 
-    public UpdateResults<MongoCommand> update() {
+    public org.mongodb.morphia.query.UpdateResults<MongoCommand> update() {
       return ds.update(query(), updateOperations, false);
     }
 
-    public UpdateResults<MongoCommand> update(WriteConcern wc) {
+    public org.mongodb.morphia.query.UpdateResults<MongoCommand> update(com.mongodb.WriteConcern wc) {
       return ds.update(query(), updateOperations, false, wc);
     }
 
-    public UpdateResults<MongoCommand> upsert() {
+    public org.mongodb.morphia.query.UpdateResults<MongoCommand> upsert() {
       return ds.update(query(), updateOperations, true);
     }
 
-    public UpdateResults<MongoCommand> upsert(WriteConcern wc) {
+    public org.mongodb.morphia.query.UpdateResults<MongoCommand> upsert(com.mongodb.WriteConcern wc) {
       return ds.update(query(), updateOperations, true, wc);
     }
 
@@ -149,7 +136,7 @@ public class MongoCommandCriteria extends BaseCriteria<MongoCommand> {
       return this;
     }
 
-    public MongoCommandUpdater addAllTo_id(List<org.bson.types.ObjectId> values, boolean addDups) {
+    public MongoCommandUpdater addAllTo_id(java.util.List<org.bson.types.ObjectId> values, boolean addDups) {
       updateOperations.addAll("_id", values, addDups);
       return this;
     }
@@ -169,7 +156,7 @@ public class MongoCommandCriteria extends BaseCriteria<MongoCommand> {
       return this;
     }
 
-    public MongoCommandUpdater removeAllFrom_id(List<org.bson.types.ObjectId> values) {
+    public MongoCommandUpdater removeAllFrom_id(java.util.List<org.bson.types.ObjectId> values) {
       updateOperations.removeAll("_id", values);
       return this;
     }
@@ -209,7 +196,7 @@ public class MongoCommandCriteria extends BaseCriteria<MongoCommand> {
       return this;
     }
 
-    public MongoCommandUpdater addAllToBookmark(List<java.lang.String> values, boolean addDups) {
+    public MongoCommandUpdater addAllToBookmark(java.util.List<java.lang.String> values, boolean addDups) {
       updateOperations.addAll("bookmark", values, addDups);
       return this;
     }
@@ -229,7 +216,7 @@ public class MongoCommandCriteria extends BaseCriteria<MongoCommand> {
       return this;
     }
 
-    public MongoCommandUpdater removeAllFromBookmark(List<java.lang.String> values) {
+    public MongoCommandUpdater removeAllFromBookmark(java.util.List<java.lang.String> values) {
       updateOperations.removeAll("bookmark", values);
       return this;
     }
@@ -269,7 +256,7 @@ public class MongoCommandCriteria extends BaseCriteria<MongoCommand> {
       return this;
     }
 
-    public MongoCommandUpdater addAllToDatabase(List<java.lang.String> values, boolean addDups) {
+    public MongoCommandUpdater addAllToDatabase(java.util.List<java.lang.String> values, boolean addDups) {
       updateOperations.addAll("database", values, addDups);
       return this;
     }
@@ -289,7 +276,7 @@ public class MongoCommandCriteria extends BaseCriteria<MongoCommand> {
       return this;
     }
 
-    public MongoCommandUpdater removeAllFromDatabase(List<java.lang.String> values) {
+    public MongoCommandUpdater removeAllFromDatabase(java.util.List<java.lang.String> values) {
       updateOperations.removeAll("database", values);
       return this;
     }
@@ -329,7 +316,7 @@ public class MongoCommandCriteria extends BaseCriteria<MongoCommand> {
       return this;
     }
 
-    public MongoCommandUpdater addAllToLimit(List<java.lang.Integer> values, boolean addDups) {
+    public MongoCommandUpdater addAllToLimit(java.util.List<java.lang.Integer> values, boolean addDups) {
       updateOperations.addAll("limit", values, addDups);
       return this;
     }
@@ -349,7 +336,7 @@ public class MongoCommandCriteria extends BaseCriteria<MongoCommand> {
       return this;
     }
 
-    public MongoCommandUpdater removeAllFromLimit(List<java.lang.Integer> values) {
+    public MongoCommandUpdater removeAllFromLimit(java.util.List<java.lang.Integer> values) {
       updateOperations.removeAll("limit", values);
       return this;
     }
@@ -389,7 +376,7 @@ public class MongoCommandCriteria extends BaseCriteria<MongoCommand> {
       return this;
     }
 
-    public MongoCommandUpdater addAllToParams(List<java.util.Map<java.lang.String, java.lang.String>> values,
+    public MongoCommandUpdater addAllToParams(java.util.List<java.util.Map<java.lang.String, java.lang.String>> values,
         boolean addDups) {
       updateOperations.addAll("params", values, addDups);
       return this;
@@ -410,7 +397,8 @@ public class MongoCommandCriteria extends BaseCriteria<MongoCommand> {
       return this;
     }
 
-    public MongoCommandUpdater removeAllFromParams(List<java.util.Map<java.lang.String, java.lang.String>> values) {
+    public MongoCommandUpdater removeAllFromParams(
+        java.util.List<java.util.Map<java.lang.String, java.lang.String>> values) {
       updateOperations.removeAll("params", values);
       return this;
     }
@@ -450,7 +438,7 @@ public class MongoCommandCriteria extends BaseCriteria<MongoCommand> {
       return this;
     }
 
-    public MongoCommandUpdater addAllToQueryString(List<java.lang.String> values, boolean addDups) {
+    public MongoCommandUpdater addAllToQueryString(java.util.List<java.lang.String> values, boolean addDups) {
       updateOperations.addAll("queryString", values, addDups);
       return this;
     }
@@ -470,7 +458,7 @@ public class MongoCommandCriteria extends BaseCriteria<MongoCommand> {
       return this;
     }
 
-    public MongoCommandUpdater removeAllFromQueryString(List<java.lang.String> values) {
+    public MongoCommandUpdater removeAllFromQueryString(java.util.List<java.lang.String> values) {
       updateOperations.removeAll("queryString", values);
       return this;
     }
@@ -510,7 +498,7 @@ public class MongoCommandCriteria extends BaseCriteria<MongoCommand> {
       return this;
     }
 
-    public MongoCommandUpdater addAllToReadOnly(List<java.lang.Boolean> values, boolean addDups) {
+    public MongoCommandUpdater addAllToReadOnly(java.util.List<java.lang.Boolean> values, boolean addDups) {
       updateOperations.addAll("readOnly", values, addDups);
       return this;
     }
@@ -530,7 +518,7 @@ public class MongoCommandCriteria extends BaseCriteria<MongoCommand> {
       return this;
     }
 
-    public MongoCommandUpdater removeAllFromReadOnly(List<java.lang.Boolean> values) {
+    public MongoCommandUpdater removeAllFromReadOnly(java.util.List<java.lang.Boolean> values) {
       updateOperations.removeAll("readOnly", values);
       return this;
     }
@@ -570,7 +558,7 @@ public class MongoCommandCriteria extends BaseCriteria<MongoCommand> {
       return this;
     }
 
-    public MongoCommandUpdater addAllToShowCount(List<java.lang.Boolean> values, boolean addDups) {
+    public MongoCommandUpdater addAllToShowCount(java.util.List<java.lang.Boolean> values, boolean addDups) {
       updateOperations.addAll("showCount", values, addDups);
       return this;
     }
@@ -590,7 +578,7 @@ public class MongoCommandCriteria extends BaseCriteria<MongoCommand> {
       return this;
     }
 
-    public MongoCommandUpdater removeAllFromShowCount(List<java.lang.Boolean> values) {
+    public MongoCommandUpdater removeAllFromShowCount(java.util.List<java.lang.Boolean> values) {
       updateOperations.removeAll("showCount", values);
       return this;
     }

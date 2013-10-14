@@ -27,7 +27,7 @@ import org.mongodb.morphia.annotations.Indexes;
     @Index(name = "names", value = "database, bookmark", unique = true, dropDups = true)
 )
 public class MongoCommand extends MongoModel<MongoCommand> {
-  private static final int DEFAULT_LIMIT = 100;
+  public static final int DEFAULT_LIMIT = 100;
 
   private String bookmark;
 
