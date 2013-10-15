@@ -16,6 +16,7 @@
 package com.antwerkz.ophelia.models;
 
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.antwerkz.ophelia.dao.MongoModel;
 import org.mongodb.morphia.annotations.Entity;
@@ -33,7 +34,7 @@ public class MongoCommand extends MongoModel<MongoCommand> {
 
   private String database;
 
-  private String queryString;
+  private String value;
 
   private Integer limit;
 
@@ -49,9 +50,9 @@ public class MongoCommand extends MongoModel<MongoCommand> {
     limit = DEFAULT_LIMIT;
   }
 
-  public MongoCommand(String queryString) {
+  public MongoCommand(String value) {
     this();
-    this.queryString = queryString;
+    this.value = value;
   }
 
   public String getBookmark() {
@@ -70,12 +71,12 @@ public class MongoCommand extends MongoModel<MongoCommand> {
     this.database = database;
   }
 
-  public String getQueryString() {
-    return queryString;
+  public String getValue() {
+    return value;
   }
 
-  public void setQueryString(String queryString) {
-    this.queryString = queryString;
+  public void setValue(String value) {
+    this.value = value;
   }
 
   public Integer getLimit() {
@@ -114,6 +115,16 @@ public class MongoCommand extends MongoModel<MongoCommand> {
     this.params = params;
   }
 
+  public String expand() {
+    String expanded = value;
+    if (params != null) {
+      for (Entry<String, String> entry : params.entrySet()) {
+        expanded = expanded.replaceAll("\\{\\{" + entry.getKey() + "\\}\\}", entry.getValue());
+      }
+    }
+    return expanded.replace("\n", "");
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -126,7 +137,7 @@ public class MongoCommand extends MongoModel<MongoCommand> {
     if (bookmark != null ? !bookmark.equals(mongoCommand.bookmark) : mongoCommand.bookmark != null) {
       return false;
     }
-    if (queryString != null ? !queryString.equals(mongoCommand.queryString) : mongoCommand.queryString != null) {
+    if (value != null ? !value.equals(mongoCommand.value) : mongoCommand.value != null) {
       return false;
     }
     return true;
@@ -135,7 +146,7 @@ public class MongoCommand extends MongoModel<MongoCommand> {
   @Override
   public int hashCode() {
     int result = bookmark != null ? bookmark.hashCode() : 0;
-    result = 31 * result + (queryString != null ? queryString.hashCode() : 0);
+    result = 31 * result + (value != null ? value.hashCode() : 0);
     return result;
   }
 
@@ -148,7 +159,7 @@ public class MongoCommand extends MongoModel<MongoCommand> {
     sb.append(", limit=").append(limit);
     sb.append(", readOnly=").append(readOnly);
     sb.append(", showCount=").append(showCount);
-    sb.append(", queryString='").append(queryString).append('\'');
+    sb.append(", queryString='").append(value).append('\'');
     sb.append(", params=").append(params);
     sb.append('}');
     return sb.toString();

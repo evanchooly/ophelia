@@ -75,7 +75,7 @@ public class Parser {
 
   public Parser(MongoCommand mongoCommand) throws IOException {
     this.mongoCommand = mongoCommand;
-    this.queryString = scrub(mongoCommand.getQueryString());
+    this.queryString = scrub(mongoCommand.getValue());
 //    mongo.getDB("local").doEval(JS_SCRIPT);
 //    String code = query.getQueryString() + ".returnState()";
 //    CommandResult result = mongo.getDB("local").doEval(code);
@@ -246,7 +246,8 @@ public class Parser {
   }
 
   private List<Map> find(final DB db, DBCollection collection) {
-    DBObject eval = (DBObject) db.eval(mongoCommand.getQueryString());
+    String expand = mongoCommand.expand();
+    DBObject eval = (DBObject) db.eval(expand);
     DBCursor query = collection.find(
         (DBObject) extract(eval, "_query", "query"),
         (DBObject) eval.get("_fields"));
