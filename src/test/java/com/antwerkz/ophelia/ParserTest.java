@@ -46,6 +46,7 @@ public class ParserTest {
 
   @Test
   public void insert() throws IOException {
+    db.getCollection("UnitTest").drop();
     Parser parser = new Parser(new MongoCommand("db.UnitTest.insert({"
         + "\"name\" : \"MongoDB\","
         + "\"type\" : \"database\","
@@ -58,20 +59,33 @@ public class ParserTest {
     Assert.assertTrue(iterator.hasNext());
     Map map = iterator.next();
     Assert.assertEquals(map.get("type"), "database");
-    Assert.assertEquals(((Map) map.get("info")).get("y"), 102.0);
+    Assert.assertEquals(((Map) map.get("info")).get("y"), 102);
     parser.getMapper().writer().writeValueAsString(map);
   }
 
   @Test
-  public void parameters() throws IOException {
-    Parser parser = new Parser(new MongoCommand("db.users.find({}, {thumbnail:0});")
-    );
-    parser.execute(db);
+  public void fields() throws IOException {
+    DBCollection collection = db.getCollection("fields");
+    collection.drop();
+    List<DBObject> list = new ArrayList<>();
+    for (int x = 0; x < 10; x++) {
+      BasicDBObject objects = new BasicDBObject();
+      objects.put("_id", new ObjectId());
+      objects.put("bobby", "mcgee");
+      objects.put("count", x);
+      list.add(objects);
+    }
+    collection.insert(list);
+    Parser parser = new Parser(new MongoCommand("db.users.find({}, {count:0});"));
+    List<Map> results = parser.execute(db);
+    for (Map result : results) {
+      Assert.assertNull(result.get("count"));
+    }
   }
 
   @Test
   public void emptyFind() throws IOException {
-    Parser parser = new Parser(new MongoCommand("db.Collection.find()"));
+    Parser parser = new Parser(new MongoCommand("db.collection.find()"));
     parser.execute(db);
   }
 
