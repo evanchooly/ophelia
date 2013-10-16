@@ -69,16 +69,10 @@ public class Parser {
   private MongoClient mongo;
 
   private MongoCommand mongoCommand;
-//  public Parser(MongoClient mongo) {
-//    this.mongo = mongo;
-//  }
 
   public Parser(MongoCommand mongoCommand) throws IOException {
     this.mongoCommand = mongoCommand;
-    this.queryString = scrub(mongoCommand.getValue());
-//    mongo.getDB("local").doEval(JS_SCRIPT);
-//    String code = query.getQueryString() + ".returnState()";
-//    CommandResult result = mongo.getDB("local").doEval(code);
+    this.queryString = scrub(mongoCommand.expand());
     if (this.queryString.endsWith(";")) {
       queryString = queryString.substring(0, queryString.length() - 1);
     }

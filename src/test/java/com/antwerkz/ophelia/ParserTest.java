@@ -33,11 +33,14 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import org.bson.types.ObjectId;
+import org.joda.time.DateTime;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 @Test
 public class ParserTest {
+  private static final String DATE_PATTERN = "yyyy-MM-dd hh:mm:ss";
+
   private DB db;
 
   public ParserTest() throws UnknownHostException {
@@ -47,18 +50,25 @@ public class ParserTest {
   @Test
   public void insert() throws IOException {
     db.getCollection("UnitTest").drop();
-    Parser parser = new Parser(new MongoCommand("db.UnitTest.insert({"
+    MongoCommand command = new MongoCommand("db.UnitTest.insert({"
         + "\"name\" : \"MongoDB\","
         + "\"type\" : \"database\","
         + "\"count\" : 1,"
+        + "\"date\" : \"{{now}}\","
         + "\"info\" : {\"x\" : 203,"
-        + "\"y\" : 102}})"));
+        + "\"y\" : 102}})");
+    final Map<String, String> params = new HashMap<>();
+    String date = DateTime.now().toString(DATE_PATTERN);
+    params.put("now", date);
+    command.setParams(params);
+    Parser parser = new Parser(command);
     parser.execute(db);
     parser = new Parser(new MongoCommand("db.UnitTest.find( { type : \"database\" } )"));
-    Iterator<Map> iterator = parser.execute(db).iterator();
-    Assert.assertTrue(iterator.hasNext());
+    List<Map> execute = parser.execute(db);
+    Iterator<Map> iterator = execute.iterator();
     Map map = iterator.next();
     Assert.assertEquals(map.get("type"), "database");
+    Assert.assertEquals(map.get("date"), date);
     Assert.assertEquals(((Map) map.get("info")).get("y"), 102);
     parser.getMapper().writer().writeValueAsString(map);
   }
