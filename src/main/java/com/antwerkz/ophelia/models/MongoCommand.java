@@ -15,10 +15,23 @@
  */
 package com.antwerkz.ophelia.models;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
+import com.antwerkz.ophelia.controllers.InvalidQueryException;
 import com.antwerkz.ophelia.dao.MongoModel;
+import com.antwerkz.ophelia.utils.Parser;
+import com.antwerkz.sofia.Ophelia;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
+import com.mongodb.WriteResult;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Index;
 import org.mongodb.morphia.annotations.Indexes;
@@ -30,11 +43,13 @@ import org.mongodb.morphia.annotations.Indexes;
 public class MongoCommand extends MongoModel<MongoCommand> {
   public static final int DEFAULT_LIMIT = 100;
 
+  private String expanded;
+
   private String bookmark;
 
   private String database;
 
-  private String value;
+  private String raw;
 
   private Integer limit;
 
@@ -44,15 +59,134 @@ public class MongoCommand extends MongoModel<MongoCommand> {
 
   private Map<String, String> params;
 
+  private String method;
+
+  private String collection;
+
+  private String mode;
+
   public MongoCommand() {
     readOnly = false;
     showCount = true;
     limit = DEFAULT_LIMIT;
   }
 
-  public MongoCommand(String value) {
+  public MongoCommand(String raw) {
+    this(raw, new HashMap<String, String>());
+  }
+
+  public MongoCommand(String raw, final Map<String, String> params) {
     this();
-    this.value = value;
+    this.raw = raw;
+    this.expanded = expand();
+    this.params = params;
+    extractMetaData();
+  }
+
+  private void extractMetaData() {
+    String preface = expanded.substring(0, expanded.indexOf('('));
+    method = preface.substring(preface.lastIndexOf('.') + 1);
+    collection = preface.substring(preface.indexOf('.') + 1, preface.lastIndexOf('.'));
+    mode = preface.substring(0, preface.indexOf('.'));
+  }
+
+  public List<Map> execute(DB db) {
+    if (db != null) {
+      DBCollection dbCollection = db.getCollection(collection);
+      switch (method) {
+        case "drop":
+          dbCollection.drop();
+          return null;
+        case "insert":
+          return insert(db, dbCollection);
+        case "find":
+          return find(db);
+        case "remove":
+          return remove(dbCollection);
+        case "count":
+          return count(dbCollection);
+        default:
+          throw new InvalidQueryException(Ophelia.unknownQueryMethod(method));
+      }
+    }
+    return null;
+  }
+
+  private List<Map> insert(final DB db, DBCollection collection) {
+    DBCursor dbObjects = reconstructQuery(db);
+    Parser parser = new Parser(this);
+    WriteResult insert = collection.insert(parser.getQueryExpression());
+    String error = insert.getError();
+    if (error != null) {
+      throw new IllegalArgumentException(error);
+    }
+    return wrap(insert.getN());
+  }
+
+  private List<Map> wrap(int number) {
+    Map<String, Number> count = new TreeMap<>();
+    count.put("count", number);
+    return Arrays.<Map>asList(count);
+  }
+
+  private List<Map> find(final DB db) {
+    return extract((DBCursor) reconstructQuery(db).iterator());
+  }
+
+  private List<Map> remove(DBCollection collection) {
+    Parser parser = new Parser(this);
+    WriteResult remove = collection.remove(parser.getQueryExpression());
+    String error = remove.getError();
+    if (error != null) {
+      throw new IllegalArgumentException(error);
+    }
+    return wrap(remove.getN());
+  }
+
+  @SuppressWarnings("unchecked")
+  private List<Map> count(final DBCollection collection) {
+    Map map = new HashMap();
+    map.put(Ophelia.count(), collection.count(null));
+    return Arrays.asList(map);
+  }
+
+  private Object extract(final DBObject eval, final String first, final String second) {
+    return ((DBObject) eval.get(first)).get(second);
+  }
+
+  public List<Map> explain(DB db) {
+    return Arrays.asList(reconstructQuery(db).explain().toMap());
+  }
+
+  private DBCursor reconstructQuery(final DB db) {
+    DBObject eval = (DBObject) db.eval(expanded.replace(method, "find"));
+    DBCursor query = db.getCollection(collection).find(
+        (DBObject) extract(eval, "_query", "query"),
+        (DBObject) eval.get("_fields"));
+    query.sort((DBObject) extract(eval, "_query", "orderby"));
+    query.batchSize(((Double) eval.get("_batchSize")).intValue());
+    int limit = ((Double) eval.get("_limit")).intValue();
+    if (limit == 0) {
+      limit = getLimit();
+    }
+    query.limit(limit == 0 ? DEFAULT_LIMIT : Math.min(limit, DEFAULT_LIMIT));
+    query.skip(((Double) eval.get("_skip")).intValue());
+    return query;
+  }
+
+  private List<Map> extract(DBCursor execute) {
+    List<Map> list = new ArrayList<>();
+    try (DBCursor cursor = execute) {
+      for (final DBObject dbObject : cursor) {
+        list.add(dbObject.toMap());
+      }
+      if (list.isEmpty()) {
+        Map<String, String> map = new TreeMap<>();
+        map.put("message", Ophelia.noResults());
+        list.add(map);
+      }
+    }
+    return list;
   }
 
   public String getBookmark() {
@@ -71,12 +205,8 @@ public class MongoCommand extends MongoModel<MongoCommand> {
     this.database = database;
   }
 
-  public String getValue() {
-    return value;
-  }
-
-  public void setValue(String value) {
-    this.value = value;
+  public String getRaw() {
+    return raw;
   }
 
   public Integer getLimit() {
@@ -111,12 +241,8 @@ public class MongoCommand extends MongoModel<MongoCommand> {
     return params;
   }
 
-  public void setParams(final Map<String, String> params) {
-    this.params = params;
-  }
-
   public String expand() {
-    String expanded = value;
+    String expanded = raw;
     if (params != null) {
       for (Entry<String, String> entry : params.entrySet()) {
         expanded = expanded.replaceAll("\\{\\{" + entry.getKey() + "\\}\\}", entry.getValue());
@@ -137,7 +263,7 @@ public class MongoCommand extends MongoModel<MongoCommand> {
     if (bookmark != null ? !bookmark.equals(mongoCommand.bookmark) : mongoCommand.bookmark != null) {
       return false;
     }
-    if (value != null ? !value.equals(mongoCommand.value) : mongoCommand.value != null) {
+    if (raw != null ? !raw.equals(mongoCommand.raw) : mongoCommand.raw != null) {
       return false;
     }
     return true;
@@ -146,7 +272,7 @@ public class MongoCommand extends MongoModel<MongoCommand> {
   @Override
   public int hashCode() {
     int result = bookmark != null ? bookmark.hashCode() : 0;
-    result = 31 * result + (value != null ? value.hashCode() : 0);
+    result = 31 * result + (raw != null ? raw.hashCode() : 0);
     return result;
   }
 
@@ -159,7 +285,7 @@ public class MongoCommand extends MongoModel<MongoCommand> {
     sb.append(", limit=").append(limit);
     sb.append(", readOnly=").append(readOnly);
     sb.append(", showCount=").append(showCount);
-    sb.append(", queryString='").append(value).append('\'');
+    sb.append(", queryString='").append(raw).append('\'');
     sb.append(", params=").append(params);
     sb.append('}');
     return sb.toString();

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.antwerkz.ophelia.plugins;
+package com.antwerkz.ophelia.utils;
 
 import java.io.IOException;
 import java.net.UnknownHostException;

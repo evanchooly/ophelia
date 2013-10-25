@@ -15,7 +15,7 @@
  */
 package com.antwerkz.ophelia.dao;
 
-import com.antwerkz.ophelia.plugins.MongOphelia;
+import com.antwerkz.ophelia.utils.MongOphelia;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.annotations.Id;

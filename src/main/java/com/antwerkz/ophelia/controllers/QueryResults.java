@@ -17,11 +17,13 @@ package com.antwerkz.ophelia.controllers;
 
 import java.util.List;
 import java.util.Map;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import com.antwerkz.ophelia.models.ConnectionInfo;
 import com.antwerkz.ophelia.models.MongoCommand;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+@XmlRootElement
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class QueryResults {
   public Map<String, Object> collections;

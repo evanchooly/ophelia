@@ -23,9 +23,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import com.antwerkz.ophelia.controllers.JacksonMapper;
-import com.antwerkz.ophelia.controllers.Parser;
 import com.antwerkz.ophelia.models.MongoCommand;
+import com.antwerkz.ophelia.utils.JacksonMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
@@ -50,27 +49,25 @@ public class ParserTest {
   @Test
   public void insert() throws IOException {
     db.getCollection("UnitTest").drop();
+    final Map<String, String> params = new HashMap<>();
+    String date = DateTime.now().toString(DATE_PATTERN);
+    params.put("now", date);
     MongoCommand command = new MongoCommand("db.UnitTest.insert({"
         + "\"name\" : \"MongoDB\","
         + "\"type\" : \"database\","
         + "\"count\" : 1,"
         + "\"date\" : \"{{now}}\","
         + "\"info\" : {\"x\" : 203,"
-        + "\"y\" : 102}})");
-    final Map<String, String> params = new HashMap<>();
-    String date = DateTime.now().toString(DATE_PATTERN);
-    params.put("now", date);
-    command.setParams(params);
-    Parser parser = new Parser(command);
-    parser.execute(db);
-    parser = new Parser(new MongoCommand("db.UnitTest.find( { type : \"database\" } )"));
-    List<Map> execute = parser.execute(db);
+        + "\"y\" : 102}})", params);
+    command.execute(db);
+    command = new MongoCommand("db.UnitTest.find( { type : \"database\" } )");
+    List<Map> execute = command.execute(db);
     Iterator<Map> iterator = execute.iterator();
     Map map = iterator.next();
     Assert.assertEquals(map.get("type"), "database");
     Assert.assertEquals(map.get("date"), date);
     Assert.assertEquals(((Map) map.get("info")).get("y"), 102);
-    parser.getMapper().writer().writeValueAsString(map);
+//    parser.getMapper().writer().writeValueAsString(map);
   }
 
   @Test
@@ -86,8 +83,7 @@ public class ParserTest {
       list.add(objects);
     }
     collection.insert(list);
-    Parser parser = new Parser(new MongoCommand("db.users.find({}, {count:0});"));
-    List<Map> results = parser.execute(db);
+    List<Map> results = new MongoCommand("db.users.find({}, {count:0});").execute(db);
     for (Map result : results) {
       Assert.assertNull(result.get("count"));
     }
@@ -95,21 +91,17 @@ public class ParserTest {
 
   @Test
   public void emptyFind() throws IOException {
-    Parser parser = new Parser(new MongoCommand("db.collection.find()"));
-    parser.execute(db);
+    new MongoCommand("db.collection.find()").execute(db);
   }
 
   @Test
   public void systemIndexes() throws IOException {
-    Parser parser = new Parser(new MongoCommand("db.system.indexes.find()"));
-    parser.execute(db);
+    new MongoCommand("db.system.indexes.find()").execute(db);
   }
 
   @Test
   public void objectId() throws IOException {
-    Parser parser = new Parser(new MongoCommand("db.Collection.find( { _id : ObjectId(\"4f54216718c69681f6f14e13\") })")
-    );
-    parser.execute(db);
+    new MongoCommand("db.Collection.find( { _id : ObjectId(\"4f54216718c69681f6f14e13\") })").execute(db);
   }
 
   public void parameterized() throws IOException {
@@ -120,9 +112,8 @@ public class ParserTest {
         + "  _id : \"{{id}}\",\n"
         + "  prop : \"{{id}}\",\n"
         + "  name : \"{{name}}\"\n"
-        + "} )");
-    mongoCommand.setParams(params);
-    new Parser(mongoCommand).execute(db);
+        + "} )", params);
+    mongoCommand.execute(db);
   }
 
   @Test
@@ -133,8 +124,7 @@ public class ParserTest {
         + "\"count\" : 1,"
         + "\"info\" : {\"x\" : 203,"
         + "\"y\" : 102}})");
-    Parser parser = new Parser(mongoCommand);
-    Assert.assertFalse(parser.explain(db).get(0).isEmpty());
+    Assert.assertFalse(mongoCommand.explain(db).get(0).isEmpty());
   }
 
   @Test
@@ -145,9 +135,7 @@ public class ParserTest {
         + "\"count\" : 1,"
         + "\"info\" : {\"x\" : 203,"
         + "\"y\" : 102}})");
-    Parser parser = new Parser(mongoCommand);
-    parser.setLimit(null);
-    Assert.assertFalse(parser.execute(db).get(0).isEmpty());
+    mongoCommand.execute(db).get(0).isEmpty();
   }
 
   @Test
@@ -176,10 +164,10 @@ public class ParserTest {
     MongoCommand mongoCommand = new MongoCommand(
         "db.limits.find({ \"bobby\" : { $ne : \"george\" }}).sort({\"count\" : -1})");
     mongoCommand.setLimit(5);
-    Assert.assertEquals(new Parser(mongoCommand).execute(db).size(), 5);
+    Assert.assertEquals(mongoCommand.execute(db).size(), 5);
     mongoCommand.setLimit(6000);
-    Assert.assertEquals(new Parser(mongoCommand).execute(db).size(), MongoCommand.DEFAULT_LIMIT);
-    Assert.assertEquals(new Parser(new MongoCommand("db.limits.find({ \"bobby\" : { $ne : \"george\" }})"
-        + ".sort({\"count\" : -1}).limit(10)")).execute(db).size(), 10);
+    Assert.assertEquals(mongoCommand.execute(db).size(), MongoCommand.DEFAULT_LIMIT);
+    Assert.assertEquals(new MongoCommand("db.limits.find({ \"bobby\" : { $ne : \"george\" }})"
+        + ".sort({\"count\" : -1}).limit(10)").execute(db).size(), 10);
   }
 }

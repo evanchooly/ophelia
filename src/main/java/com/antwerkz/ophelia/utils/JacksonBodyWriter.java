@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.antwerkz.ophelia.controllers;
+package com.antwerkz.ophelia.utils;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -29,22 +29,22 @@ import javax.ws.rs.ext.Provider;
 @Provider
 @Produces(MediaType.APPLICATION_JSON)
 public class JacksonBodyWriter implements MessageBodyWriter<Object> {
-    private JacksonMapper mapper = new JacksonMapper();
+  private JacksonMapper mapper = new JacksonMapper();
 
-    @Override
-    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return true;
-    }
+  @Override
+  public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+    return true;
+  }
 
-    @Override
-    public long getSize(Object o, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return -1;
-    }
+  @Override
+  public long getSize(Object o, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+    return -1;
+  }
 
-    @Override
-    public void writeTo(Object o, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-        MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
-        throws IOException, WebApplicationException {
-        mapper.writeValue(entityStream, o);
-    }
+  @Override
+  public void writeTo(Object o, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+      MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
+      throws IOException, WebApplicationException {
+    mapper.writeValue(entityStream, o);
+  }
 }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.antwerkz.ophelia.controllers;
+package com.antwerkz.ophelia.utils;
 
 import java.io.IOException;
 
@@ -29,24 +29,24 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.bson.types.ObjectId;
 
 public class JacksonMapper extends ObjectMapper {
-    public JacksonMapper() {
-        configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
-        configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        SimpleModule module = new SimpleModule("jackson", Version.unknownVersion());
-        module.addSerializer(new ObjectIdSerializer());
-        registerModule(module);
+  public JacksonMapper() {
+    configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
+    configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    SimpleModule module = new SimpleModule("jackson", Version.unknownVersion());
+    module.addSerializer(new ObjectIdSerializer());
+    registerModule(module);
+  }
+
+  private static class ObjectIdSerializer extends JsonSerializer<ObjectId> {
+    @Override
+    public Class<ObjectId> handledType() {
+      return ObjectId.class;
     }
 
-    private static class ObjectIdSerializer extends JsonSerializer<ObjectId> {
-        @Override
-        public Class<ObjectId> handledType() {
-            return ObjectId.class;
-        }
-
-        @Override
-        public void serialize(ObjectId id, JsonGenerator generator, SerializerProvider provider)
-            throws IOException, JsonProcessingException {
-            generator.writeString(id.toString());
-        }
+    @Override
+    public void serialize(ObjectId id, JsonGenerator generator, SerializerProvider provider)
+        throws IOException, JsonProcessingException {
+      generator.writeString(id.toString());
     }
+  }
 }

@@ -35,13 +35,15 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 
 import com.antwerkz.ophelia.models.ConnectionInfo;
 import com.antwerkz.ophelia.models.MongoCommand;
-import com.antwerkz.ophelia.plugins.MongOphelia;
+import com.antwerkz.ophelia.utils.JacksonMapper;
+import com.antwerkz.ophelia.utils.MongOphelia;
+import com.antwerkz.ophelia.utils.Parser;
 import com.mongodb.DB;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Path("app")
+@Path("/app")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class Application {
@@ -86,26 +88,27 @@ public class Application {
   }
 
   @GET
-  @Path("content")
+  @Path("/content")
   @Produces(MediaType.APPLICATION_JSON)
-  public QueryResults content(@Context HttpServletRequest request) {
-    return generateContent(request.getSession(), new QueryResults());
+  public String content(@Context HttpServletRequest request) throws IOException {
+    return mapper.writeValueAsString(generateContent(request.getSession(), new QueryResults()));
   }
 
   @GET()
   @Path("/database/{database}")
   @Produces(MediaType.APPLICATION_JSON)
-  public QueryResults database(@Context HttpServletRequest request, @PathParam("database") String database) {
+  public String database(@Context HttpServletRequest request, @PathParam("database") String database)
+      throws IOException {
     HttpSession session = request.getSession();
     getConnectionInfo(session).setDatabase(database);
-    return generateContent(session, new QueryResults());
+    return mapper.writeValueAsString(generateContent(session, new QueryResults()));
   }
 
   @GET()
   @Path("/host/{host}/{port}")
   @Produces(MediaType.APPLICATION_JSON)
-  public QueryResults changeHost(@Context HttpServletRequest request, @PathParam("host") String dbHost,
-      @PathParam("port") Integer dbPort) {
+  public String changeHost(@Context HttpServletRequest request, @PathParam("host") String dbHost,
+      @PathParam("port") Integer dbPort) throws IOException {
     ConnectionInfo info = getConnectionInfo(request.getSession());
     info.setHost(dbHost);
     info.setPort(dbPort);
@@ -115,7 +118,7 @@ public class Application {
   @POST
   @Path("/query")
   @Produces(MediaType.APPLICATION_JSON)
-  public QueryResults query(@Context HttpServletRequest request, MongoCommand mongoCommand) throws IOException {
+  public String query(@Context HttpServletRequest request, MongoCommand mongoCommand) throws IOException {
     QueryResults queryResults;
     try {
       queryResults = new QueryResults();
@@ -124,13 +127,13 @@ public class Application {
       if (mongoCommand.getShowCount()) {
         queryResults.setResultCount(parser.count(getDB(mongoCommand.getDatabase())));
       }
-      queryResults.setDbResults(parser.execute(getDB(mongoCommand.getDatabase())));
+      queryResults.setDbResults(mongoCommand.execute(getDB(mongoCommand.getDatabase())));
     } catch (Exception e) {
       logger.error(e.getMessage(), e);
       queryResults = new QueryResults();
       queryResults.setError(e.getMessage());
     }
-    return queryResults;
+    return mapper.writeValueAsString(queryResults);
   }
 
   @POST
@@ -164,8 +167,7 @@ public class Application {
     try {
       queryResults = new QueryResults();
       generateContent(request.getSession(), queryResults);
-      final Parser parser = new Parser(mongoCommand);
-      queryResults.setDbResults(parser.explain(getDB(mongoCommand.getDatabase())));
+      queryResults.setDbResults(mongoCommand.explain(getDB(mongoCommand.getDatabase())));
     } catch (Exception e) {
       logger.error(e.getMessage(), e);
       queryResults = new QueryResults();

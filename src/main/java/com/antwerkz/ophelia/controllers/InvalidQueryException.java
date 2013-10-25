@@ -16,10 +16,23 @@
 package com.antwerkz.ophelia.controllers;
 
 public class InvalidQueryException extends RuntimeException {
-    public InvalidQueryException() {
-    }
+  public InvalidQueryException() {
+  }
 
-    public InvalidQueryException(String message) {
-        super(message);
-    }
+  public InvalidQueryException(final Throwable cause) {
+    super(cause);
+  }
+
+  public InvalidQueryException(String message) {
+    super(message);
+  }
+
+  public InvalidQueryException(final String message, final Throwable cause) {
+    super(message, cause);
+  }
+
+  public InvalidQueryException(final String message, final Throwable cause, final boolean enableSuppression,
+      final boolean writableStackTrace) {
+    super(message, cause, enableSuppression, writableStackTrace);
+  }
 }

@@ -29,6 +29,16 @@ public class MongoCommandCriteria extends com.antwerkz.critter.criteria.BaseCrit
     return this;
   }
 
+  public com.antwerkz.critter.TypeSafeFieldEnd<MongoCommandCriteria, MongoCommand, java.lang.String> collection() {
+    return new com.antwerkz.critter.TypeSafeFieldEnd<>(this, query, prefix + "collection");
+  }
+
+  public MongoCommandCriteria collection(java.lang.String value) {
+    new com.antwerkz.critter.TypeSafeFieldEnd<MongoCommandCriteria, MongoCommand, java.lang.String>(this, query,
+        prefix + "collection").equal(value);
+    return this;
+  }
+
   public com.antwerkz.critter.TypeSafeFieldEnd<MongoCommandCriteria, MongoCommand, java.lang.String> database() {
     return new com.antwerkz.critter.TypeSafeFieldEnd<>(this, query, prefix + "database");
   }
@@ -36,6 +46,16 @@ public class MongoCommandCriteria extends com.antwerkz.critter.criteria.BaseCrit
   public MongoCommandCriteria database(java.lang.String value) {
     new com.antwerkz.critter.TypeSafeFieldEnd<MongoCommandCriteria, MongoCommand, java.lang.String>(this, query,
         prefix + "database").equal(value);
+    return this;
+  }
+
+  public com.antwerkz.critter.TypeSafeFieldEnd<MongoCommandCriteria, MongoCommand, java.lang.String> expanded() {
+    return new com.antwerkz.critter.TypeSafeFieldEnd<>(this, query, prefix + "expanded");
+  }
+
+  public MongoCommandCriteria expanded(java.lang.String value) {
+    new com.antwerkz.critter.TypeSafeFieldEnd<MongoCommandCriteria, MongoCommand, java.lang.String>(this, query,
+        prefix + "expanded").equal(value);
     return this;
   }
 
@@ -49,6 +69,26 @@ public class MongoCommandCriteria extends com.antwerkz.critter.criteria.BaseCrit
     return this;
   }
 
+  public com.antwerkz.critter.TypeSafeFieldEnd<MongoCommandCriteria, MongoCommand, java.lang.String> method() {
+    return new com.antwerkz.critter.TypeSafeFieldEnd<>(this, query, prefix + "method");
+  }
+
+  public MongoCommandCriteria method(java.lang.String value) {
+    new com.antwerkz.critter.TypeSafeFieldEnd<MongoCommandCriteria, MongoCommand, java.lang.String>(this, query,
+        prefix + "method").equal(value);
+    return this;
+  }
+
+  public com.antwerkz.critter.TypeSafeFieldEnd<MongoCommandCriteria, MongoCommand, java.lang.String> mode() {
+    return new com.antwerkz.critter.TypeSafeFieldEnd<>(this, query, prefix + "mode");
+  }
+
+  public MongoCommandCriteria mode(java.lang.String value) {
+    new com.antwerkz.critter.TypeSafeFieldEnd<MongoCommandCriteria, MongoCommand, java.lang.String>(this, query,
+        prefix + "mode").equal(value);
+    return this;
+  }
+
   public com.antwerkz.critter.TypeSafeFieldEnd<MongoCommandCriteria, MongoCommand, java.util.Map<java.lang.String, java.lang.String>> params() {
     return new com.antwerkz.critter.TypeSafeFieldEnd<>(this, query, prefix + "params");
   }
@@ -59,13 +99,13 @@ public class MongoCommandCriteria extends com.antwerkz.critter.criteria.BaseCrit
     return this;
   }
 
-  public com.antwerkz.critter.TypeSafeFieldEnd<MongoCommandCriteria, MongoCommand, java.lang.String> queryString() {
-    return new com.antwerkz.critter.TypeSafeFieldEnd<>(this, query, prefix + "queryString");
+  public com.antwerkz.critter.TypeSafeFieldEnd<MongoCommandCriteria, MongoCommand, java.lang.String> raw() {
+    return new com.antwerkz.critter.TypeSafeFieldEnd<>(this, query, prefix + "raw");
   }
 
-  public MongoCommandCriteria queryString(java.lang.String value) {
+  public MongoCommandCriteria raw(java.lang.String value) {
     new com.antwerkz.critter.TypeSafeFieldEnd<MongoCommandCriteria, MongoCommand, java.lang.String>(this, query,
-        prefix + "queryString").equal(value);
+        prefix + "raw").equal(value);
     return this;
   }
 
@@ -236,6 +276,66 @@ public class MongoCommandCriteria extends com.antwerkz.critter.criteria.BaseCrit
       return this;
     }
 
+    public MongoCommandUpdater collection(java.lang.String value) {
+      updateOperations.set("collection", value);
+      return this;
+    }
+
+    public MongoCommandUpdater unsetCollection(java.lang.String value) {
+      updateOperations.unset("collection");
+      return this;
+    }
+
+    public MongoCommandUpdater addCollection(java.lang.String value) {
+      updateOperations.add("collection", value);
+      return this;
+    }
+
+    public MongoCommandUpdater addCollection(java.lang.String value, boolean addDups) {
+      updateOperations.add("collection", value, addDups);
+      return this;
+    }
+
+    public MongoCommandUpdater addAllToCollection(java.util.List<java.lang.String> values, boolean addDups) {
+      updateOperations.addAll("collection", values, addDups);
+      return this;
+    }
+
+    public MongoCommandUpdater removeFirstCollection() {
+      updateOperations.removeFirst("collection");
+      return this;
+    }
+
+    public MongoCommandUpdater removeLastCollection() {
+      updateOperations.removeLast("collection");
+      return this;
+    }
+
+    public MongoCommandUpdater removeFromCollection(java.lang.String value) {
+      updateOperations.removeAll("collection", value);
+      return this;
+    }
+
+    public MongoCommandUpdater removeAllFromCollection(java.util.List<java.lang.String> values) {
+      updateOperations.removeAll("collection", values);
+      return this;
+    }
+
+    public MongoCommandUpdater decCollection() {
+      updateOperations.dec("collection");
+      return this;
+    }
+
+    public MongoCommandUpdater incCollection() {
+      updateOperations.inc("collection");
+      return this;
+    }
+
+    public MongoCommandUpdater incCollection(Number value) {
+      updateOperations.inc("collection", value);
+      return this;
+    }
+
     public MongoCommandUpdater database(java.lang.String value) {
       updateOperations.set("database", value);
       return this;
@@ -296,6 +396,66 @@ public class MongoCommandCriteria extends com.antwerkz.critter.criteria.BaseCrit
       return this;
     }
 
+    public MongoCommandUpdater expanded(java.lang.String value) {
+      updateOperations.set("expanded", value);
+      return this;
+    }
+
+    public MongoCommandUpdater unsetExpanded(java.lang.String value) {
+      updateOperations.unset("expanded");
+      return this;
+    }
+
+    public MongoCommandUpdater addExpanded(java.lang.String value) {
+      updateOperations.add("expanded", value);
+      return this;
+    }
+
+    public MongoCommandUpdater addExpanded(java.lang.String value, boolean addDups) {
+      updateOperations.add("expanded", value, addDups);
+      return this;
+    }
+
+    public MongoCommandUpdater addAllToExpanded(java.util.List<java.lang.String> values, boolean addDups) {
+      updateOperations.addAll("expanded", values, addDups);
+      return this;
+    }
+
+    public MongoCommandUpdater removeFirstExpanded() {
+      updateOperations.removeFirst("expanded");
+      return this;
+    }
+
+    public MongoCommandUpdater removeLastExpanded() {
+      updateOperations.removeLast("expanded");
+      return this;
+    }
+
+    public MongoCommandUpdater removeFromExpanded(java.lang.String value) {
+      updateOperations.removeAll("expanded", value);
+      return this;
+    }
+
+    public MongoCommandUpdater removeAllFromExpanded(java.util.List<java.lang.String> values) {
+      updateOperations.removeAll("expanded", values);
+      return this;
+    }
+
+    public MongoCommandUpdater decExpanded() {
+      updateOperations.dec("expanded");
+      return this;
+    }
+
+    public MongoCommandUpdater incExpanded() {
+      updateOperations.inc("expanded");
+      return this;
+    }
+
+    public MongoCommandUpdater incExpanded(Number value) {
+      updateOperations.inc("expanded", value);
+      return this;
+    }
+
     public MongoCommandUpdater limit(java.lang.Integer value) {
       updateOperations.set("limit", value);
       return this;
@@ -353,6 +513,126 @@ public class MongoCommandCriteria extends com.antwerkz.critter.criteria.BaseCrit
 
     public MongoCommandUpdater incLimit(Number value) {
       updateOperations.inc("limit", value);
+      return this;
+    }
+
+    public MongoCommandUpdater method(java.lang.String value) {
+      updateOperations.set("method", value);
+      return this;
+    }
+
+    public MongoCommandUpdater unsetMethod(java.lang.String value) {
+      updateOperations.unset("method");
+      return this;
+    }
+
+    public MongoCommandUpdater addMethod(java.lang.String value) {
+      updateOperations.add("method", value);
+      return this;
+    }
+
+    public MongoCommandUpdater addMethod(java.lang.String value, boolean addDups) {
+      updateOperations.add("method", value, addDups);
+      return this;
+    }
+
+    public MongoCommandUpdater addAllToMethod(java.util.List<java.lang.String> values, boolean addDups) {
+      updateOperations.addAll("method", values, addDups);
+      return this;
+    }
+
+    public MongoCommandUpdater removeFirstMethod() {
+      updateOperations.removeFirst("method");
+      return this;
+    }
+
+    public MongoCommandUpdater removeLastMethod() {
+      updateOperations.removeLast("method");
+      return this;
+    }
+
+    public MongoCommandUpdater removeFromMethod(java.lang.String value) {
+      updateOperations.removeAll("method", value);
+      return this;
+    }
+
+    public MongoCommandUpdater removeAllFromMethod(java.util.List<java.lang.String> values) {
+      updateOperations.removeAll("method", values);
+      return this;
+    }
+
+    public MongoCommandUpdater decMethod() {
+      updateOperations.dec("method");
+      return this;
+    }
+
+    public MongoCommandUpdater incMethod() {
+      updateOperations.inc("method");
+      return this;
+    }
+
+    public MongoCommandUpdater incMethod(Number value) {
+      updateOperations.inc("method", value);
+      return this;
+    }
+
+    public MongoCommandUpdater mode(java.lang.String value) {
+      updateOperations.set("mode", value);
+      return this;
+    }
+
+    public MongoCommandUpdater unsetMode(java.lang.String value) {
+      updateOperations.unset("mode");
+      return this;
+    }
+
+    public MongoCommandUpdater addMode(java.lang.String value) {
+      updateOperations.add("mode", value);
+      return this;
+    }
+
+    public MongoCommandUpdater addMode(java.lang.String value, boolean addDups) {
+      updateOperations.add("mode", value, addDups);
+      return this;
+    }
+
+    public MongoCommandUpdater addAllToMode(java.util.List<java.lang.String> values, boolean addDups) {
+      updateOperations.addAll("mode", values, addDups);
+      return this;
+    }
+
+    public MongoCommandUpdater removeFirstMode() {
+      updateOperations.removeFirst("mode");
+      return this;
+    }
+
+    public MongoCommandUpdater removeLastMode() {
+      updateOperations.removeLast("mode");
+      return this;
+    }
+
+    public MongoCommandUpdater removeFromMode(java.lang.String value) {
+      updateOperations.removeAll("mode", value);
+      return this;
+    }
+
+    public MongoCommandUpdater removeAllFromMode(java.util.List<java.lang.String> values) {
+      updateOperations.removeAll("mode", values);
+      return this;
+    }
+
+    public MongoCommandUpdater decMode() {
+      updateOperations.dec("mode");
+      return this;
+    }
+
+    public MongoCommandUpdater incMode() {
+      updateOperations.inc("mode");
+      return this;
+    }
+
+    public MongoCommandUpdater incMode(Number value) {
+      updateOperations.inc("mode", value);
       return this;
     }
 
@@ -418,63 +698,63 @@ public class MongoCommandCriteria extends com.antwerkz.critter.criteria.BaseCrit
       return this;
     }
 
-    public MongoCommandUpdater queryString(java.lang.String value) {
-      updateOperations.set("queryString", value);
+    public MongoCommandUpdater raw(java.lang.String value) {
+      updateOperations.set("raw", value);
       return this;
     }
 
-    public MongoCommandUpdater unsetQueryString(java.lang.String value) {
-      updateOperations.unset("queryString");
+    public MongoCommandUpdater unsetRaw(java.lang.String value) {
+      updateOperations.unset("raw");
       return this;
     }
 
-    public MongoCommandUpdater addQueryString(java.lang.String value) {
-      updateOperations.add("queryString", value);
+    public MongoCommandUpdater addRaw(java.lang.String value) {
+      updateOperations.add("raw", value);
       return this;
     }
 
-    public MongoCommandUpdater addQueryString(java.lang.String value, boolean addDups) {
-      updateOperations.add("queryString", value, addDups);
+    public MongoCommandUpdater addRaw(java.lang.String value, boolean addDups) {
+      updateOperations.add("raw", value, addDups);
       return this;
     }
 
-    public MongoCommandUpdater addAllToQueryString(java.util.List<java.lang.String> values, boolean addDups) {
-      updateOperations.addAll("queryString", values, addDups);
+    public MongoCommandUpdater addAllToRaw(java.util.List<java.lang.String> values, boolean addDups) {
+      updateOperations.addAll("raw", values, addDups);
       return this;
     }
 
-    public MongoCommandUpdater removeFirstQueryString() {
-      updateOperations.removeFirst("queryString");
+    public MongoCommandUpdater removeFirstRaw() {
+      updateOperations.removeFirst("raw");
       return this;
     }
 
-    public MongoCommandUpdater removeLastQueryString() {
-      updateOperations.removeLast("queryString");
+    public MongoCommandUpdater removeLastRaw() {
+      updateOperations.removeLast("raw");
       return this;
     }
 
-    public MongoCommandUpdater removeFromQueryString(java.lang.String value) {
-      updateOperations.removeAll("queryString", value);
+    public MongoCommandUpdater removeFromRaw(java.lang.String value) {
+      updateOperations.removeAll("raw", value);
       return this;
     }
 
-    public MongoCommandUpdater removeAllFromQueryString(java.util.List<java.lang.String> values) {
-      updateOperations.removeAll("queryString", values);
+    public MongoCommandUpdater removeAllFromRaw(java.util.List<java.lang.String> values) {
+      updateOperations.removeAll("raw", values);
       return this;
     }
 
-    public MongoCommandUpdater decQueryString() {
-      updateOperations.dec("queryString");
+    public MongoCommandUpdater decRaw() {
+      updateOperations.dec("raw");
       return this;
     }
 
-    public MongoCommandUpdater incQueryString() {
-      updateOperations.inc("queryString");
+    public MongoCommandUpdater incRaw() {
+      updateOperations.inc("raw");
       return this;
     }
 
-    public MongoCommandUpdater incQueryString(Number value) {
-      updateOperations.inc("queryString", value);
+    public MongoCommandUpdater incRaw(Number value) {
+      updateOperations.inc("raw", value);
       return this;
     }
 
