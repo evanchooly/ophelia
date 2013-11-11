@@ -1,4 +1,4 @@
-package com.antwerkz.sofia;
+package sofia;
 
 import java.text.MessageFormat;
 import java.util.HashMap;
