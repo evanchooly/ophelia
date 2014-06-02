@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2012-2013 Justin Lee <jlee@antwerkz.com>
+ * Copyright (C) 2012-2014 Justin Lee <jlee@antwerkz.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,16 +24,17 @@ import twitter4j.auth.AccessToken;
 import twitter4j.auth.RequestToken;
 
 public class TwitterContext implements Serializable {
-    public String screenName;
-    final Twitter twitter;
+  public String screenName;
 
-    public TwitterContext() {
-        twitter = new TwitterFactory().getInstance();
-        twitter.setOAuthConsumer(AuthenticationController.twitterKey, AuthenticationController.twitterSecret);
-    }
+  final Twitter twitter;
 
-    public void authenticate(String oauth_token, String oauth_verifier) throws TwitterException {
-        AccessToken token = twitter.getOAuthAccessToken(new RequestToken(oauth_token, oauth_verifier));
-        screenName = token.getScreenName();
-    }
+  public TwitterContext() {
+    twitter = new TwitterFactory().getInstance();
+    twitter.setOAuthConsumer(AuthenticationController.twitterKey, AuthenticationController.twitterSecret);
+  }
+
+  public void authenticate(String oauth_token, String oauth_verifier) throws TwitterException {
+    AccessToken token = twitter.getOAuthAccessToken(new RequestToken(oauth_token, oauth_verifier));
+    screenName = token.getScreenName();
+  }
 }

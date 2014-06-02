@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2012-2013 Justin Lee <jlee@antwerkz.com>
+ * Copyright (C) 2012-2014 Justin Lee <jlee@antwerkz.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import com.antwerkz.ophelia.controllers.InvalidQueryException;
 import com.antwerkz.ophelia.dao.MongoModel;
 import com.antwerkz.ophelia.utils.Parser;
 import com.antwerkz.sofia.Ophelia;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
@@ -78,8 +79,8 @@ public class MongoCommand extends MongoModel<MongoCommand> {
   public MongoCommand(String raw, final Map<String, String> params) {
     this();
     this.raw = raw;
-    this.expanded = expand();
     this.params = params;
+    this.expanded = expand();
     extractMetaData();
   }
 
@@ -189,6 +190,7 @@ public class MongoCommand extends MongoModel<MongoCommand> {
     return list;
   }
 
+  @JsonProperty
   public String getBookmark() {
     return bookmark;
   }
@@ -197,6 +199,7 @@ public class MongoCommand extends MongoModel<MongoCommand> {
     this.bookmark = bookmark;
   }
 
+  @JsonProperty
   public String getDatabase() {
     return database;
   }
@@ -205,10 +208,18 @@ public class MongoCommand extends MongoModel<MongoCommand> {
     this.database = database;
   }
 
+  @JsonProperty("queryString")
   public String getRaw() {
     return raw;
   }
 
+  public void setRaw(final String raw) {
+    this.raw = raw;
+    this.expanded = expand();
+    extractMetaData();
+  }
+
+  @JsonProperty
   public Integer getLimit() {
     return limit == null || limit < 1 ? DEFAULT_LIMIT : limit;
   }
@@ -217,6 +228,7 @@ public class MongoCommand extends MongoModel<MongoCommand> {
     this.limit = limit;
   }
 
+  @JsonProperty
   public Boolean getReadOnly() {
     return readOnly;
   }
@@ -225,6 +237,7 @@ public class MongoCommand extends MongoModel<MongoCommand> {
     this.readOnly = coerce(readOnly);
   }
 
+  @JsonProperty
   public Boolean getShowCount() {
     return showCount;
   }
@@ -237,6 +250,7 @@ public class MongoCommand extends MongoModel<MongoCommand> {
     return value == null ? false : value;
   }
 
+  @JsonProperty
   public Map<String, String> getParams() {
     return params;
   }

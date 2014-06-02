@@ -1,0 +1,18 @@
+server:
+  type: simple
+  applicationContextPath: /ophelia  # Default value*
+
+# Logging settings.
+logging:
+
+  # The default level of all loggers. Can be OFF, ERROR, WARN, INFO, DEBUG, TRACE, or ALL.
+  level: INFO
+
+  # Logger-specific levels.
+  loggers:
+
+    com.antwerkz: DEBUG
+    com.sun.jersey: DEBUG
+
+  appenders:
+    - type: console
