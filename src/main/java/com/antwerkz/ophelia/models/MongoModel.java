@@ -13,11 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.antwerkz.ophelia.dao;
+package com.antwerkz.ophelia.models;
 
-import com.antwerkz.ophelia.utils.MongOphelia;
 import org.bson.types.ObjectId;
-import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.annotations.Id;
 
 public class MongoModel<T> {
@@ -30,37 +28,5 @@ public class MongoModel<T> {
 
   public void setId(ObjectId id) {
     this._id = id;
-  }
-
-  public static <R> R mongo(Operation<R> operation) {
-    Datastore ds = MongOphelia.get();
-    return operation.execute(ds);
-  }
-
-  public void save() {
-    mongo(new Operation<Void>() {
-      @Override
-      public Void execute(Datastore ds) {
-        if (_id == null) {
-          _id = new ObjectId();
-        }
-        ds.save(MongoModel.this);
-        return null;
-      }
-    });
-  }
-
-  public void delete() {
-    mongo(new Operation<Void>() {
-      @Override
-      public Void execute(Datastore ds) {
-        ds.delete(MongoModel.this);
-        return null;
-      }
-    });
-  }
-
-  public interface Operation<R> {
-    R execute(Datastore ds);
   }
 }

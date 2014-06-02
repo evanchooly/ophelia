@@ -33,10 +33,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
+import com.antwerkz.ophelia.OpheliaApplication;
+import com.antwerkz.ophelia.dao.MongoCommandDao;
 import com.antwerkz.ophelia.models.ConnectionInfo;
 import com.antwerkz.ophelia.models.MongoCommand;
 import com.antwerkz.ophelia.utils.JacksonMapper;
-import com.antwerkz.ophelia.utils.MongOphelia;
 import com.antwerkz.ophelia.utils.Parser;
 import com.google.common.base.Charsets;
 import com.mongodb.DB;
@@ -55,15 +56,28 @@ public class QueryResource {
 
   private JacksonMapper mapper = new JacksonMapper();
 
+  private OpheliaApplication application;
+
+  private MongoCommandDao mongoCommandDao;
+
+  public QueryResource(OpheliaApplication application, MongoCommandDao mongoCommandDao) {
+    this.application = application;
+    this.mongoCommandDao = mongoCommandDao;
+  }
+
+  public List<String> getDatabaseNames() {
+    return application.getMongo().getDatabaseNames();
+  }
+
   private QueryResults generateContent(HttpSession session, QueryResults queryResults) {
     try {
       ConnectionInfo info = getConnectionInfo(session);
       String database = info.getDatabase();
       if (database == null) {
-        database = MongOphelia.getDatabaseNames().get(0);
+        database = getDatabaseNames().get(0);
         info.setDatabase(database);
       }
-      queryResults.setDatabaseList(MongOphelia.getDatabaseNames());
+      queryResults.setDatabaseList(getDatabaseNames());
       queryResults.setInfo(info);
       queryResults.setCollections(loadCollections(info));
       return queryResults;
@@ -75,7 +89,7 @@ public class QueryResource {
   }
 
   private List<MongoCommand> loadBookmarks(String database) {
-    return MongoCommand.finder().findAll(database);
+    return mongoCommandDao.findAll(database);
   }
 
   private Map<String, Object> loadCollections(final ConnectionInfo info) {
@@ -202,7 +216,7 @@ public class QueryResource {
     QueryResults queryResults = new QueryResults();
     System.out.println("id = " + id);
     try {
-      MongoCommand.finder().delete(new ObjectId(id));
+      mongoCommandDao.delete(new ObjectId(id));
     } catch (IllegalArgumentException e) {
       queryResults.setError(e.getMessage());
     }
@@ -216,7 +230,7 @@ public class QueryResource {
 //        Query query = mapper.readValue(json, Query.class);
     System.out.println("query = " + mongoCommand);
     try {
-      mongoCommand.save();
+      mongoCommandDao.save(mongoCommand);
     } catch (Exception e) {
       throw new RuntimeException(e.getMessage(), e);
     }
@@ -224,20 +238,16 @@ public class QueryResource {
   }
 
   private DB getDB(String database) {
-    return MongOphelia.get(database).getDB();
+    return application.getMongo().getDB(database);
   }
 
   public ConnectionInfo getConnectionInfo(HttpSession session) {
     ConnectionInfo info = (ConnectionInfo) session.getAttribute(INFO);
     if (info == null) {
-      info = createConnection(session);
+      info = new ConnectionInfo();
+      session.setAttribute(INFO, info);
     }
-    return info;
-  }
-
-  private static ConnectionInfo createConnection(HttpSession session) {
-    ConnectionInfo info = new ConnectionInfo();
-    session.setAttribute(INFO, info);
+    info.setApplication(application);
     return info;
   }
 

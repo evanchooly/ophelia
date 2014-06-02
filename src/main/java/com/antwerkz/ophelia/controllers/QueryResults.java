@@ -21,6 +21,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import com.antwerkz.ophelia.models.ConnectionInfo;
 import com.antwerkz.ophelia.models.MongoCommand;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @XmlRootElement

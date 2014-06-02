@@ -16,14 +16,22 @@
 package com.antwerkz.ophelia;
 
 import com.antwerkz.ophelia.controllers.QueryResource;
+import com.antwerkz.ophelia.dao.MongoCommandDao;
+import com.antwerkz.ophelia.models.ConnectionInfo;
+import com.mongodb.MongoClient;
 import io.dropwizard.Application;
 import io.dropwizard.assets.AssetsBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.dropwizard.views.ViewBundle;
 import org.eclipse.jetty.server.session.SessionHandler;
+import org.mongodb.morphia.Morphia;
 
 public class OpheliaApplication extends Application<OpheliaConfiguration> {
+  private Morphia morphia;
+
+  private MongoClient mongo;
+
   public static void main(String[] args) throws Exception {
     new OpheliaApplication().run(args);
   }
@@ -41,8 +49,19 @@ public class OpheliaApplication extends Application<OpheliaConfiguration> {
 
   @Override
   public void run(final OpheliaConfiguration configuration, final Environment environment) throws Exception {
-    environment.jersey().register(new QueryResource());
+    morphia = new Morphia();
+    morphia.mapPackage(ConnectionInfo.class.getPackage().getName());
+
+    mongo = new MongoClient();
+
     environment.getApplicationContext().setSessionsEnabled(true);
     environment.getApplicationContext().setSessionHandler(new SessionHandler());
+
+    environment.jersey().register(new QueryResource(this,
+        new MongoCommandDao(morphia.createDatastore(mongo, "ophelia"))));
+  }
+
+  public MongoClient getMongo() {
+    return mongo;
   }
 }

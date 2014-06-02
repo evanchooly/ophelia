@@ -20,9 +20,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import com.antwerkz.ophelia.dao.Finder;
-import com.antwerkz.ophelia.utils.MongOphelia;
-import com.mongodb.CommandResult;
+import com.antwerkz.ophelia.OpheliaApplication;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mongodb.DB;
 
 public class ConnectionInfo {
@@ -31,6 +30,8 @@ public class ConnectionInfo {
   private String host = "127.0.0.1";
 
   private Integer port = 27017;
+
+  private transient OpheliaApplication application;
 
   public String getDatabase() {
     return database;
@@ -57,17 +58,16 @@ public class ConnectionInfo {
   }
 
   public List<String> getDatabaseNames() {
-    return MongOphelia.getDatabaseNames();
+    return application.getMongo().getDatabaseNames();
   }
 
   public Map<String, Object> loadCollections() {
     TreeMap<String, Object> map = new TreeMap<>();
-    DB db = MongOphelia.getDB();
+    DB db = application.getMongo().getDB(database);
     if (db != null) {
       Set<String> collections = db.getCollectionNames();
       for (String collection : collections) {
-        CommandResult stats = db.getCollection(collection).getStats();
-        map.put(collection, stats.get("count"));
+        map.put(collection, db.getCollection(collection).getStats().get("count"));
       }
     }
     return map;
@@ -83,7 +83,12 @@ public class ConnectionInfo {
     return sb.toString();
   }
 
-  public static Finder<ConnectionInfo> find() {
-    return new Finder<ConnectionInfo>(ConnectionInfo.class);
+  @JsonIgnore
+  public OpheliaApplication getApplication() {
+    return application;
+  }
+
+  public void setApplication(final OpheliaApplication application) {
+    this.application = application;
   }
 }

@@ -24,7 +24,6 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import com.antwerkz.ophelia.controllers.InvalidQueryException;
-import com.antwerkz.ophelia.dao.MongoModel;
 import com.antwerkz.ophelia.utils.Parser;
 import com.antwerkz.sofia.Ophelia;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -303,10 +302,6 @@ public class MongoCommand extends MongoModel<MongoCommand> {
     sb.append(", params=").append(params);
     sb.append('}');
     return sb.toString();
-  }
-
-  public static QueryFinder finder() {
-    return new QueryFinder();
   }
 
 }
