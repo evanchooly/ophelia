@@ -46,7 +46,7 @@
         <script src="assets/js/controllers.js"></script>
 
         <link href="assets/style/main.less" rel="stylesheet/less" type="text/css">
-        <script src="assets/js/less-1.3.1.min.js" type="text/javascript"></script>
+        <script src="webjars/less/1.3.1/less.min.js" type="text/javascript"></script>
     </head>
 
     <body ng-controller="OpheliaController">
