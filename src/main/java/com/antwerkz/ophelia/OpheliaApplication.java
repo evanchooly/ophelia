@@ -28,40 +28,41 @@ import org.eclipse.jetty.server.session.SessionHandler;
 import org.mongodb.morphia.Morphia;
 
 public class OpheliaApplication extends Application<OpheliaConfiguration> {
-  private Morphia morphia;
+    private Morphia morphia;
 
-  private MongoClient mongo;
+    private MongoClient mongo;
 
-  public static void main(String[] args) throws Exception {
-    new OpheliaApplication().run(args);
-  }
+    public static void main(String[] args) throws Exception {
+        new OpheliaApplication().run(args);
+    }
 
-  @Override
-  public String getName() {
-    return "Ophelia";
-  }
+    @Override
+    public String getName() {
+        return "Ophelia";
+    }
 
-  @Override
-  public void initialize(final Bootstrap<OpheliaConfiguration> bootstrap) {
-    bootstrap.addBundle(new ViewBundle());
-    bootstrap.addBundle(new AssetsBundle("/assets", "/assets", null, null));
-  }
+    @Override
+    public void initialize(final Bootstrap<OpheliaConfiguration> bootstrap) {
+        bootstrap.addBundle(new ViewBundle());
+        bootstrap.addBundle(new AssetsBundle("/assets", "/assets", null, "assets"));
+        bootstrap.addBundle(new AssetsBundle("/META-INF/resources/webjars", "/webjars", null, "webjars"));
+    }
 
-  @Override
-  public void run(final OpheliaConfiguration configuration, final Environment environment) throws Exception {
-    morphia = new Morphia();
-    morphia.mapPackage(ConnectionInfo.class.getPackage().getName());
+    @Override
+    public void run(final OpheliaConfiguration configuration, final Environment environment) throws Exception {
+        morphia = new Morphia();
+        morphia.mapPackage(ConnectionInfo.class.getPackage().getName());
 
-    mongo = new MongoClient();
+        mongo = new MongoClient();
 
-    environment.getApplicationContext().setSessionsEnabled(true);
-    environment.getApplicationContext().setSessionHandler(new SessionHandler());
+        environment.getApplicationContext().setSessionsEnabled(true);
+        environment.getApplicationContext().setSessionHandler(new SessionHandler());
 
-    environment.jersey().register(new QueryResource(this,
-        new MongoCommandDao(morphia.createDatastore(mongo, "ophelia"))));
-  }
+        environment.jersey().register(new QueryResource(this,
+                                                        new MongoCommandDao(morphia.createDatastore(mongo, "ophelia"))));
+    }
 
-  public MongoClient getMongo() {
-    return mongo;
-  }
+    public MongoClient getMongo() {
+        return mongo;
+    }
 }

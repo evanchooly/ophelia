@@ -35,14 +35,14 @@
         <!--[if lt IE 9]>
         <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
         <![endif]-->
-        <link href="assets/style/angular-ui-0.3.1.css" rel="stylesheet/less" type="text/css">
+        <link href="webjars/angular-ui/0.3.2/angular-ui.css" rel="stylesheet/less" type="text/css">
 
         <link rel="shortcut icon" type="image/png" href="assets/images/O.png">
         <script src="assets/js/jquery-1.7.2.min.js"></script>
         <script src="assets/js/bootstrap.js"></script>
         <script src="assets/js/bootstrap-modal.js"></script>
-        <script src="assets/js/angular-1.0.2/angular.js"></script>
-        <script src="assets/js/angular-ui-0.3.1.js"></script>
+        <script src="webjars/angularjs/1.0.2/angular.js"></script>
+        <script src="webjars/angular-ui/0.3.2/angular-ui.js"></script>
         <script src="assets/js/ophelia.js"></script>
         <script src="assets/js/controllers.js"></script>
 
