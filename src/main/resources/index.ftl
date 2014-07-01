@@ -38,7 +38,7 @@
         <link href="webjars/angular-ui/0.3.2/angular-ui.css" rel="stylesheet/less" type="text/css">
 
         <link rel="shortcut icon" type="image/png" href="assets/images/O.png">
-        <script src="assets/js/jquery-1.7.2.min.js"></script>
+        <script src="webjars/jquery/1.11.0/jquery.min.js"></script>
         <script src="assets/js/bootstrap.js"></script>
         <script src="assets/js/bootstrap-modal.js"></script>
         <script src="webjars/angularjs/1.0.2/angular.js"></script>
