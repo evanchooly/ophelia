@@ -14,7 +14,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <dropwizard.version>0.7.0</dropwizard.version>
+        <dropwizard.version>0.7.1</dropwizard.version>
         <morphia.version>0.105</morphia.version>
         <sofia.version>0.13</sofia.version>
     </properties>

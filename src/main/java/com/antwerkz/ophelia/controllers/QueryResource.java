@@ -15,10 +15,19 @@
  */
 package com.antwerkz.ophelia.controllers;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import com.antwerkz.ophelia.OpheliaApplication;
+import com.antwerkz.ophelia.dao.MongoCommandDao;
+import com.antwerkz.ophelia.models.ConnectionInfo;
+import com.antwerkz.ophelia.models.MongoCommand;
+import com.antwerkz.ophelia.utils.JacksonMapper;
+import com.antwerkz.ophelia.utils.Parser;
+import com.google.common.base.Charsets;
+import com.mongodb.DB;
+import io.dropwizard.views.View;
+import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.Consumes;
@@ -32,19 +41,10 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
-
-import com.antwerkz.ophelia.OpheliaApplication;
-import com.antwerkz.ophelia.dao.MongoCommandDao;
-import com.antwerkz.ophelia.models.ConnectionInfo;
-import com.antwerkz.ophelia.models.MongoCommand;
-import com.antwerkz.ophelia.utils.JacksonMapper;
-import com.antwerkz.ophelia.utils.Parser;
-import com.google.common.base.Charsets;
-import com.mongodb.DB;
-import io.dropwizard.views.View;
-import org.bson.types.ObjectId;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 @Path("/")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -150,10 +150,8 @@ public class QueryResource {
   @Path("/query")
   @Produces(MediaType.APPLICATION_JSON)
   public String query(@Context HttpServletRequest request, MongoCommand mongoCommand) throws IOException {
-    System.out.println("*************** QueryResource.query");
     QueryResults queryResults;
     try {
-      System.out.println("mongoCommand = " + mongoCommand);
       queryResults = new QueryResults();
       generateContent(request.getSession(), queryResults);
       final Parser parser = new Parser(mongoCommand);
