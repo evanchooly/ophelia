@@ -17,7 +17,6 @@ package com.antwerkz.ophelia;
 
 import com.antwerkz.ophelia.controllers.QueryResource;
 import com.antwerkz.ophelia.dao.MongoCommandDao;
-import com.antwerkz.ophelia.dropwizard.DevelopmentAssetsBundle;
 import com.antwerkz.ophelia.models.ConnectionInfo;
 import com.mongodb.MongoClient;
 import io.dropwizard.Application;
@@ -27,8 +26,6 @@ import io.dropwizard.setup.Environment;
 import io.dropwizard.views.ViewBundle;
 import org.eclipse.jetty.server.session.SessionHandler;
 import org.mongodb.morphia.Morphia;
-
-import java.io.File;
 
 public class OpheliaApplication extends Application<OpheliaConfiguration> {
     private Morphia morphia;
@@ -47,11 +44,7 @@ public class OpheliaApplication extends Application<OpheliaConfiguration> {
     @Override
     public void initialize(final Bootstrap<OpheliaConfiguration> bootstrap) {
         bootstrap.addBundle(new ViewBundle());
-        if (new File("src/main/resources").exists()) {
-            bootstrap.addBundle(new DevelopmentAssetsBundle());
-        } else {
-            bootstrap.addBundle(new AssetsBundle("/assets", "/assets", null, "assets"));
-        }
+        bootstrap.addBundle(new AssetsBundle("/assets", "/assets", null, "assets"));
         bootstrap.addBundle(new AssetsBundle("/META-INF/resources/webjars", "/webjars", null, "webjars"));
     }
 
