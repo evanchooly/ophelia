@@ -40,7 +40,7 @@
         <link href="assets/images/O.png" rel="shortcut icon" type="image/png">
         <script src="webjars/jquery/1.11.0/jquery.min.js"></script>
         <script src="webjars/bootstrap/2.2.1/js/bootstrap.min.js"></script>
-        <script src="webjars/angularjs/1.0.2/angular.js"></script>
+        <script src="webjars/angularjs/1.3.0-beta.13/angular.js"></script>
         <script src="webjars/angular-ui/0.4.0/angular-ui.js"></script>
         <script src="assets/js/ophelia.js"></script>
         <script src="assets/js/controllers.js"></script>

@@ -60,9 +60,11 @@ public class OpheliaApplication extends Application<OpheliaConfiguration> {
 
         environment.jersey().register(new QueryResource(this,
                                                         new MongoCommandDao(morphia.createDatastore(mongo, "ophelia"))));
+        environment.healthChecks().register("ophelia", new OpheliaHealthCheck());
     }
 
     public MongoClient getMongo() {
         return mongo;
     }
+
 }

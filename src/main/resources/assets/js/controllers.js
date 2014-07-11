@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 var app = angular.module('ophelia', ['ui']);
-function OpheliaController($scope, $http) {
+
+app.controller('OpheliaController', function($scope, $http) {
     angular.module('ophelia', ['ui']);
     var contextPath = location.pathname;
     if (contextPath == "/") {
@@ -225,4 +226,5 @@ function OpheliaController($scope, $http) {
      */
     resetState();
     get(contextPath + 'content');
-}
+})
+
