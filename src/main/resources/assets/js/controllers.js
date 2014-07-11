@@ -15,7 +15,7 @@
  */
 var app = angular.module('ophelia', ['ui']);
 
-app.controller('OpheliaController', function($scope, $http) {
+app.controller('OpheliaController', function($scope, $http, $sce) {
     angular.module('ophelia', ['ui']);
     var contextPath = location.pathname;
     if (contextPath == "/") {
@@ -31,6 +31,7 @@ app.controller('OpheliaController', function($scope, $http) {
     };
     $scope.showSaveBookmark = false;
     $scope.sofia = sofia;
+
     function resetState() {
         $scope.bookmarks = [];
         $scope.collections = [];
@@ -168,30 +169,33 @@ app.controller('OpheliaController', function($scope, $http) {
     $scope.syntaxHighlight = function (json) {
         // This function courtesy of StackOverflow user Pumbaa80
         // http://stackoverflow.com/questions/4810841/json-pretty-print-using-javascript
-        console.log("json = " + json);
         delete json.$$hashKey
         if (typeof json != 'string') {
             json = JSON.stringify(json, undefined, 2);
         }
         console.log("json = " + json);
-        console.log("json = " + json);
-        json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-        return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
-                function (match) {
-                    var cls = 'number';
-                    if (/^"/.test(match)) {
-                        if (/:$/.test(match)) {
-                            cls = 'key';
-                        } else {
-                            cls = 'string';
-                        }
-                    } else if (/true|false/.test(match)) {
-                        cls = 'boolean';
-                    } else if (/null/.test(match)) {
-                        cls = 'null';
+        json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+            .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
+            function (match) {
+                var cls = 'number';
+                if (/^"/.test(match)) {
+                    if (/:$/.test(match)) {
+                        cls = 'key';
+                    } else {
+                        cls = 'string';
                     }
-                    return '<span class="' + cls + '">' + match + '</span>';
-                });
+                } else if (/true|false/.test(match)) {
+                    cls = 'boolean';
+                } else if (/null/.test(match)) {
+                    cls = 'null';
+                }
+                return '<span class="' + cls + '">' + match + '</span>';
+            });
+        console.log("now json = " + json);
+
+        var html = $sce.trustAsHtml(json/*.slice(1, -1)*/);
+        console.log("html = " + html)
+        return html;
     };
     /*
      $scope.useBookmark = function (bookmark) {

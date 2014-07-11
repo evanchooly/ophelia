@@ -105,7 +105,7 @@
             <table>
                 <tr ng-repeat="row in results">
                     <td>
-                        <pre ng-bind-html-unsafe="syntaxHighlight(row)"></pre>
+                        <pre ng-bind-html="syntaxHighlight(row)"></pre>
                     </td>
                 </tr>
             </table>
