@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-var app = angular.module('ophelia', ['ui']);
+var app = angular.module('ophelia', ['ui.bootstrap']);
 
 app.controller('OpheliaController', function($scope, $http, $sce) {
     angular.module('ophelia', ['ui']);
@@ -193,9 +193,7 @@ app.controller('OpheliaController', function($scope, $http, $sce) {
             });
         console.log("now json = " + json);
 
-        var html = $sce.trustAsHtml(json/*.slice(1, -1)*/);
-        console.log("html = " + html)
-        return html;
+        return $sce.trustAsHtml(json/*.slice(1, -1)*/);
     };
     /*
      $scope.useBookmark = function (bookmark) {

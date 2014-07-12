@@ -12,7 +12,8 @@ logging:
   loggers:
 
     com.antwerkz: DEBUG
-    com.sun.jersey: DEBUG
+    com.sun.jersey: ERROR
+    org.eclipse.jetty: ERROR
 
   appenders:
     - type: console
