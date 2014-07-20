@@ -82,7 +82,7 @@
     <div class="row-fluid">
         <hr>
         <footer>
-            &copy; Justin Lee 2012
+            &copy; Justin Lee 2012-2014
             <div id="projectInfo">
                 <a href="https://github.com/evanchooly/ophelia">Ophelia at github</a>
             </div>

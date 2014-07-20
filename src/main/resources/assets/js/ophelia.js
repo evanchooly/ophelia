@@ -1,65 +1,74 @@
 sofia = {
-    appTitle: function () {
+        appTitle: function() {
         return "Ophelia";
     },
-    bookmarkExists: function () {
+    bookmarkExists: function() {
         return "Bookmark already exists";
     },
-    bookmarks: function () {
+    bookmarks: function() {
         return "Bookmarks";
     },
-    cancel: function () {
+    cancel: function() {
         return "Cancel";
     },
-    close: function () {
+    close: function() {
         return "Close";
     },
-    collections: function () {
+    collectionStats: function() {
+        return "Collection Stats";
+    },
+    collections: function() {
         return "Collections";
     },
-    count: function () {
+    count: function() {
         return "Count";
     },
-    invalidQuery: function (arg0) {
+    indexes: function() {
+        return "Indexes";
+    },
+    invalidQuery: function(arg0) {
         return "Bad query: {0}";
     },
-    load: function () {
+    load: function() {
         return "Load";
     },
-    loadBookmark: function () {
+    loadBookmark: function() {
         return "Load Bookmark";
     },
-    noResults: function () {
+    noResults: function() {
         return "No results found";
     },
-    parameters: function () {
+    parameters: function() {
         return "Parameters";
     },
-    queryBookmark: function () {
+    queryBookmark: function() {
         return "Bookmark";
     },
-    queryExplain: function () {
+    queryExplain: function() {
         return "Explain";
     },
-    queryExport: function () {
+    queryExport: function() {
         return "Export";
     },
-    queryLimit: function () {
+    queryLimit: function() {
         return "Limit:";
     },
-    queryShowCount: function () {
+    queryShowCount: function() {
         return "Show Count:";
     },
-    querySubmit: function () {
+    querySubmit: function() {
         return "Query";
     },
-    resultCount: function () {
+    resultCount: function() {
         return "Result count:";
     },
-    save: function () {
+    save: function() {
         return "Save";
     },
-    unknownQueryMethod: function (arg0) {
+    selectCollection: function() {
+        return "Choose a collection";
+    },
+    unknownQueryMethod: function(arg0) {
         return "Unknown or unsupported query method: {0}";
     }
 };

@@ -24,6 +24,121 @@
                     <table id="countTable">
                         <tr ng-repeat="(key, value) in collections">
                             <td class="dbName">
+                                <div ng-click="selectCollection(key)">{{key}}</div>
+                            </td>
+                            <td class="count"><span class="countContent">{{value}}</span></td>
+                        </tr>
+                    </table>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="span6 main-content">
+        <tabset>
+            <tab heading="Query">
+                <div class="query">
+                    <div id="error" ng-show="showError">{{errorMessage}}</div>
+                    <form id="queryForm" action="/export" ng-model="query" method="post">
+                        <table>
+                            <tr>
+                                <td class="queryColumn" rowspan="4">
+                                    <textarea id="mongo" name="queryString" rows="5" ng-model="query.queryString"></textarea>
+
+                                    <div id="query-buttons">
+                                        <input id="queryButton" type="button" value="{{sofia.querySubmit()}}"
+                                               ng-click="submitQuery()">
+                                        <input id="explainButton" type="button" value="{{sofia.queryExplain()}}"
+                                               ng-click="explain()">
+                                        <input id="exportButton" type="submit" value="{{sofia.queryExport()}}">
+                                        <input type="hidden" name="database" value="{{query.database}}"
+                                               ng-model="query.database"/>
+                                        <!--<input id="bookmark" type="button" value="{{sofia.queryBookmark()}}" ng-click="showSaveBookmark=true;">-->
+                                    </div>
+                                </td>
+                                <!--
+                                    <td>
+                                        <label for="bookmark">{{sofia.queryBookmark()}}
+                                            <span ng-show="bookmarks.length > 0">(<a
+                                                ng-click="modalShown=true">{{sofia.load()}}</a>)</span>
+                                        </label>
+                                    </td>
+                                    <td>
+                                        <input id="bookmark" name="bookmark" type="text" ng-model="query.bookmark">
+                                    </td>
+                                    <td class="paramsColumn" rowspan="4">
+                                        <table id="queryParameters" ng-hide="query.params.length == 0">
+                                            <thead>
+                                                <tr>
+                                                    <td colspan="2"><span class="nav-header">{{sofia.parameters()}}</span></td>
+                                                </tr>
+                                                <tr ng-repeat="param in query.params">
+                                                    <td>{{param.key}}</td>
+                                                    <td><input type="text" ></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>fixed</td>
+                                                    <td><input type="text" ></td>
+                                                </tr>
+                                                <tr ng-repeat="(name, value) in query.params">
+                                                    <td>{{name}}</td>
+                                                    <td><input type="text" ng-model="query.params[name]"></td>
+                                                </tr>
+                                            </thead>
+                                        </table>
+                                    </td>
+                                -->
+                            </tr>
+                            <tr>
+                                <td><label for="limit">{{sofia.queryLimit()}}</label></td>
+                                <td><input id="limit" name="limit" type="number" ng-model="query.limit"></td>
+                            </tr>
+                            <tr>
+                                <td><label for="showCount">{{sofia.queryShowCount()}}</label></td>
+                                <td><input id="showCount" name="showCount" type="checkbox" ng-model="query.showCount"></td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+                <div class="table" ng-show="showCount">
+                    {{sofia.resultCount()}} <span id="countValue">{{count}}</span>
+                </div>
+                <div class="table">
+                    <table>
+                        <tr ng-repeat="row in results">
+                            <td>
+                                <pre ng-bind-html="syntaxHighlight(row)"></pre>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </tab>
+            <tab heading="Manage">
+                dude!
+            </tab>
+        </tabset>
+    </div>
+    <div class="span3">
+        <div class="well sidebar-nav collections">
+            <ul class="nav nav-list">
+                <li class="nav-header">{{sofia.collectionStats()}}</li>
+                <li class="nav-pills" ng-switch="collection.length">
+                    <div class="user-advice" ng-switch-when="0">{{sofia.selectCollection()}}</div>
+                    <table id="countTable" ng-switch-default>
+                        <tr ng-repeat="(key, value) in collectionStats">
+                            <td class="dbName">
+                                <div ng-click="query.queryString='db.' + key + '.find( {\n\n} )'">{{key}}</div>
+                            </td>
+                            <td class="count"><span class="countContent">{{value}}</span></td>
+                        </tr>
+                    </table>
+                </li>
+            </ul>
+            <ul class="nav nav-list">
+                <li class="nav-header">{{sofia.indexes()}}</li>
+                <li class="nav-pills">
+                    <table id="countTable">
+                        <tr ng-repeat="(key, value) in indexes">
+                            <td class="dbName">
                                 <div ng-click="query.queryString='db.' + key + '.find( {\n\n} )'">{{key}}</div>
                             </td>
                             <td class="count"><span class="countContent">{{value}}</span></td>
@@ -33,85 +148,9 @@
             </ul>
         </div>
     </div>
-
-    <div class="span9 main-content">
-        <div class="query">
-            <div id="error" ng-show="showError">{{errorMessage}}</div>
-            <form id="queryForm" action="/export" ng-model="query" method="post">
-            <table>
-                    <tr>
-                        <td class="queryColumn" rowspan="4">
-                            <textarea id="mongo" name="queryString" rows="5" ng-model="query.queryString"></textarea>
-
-                            <div id="query-buttons">
-                                <input id="queryButton" type="button" value="{{sofia.querySubmit()}}"
-                                       ng-click="submitQuery()">
-                                <input id="explainButton" type="button" value="{{sofia.queryExplain()}}"
-                                       ng-click="explain()">
-                                <input id="exportButton" type="submit" value="{{sofia.queryExport()}}">
-                                <input type="hidden" name="database" value="{{query.database}}"
-                                       ng-model="query.database"/>
-                                <!--<input id="bookmark" type="button" value="{{sofia.queryBookmark()}}" ng-click="showSaveBookmark=true;">-->
-                            </div>
-                        </td>
-                        <!--
-                            <td>
-                                <label for="bookmark">{{sofia.queryBookmark()}}
-                                    <span ng-show="bookmarks.length > 0">(<a
-                                        ng-click="modalShown=true">{{sofia.load()}}</a>)</span>
-                                </label>
-                            </td>
-                            <td>
-                                <input id="bookmark" name="bookmark" type="text" ng-model="query.bookmark">
-                            </td>
-                            <td class="paramsColumn" rowspan="4">
-                                <table id="queryParameters" ng-hide="query.params.length == 0">
-                                    <thead>
-                                        <tr>
-                                            <td colspan="2"><span class="nav-header">{{sofia.parameters()}}</span></td>
-                                        </tr>
-                                        <tr ng-repeat="param in query.params">
-                                            <td>{{param.key}}</td>
-                                            <td><input type="text" ></td>
-                                        </tr>
-                                        <tr>
-                                            <td>fixed</td>
-                                            <td><input type="text" ></td>
-                                        </tr>
-                                        <tr ng-repeat="(name, value) in query.params">
-                                            <td>{{name}}</td>
-                                            <td><input type="text" ng-model="query.params[name]"></td>
-                                        </tr>
-                                    </thead>
-                                </table>
-                            </td>
-                        -->
-                    </tr>
-                    <tr>
-                        <td><label for="limit">{{sofia.queryLimit()}}</label></td>
-                        <td><input id="limit" name="limit" type="number" ng-model="query.limit"></td>
-                    </tr>
-                    <tr>
-                        <td><label for="showCount">{{sofia.queryShowCount()}}</label></td>
-                        <td><input id="showCount" name="showCount" type="checkbox" ng-model="query.showCount"></td>
-                    </tr>
-                </table>
-            </form>
-        </div>
-        <div class="table" ng-show="showCount">
-            {{sofia.resultCount()}} <span id="countValue">{{count}}</span>
-        </div>
-        <div class="table">
-            <table>
-                <tr ng-repeat="row in results">
-                    <td>
-                        <pre ng-bind-html="syntaxHighlight(row)"></pre>
-                    </td>
-                </tr>
-            </table>
-        </div>
-    </div>
 </div>
+
+<#--
 <div id="bookmarkModal" ng-show="showSaveBookmark">
     <div class="modal-header">
         <button type="button" class="close" ng-click="showSaveBookmark=false;">×</button>
@@ -132,7 +171,9 @@
         <button class="saveButton" ng-click="saveBookmark(newBookmark)">{{sofia.save()}}</button>
     </div>
 </div>
+-->
 
+<#--
 <div ui-modal ng-model="modalShown">
     <div class="modal-body">
         <div class="well sidebar-nav">
@@ -153,7 +194,8 @@
         </div>
     </div>
 
-    <!--<div class="modal-footer">-->
-    <!--<a class="btn" ng-click="modalShown=false" href="">{{sofia.close()}}</a>-->
-    <!--</div>-->
+    <!--<div class="modal-footer">&ndash;&gt;
+    <!--<a class="btn" ng-click="modalShown=false" href="">{{sofia.close()}}</a>&ndash;&gt;
+    <!--</div>&ndash;&gt;
 </div>
+-->
