@@ -15,17 +15,19 @@
  */
 package com.antwerkz.ophelia.models;
 
+import com.antwerkz.ophelia.OpheliaApplication;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.mongodb.DB;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import com.antwerkz.ophelia.OpheliaApplication;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.mongodb.DB;
-
 public class ConnectionInfo {
   private String database;
+
+  private String collection;
 
   private String host = "127.0.0.1";
 
@@ -33,7 +35,15 @@ public class ConnectionInfo {
 
   private transient OpheliaApplication application;
 
-  public String getDatabase() {
+    public String getCollection() {
+        return collection;
+    }
+
+    public void setCollection(final String collection) {
+        this.collection = collection;
+    }
+
+    public String getDatabase() {
     return database;
   }
 

@@ -42,7 +42,7 @@
                         <table>
                             <tr>
                                 <td class="queryColumn" rowspan="4">
-                                    <textarea id="mongo" name="queryString" rows="5" ng-model="query.queryString"></textarea>
+                                    <textarea id="mongo" name="queryString" rows="5" ng-model="operation.query"></textarea>
 
                                     <div id="query-buttons">
                                         <input id="queryButton" type="button" value="{{sofia.querySubmit()}}"
@@ -63,15 +63,15 @@
                                         </label>
                                     </td>
                                     <td>
-                                        <input id="bookmark" name="bookmark" type="text" ng-model="query.bookmark">
+                                        <input id="bookmark" name="bookmark" type="text" ng-model="operation.bookmark">
                                     </td>
                                     <td class="paramsColumn" rowspan="4">
-                                        <table id="queryParameters" ng-hide="query.params.length == 0">
+                                        <table id="queryParameters" ng-hide="operation.params.length == 0">
                                             <thead>
                                                 <tr>
                                                     <td colspan="2"><span class="nav-header">{{sofia.parameters()}}</span></td>
                                                 </tr>
-                                                <tr ng-repeat="param in query.params">
+                                                <tr ng-repeat="param in operation.params">
                                                     <td>{{param.key}}</td>
                                                     <td><input type="text" ></td>
                                                 </tr>
@@ -79,9 +79,9 @@
                                                     <td>fixed</td>
                                                     <td><input type="text" ></td>
                                                 </tr>
-                                                <tr ng-repeat="(name, value) in query.params">
+                                                <tr ng-repeat="(name, value) in operation.params">
                                                     <td>{{name}}</td>
-                                                    <td><input type="text" ng-model="query.params[name]"></td>
+                                                    <td><input type="text" ng-model="operation.params[name]"></td>
                                                 </tr>
                                             </thead>
                                         </table>
@@ -90,11 +90,11 @@
                             </tr>
                             <tr>
                                 <td><label for="limit">{{sofia.queryLimit()}}</label></td>
-                                <td><input id="limit" name="limit" type="number" ng-model="query.limit"></td>
+                                <td><input id="limit" name="limit" type="number" ng-model="operation.limit"></td>
                             </tr>
                             <tr>
                                 <td><label for="showCount">{{sofia.queryShowCount()}}</label></td>
-                                <td><input id="showCount" name="showCount" type="checkbox" ng-model="query.showCount"></td>
+                                <td><input id="showCount" name="showCount" type="checkbox" ng-model="operation.showCount"></td>
                             </tr>
                         </table>
                     </form>
@@ -136,12 +136,11 @@
             <ul class="nav nav-list">
                 <li class="nav-header">{{sofia.indexes()}}</li>
                 <li class="nav-pills">
-                    <table id="countTable">
-                        <tr ng-repeat="(key, value) in indexes">
-                            <td class="dbName">
-                                <div ng-click="query.queryString='db.' + key + '.find( {\n\n} )'">{{key}}</div>
+                        <table id="countTable">
+                        <tr ng-repeat="index in collectionIndexes">
+                            <td>
+                                <pre ng-bind-html="syntaxHighlight(index)"></pre>
                             </td>
-                            <td class="count"><span class="countContent">{{value}}</span></td>
                         </tr>
                     </table>
                 </li>

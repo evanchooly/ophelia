@@ -21,11 +21,13 @@ var app = angular.module('ophelia', ['ui', 'ui.bootstrap'])
             contextPath = "";
         }
         $scope.view = 'query.html';
-        $scope.query = {
-            queryString: '',
+        $scope.operation = {
+            query: '',
+            update: '',
             database: '',
             limit: 100,
             showCount: true,
+            multiple: false,
             params: {}
         };
         $scope.showSaveBookmark = false;
@@ -33,18 +35,21 @@ var app = angular.module('ophelia', ['ui', 'ui.bootstrap'])
 
         function resetState() {
             $scope.bookmarks = [];
+            $scope.collection = null;
             $scope.collections = [];
-            $scope.collection = '';
+            $scope.collectionStats = null;
+            $scope.collectionIndexes = null;
             $scope.count = -1;
             $scope.database = '';
             $scope.databases = [];
+            $scope.collectionStats = [];
             $scope.errorMessage = '';
             $scope.results = [];
             $scope.showCount = false;
             $scope.showError = false;
             $scope.showList = false;
             $scope.showSaveBookmark = false;
-            $scope.query['bookmark'] = '';
+            $scope.operation['bookmark'] = '';
         }
 
         /*
@@ -52,7 +57,7 @@ var app = angular.module('ophelia', ['ui', 'ui.bootstrap'])
          $http({
          method: 'POST',
          url: contextPath + '/ophelia/app/export',
-         data: $scope.query,
+         data: $scope.operation,
          headers: {
          "Content-Type": "application/json"
          }
@@ -70,7 +75,7 @@ var app = angular.module('ophelia', ['ui', 'ui.bootstrap'])
             $http({
                 method: 'POST',
                 url: contextPath + 'query',
-                data: $scope.query,
+                data: $scope.operation,
                 headers: {
                     "Content-Type": "application/json"
                 }
@@ -79,20 +84,34 @@ var app = angular.module('ophelia', ['ui', 'ui.bootstrap'])
                     processResponse(data);
                 })
                 .error(function (data, status, headers, config) {
-                    alert(data)
+                    console.info(data)
                     angular.element('.errors').html(data.errors.join('<br>')).slideDown();
                     $scope.errorMessage = status.responseText;
                 });
         };
         $scope.selectCollection = function (key) {
             $scope.collection = key
-            $scope.query.queryString='db.' + key + '.find( {\n\n} )'
+            $scope.operation.queryString='db.' + key + '.find( {\n\n} )'
+            $http({
+                method: 'POST',
+                url: contextPath + 'collectionInfo',
+                data: key,
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }).success(function (data, status, headers, config) {
+                $scope.collectionStats = data['collectionStats'];
+                $scope.collectionIndexes = data['indexes'];
+            }).error(function (data, status, headers, config) {
+                angular.element('.errors').html(data.errors.join('<br>')).slideDown();
+                $scope.errorMessage = status.responseText;
+            });
         }
         $scope.explain = function () {
             $http({
                 method: 'POST',
                 url: contextPath + 'explain',
-                data: $scope.query,
+                data: $scope.operation,
                 headers: {
                     "Content-Type": "application/json"
                 }
@@ -106,6 +125,7 @@ var app = angular.module('ophelia', ['ui', 'ui.bootstrap'])
                 });
         };
         $scope.update = function (db) {
+            resetState();
             get(contextPath + 'database/' + db);
             $scope.showList = false;
         };
@@ -116,7 +136,7 @@ var app = angular.module('ophelia', ['ui', 'ui.bootstrap'])
                     processResponse(data);
                 })
                 .error(function (data, status, headers, config) {
-                    alert(data);
+                    console.error(data);
                     $scope.errorMessage = status.responseText;
                 });
         }
@@ -135,11 +155,13 @@ var app = angular.module('ophelia', ['ui', 'ui.bootstrap'])
                     $scope.collections = response[key];
                 } else if (key == 'databaseList') {
                     $scope.databases = response[key];
+                } else if (key == 'collectionStats') {
+                    $scope.collectionStats = response[key];
                 } else if (key == 'error') {
                     $scope.errorMessage = response[key];
                     $scope.showError = true;
                 } else if (key == 'info') {
-                    $scope.query.database = response[key].database;
+                    $scope.operation.database = response[key].database;
                 } else {
                     console.log("no handler for " + key);
                 }
@@ -149,7 +171,7 @@ var app = angular.module('ophelia', ['ui', 'ui.bootstrap'])
         $scope.syntaxHighlight = function (json) {
             // This function courtesy of StackOverflow user Pumbaa80
             // http://stackoverflow.com/questions/4810841/json-pretty-print-using-javascript
-//            delete json.$$hashKey
+            delete json.$$hashKey
             if (typeof json != 'string') {
                 json = JSON.stringify(json, undefined, 2);
             }
@@ -170,14 +192,14 @@ var app = angular.module('ophelia', ['ui', 'ui.bootstrap'])
                     }
                     return '<span class="' + cls + '">' + match + '</span>';
                 });
-            console.log("now json = " + json);
+//            console.log("now json = " + json);
 
             return $sce.trustAsHtml(json/*.slice(1, -1)*/);
         };
 
         /*
          $scope.useBookmark = function (bookmark) {
-         $scope.query.queryString = bookmark['queryString'];
+         $scope.operation.queryString = bookmark['queryString'];
          $scope.modalShown = false;
          //        $scope.queryChange();
          };
@@ -186,11 +208,11 @@ var app = angular.module('ophelia', ['ui', 'ui.bootstrap'])
          $scope.modalShown = false;
          };
          $scope.saveBookmark = function (bookmark) {
-         $scope.query.bookmark = bookmark;
+         $scope.operation.bookmark = bookmark;
          $http({
          method: 'POST',
          url: contextPath + '/ophelia/app/bookmark',
-         data:  $scope.query,
+         data:  $scope.operation,
          headers: {
          "Content-Type": "application/json"
          }

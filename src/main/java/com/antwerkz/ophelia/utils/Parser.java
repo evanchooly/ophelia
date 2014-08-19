@@ -15,15 +15,6 @@
  */
 package com.antwerkz.ophelia.utils;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringReader;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.TreeMap;
-
 import com.antwerkz.ophelia.controllers.InvalidQueryException;
 import com.antwerkz.ophelia.models.MongoCommand;
 import com.antwerkz.sofia.Ophelia;
@@ -33,6 +24,14 @@ import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import org.bson.types.ObjectId;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class Parser {
   private BasicDBObject queryExpression;
@@ -50,7 +49,7 @@ public class Parser {
   private Integer limit;
 
   public Parser(MongoCommand mongoCommand) {
-    this.queryString = scrub(mongoCommand.expand());
+//    this.queryString = scrub(mongoCommand.expand());
     if (this.queryString.endsWith(";")) {
       queryString = queryString.substring(0, queryString.length() - 1);
     }
@@ -61,40 +60,6 @@ public class Parser {
       throw new InvalidQueryException(Ophelia.invalidQuery(mongoCommand));
     }
     limit = mongoCommand.getLimit();
-  }
-
-  private String scrub(String query) {
-    String scrubbed = scrubObjectIds(query);
-    scrubbed = scrubObjectIds(scrubbed);
-    return scrubbed;
-  }
-
-  private String scrubObjectIds(String query) {
-    int index = -1;
-    while ((index = query.indexOf("ObjectId(\"", index + 1)) != -1) {
-      String slug = query.substring(index - 4, index);
-      if (slug.equals("new ")) {
-        index -= 4;
-      }
-      query = String.format("%s%s%s", query.substring(0, index),
-          extractValue(query, index),
-          query.substring(query.indexOf(")", index) + 1));
-      index = query.indexOf(")", index);
-    }
-    return query;
-  }
-
-  private String extractValue(String value, int index) {
-    int first = value.indexOf("\"", index) + 1;
-    int last = value.indexOf("\"", first + 1);
-    String id = value.substring(first, last);
-    Map<String, String> oid = new TreeMap<>();
-    oid.put("$oid", id);
-    try {
-      return new ObjectMapper().writeValueAsString(oid);
-    } catch (IOException e) {
-      throw new RuntimeException(e.getMessage(), e);
-    }
   }
 
   private String consume(int count) {

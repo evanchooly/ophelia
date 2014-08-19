@@ -18,6 +18,7 @@ package com.antwerkz.ophelia;
 import com.antwerkz.ophelia.controllers.QueryResource;
 import com.antwerkz.ophelia.dao.MongoCommandDao;
 import com.antwerkz.ophelia.models.ConnectionInfo;
+import com.antwerkz.ophelia.utils.MongoUtil;
 import com.mongodb.MongoClient;
 import io.dropwizard.Application;
 import io.dropwizard.assets.AssetsBundle;
@@ -55,11 +56,13 @@ public class OpheliaApplication extends Application<OpheliaConfiguration> {
 
         mongo = new MongoClient();
 
+        MongoUtil mongoUtil = new MongoUtil(mongo);
+
         environment.getApplicationContext().setSessionsEnabled(true);
         environment.getApplicationContext().setSessionHandler(new SessionHandler());
 
         environment.jersey().register(new QueryResource(this,
-                                                        new MongoCommandDao(morphia.createDatastore(mongo, "ophelia"))));
+                                                        new MongoCommandDao(morphia.createDatastore(mongo, "ophelia")), mongoUtil));
         environment.healthChecks().register("ophelia", new OpheliaHealthCheck());
     }
 
