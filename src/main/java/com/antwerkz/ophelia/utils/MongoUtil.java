@@ -27,34 +27,16 @@ public class MongoUtil {
         return Arrays.asList(getCursor(command).explain().toMap());
     }
 
-/*
-    private DBCursor reconstructQuery(final DB db) {
-        DBObject eval = (DBObject) db.eval(expanded.replace(method, "find"));
-        DBCursor query = db.getCollection(collection).find(
-                                                              (DBObject) extract(eval, "_query", "operation"),
-                                                              (DBObject) eval.get("_fields"));
-        query.sort((DBObject) extract(eval, "_query", "orderby"));
-        query.batchSize(((Double) eval.get("_batchSize")).intValue());
-        int limit = ((Double) eval.get("_limit")).intValue();
-        if (limit == 0) {
-            limit = getLimit();
-        }
-        query.limit(limit == 0 ? DEFAULT_LIMIT : Math.min(limit, DEFAULT_LIMIT));
-        query.skip(((Double) eval.get("_skip")).intValue());
-        return query;
-    }
-*/
-
     public List<Map> query(MongoCommand command) {
         DBCursor query = getCursor(command);
-//        query.sort((DBObject) extract(eval, "_query", "orderby"));
+        query.sort(command.getSortDocument());
         query.limit(command.getLimit());
-//        query.skip(((Double) eval.get("_skip")).intValue());
         return extract(query);
     }
 
     private DBCursor getCursor(final MongoCommand command) {
-        return client.getDB(command.getDatabase()).getCollection(command.getCollection()).find(command.getQueryDocument());
+        DBCollection collection = client.getDB(command.getDatabase()).getCollection(command.getCollection());
+        return collection.find(command.getQueryDocument(), command.getProjectionsDocument());
     }
 
     public List<Map> insert(final MongoCommand command) {

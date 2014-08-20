@@ -216,7 +216,7 @@ public class QueryResource {
                            @FormParam("collection") String collection) throws IOException {
         try {
             MongoCommand mongoCommand = new MongoCommand(/*queryString*/);
-            mongoCommand.setNamespace(database, collection);
+            mongoCommand.namespace(database, collection);
             final Parser parser = new Parser(mongoCommand);
             parser.setLimit(null);
             ResponseBuilder response = Response.ok(parser.export(getDB(mongoCommand.getDatabase())));

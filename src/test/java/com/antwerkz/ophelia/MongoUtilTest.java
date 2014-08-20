@@ -17,7 +17,10 @@ package com.antwerkz.ophelia;
 
 import com.antwerkz.ophelia.models.MongoCommand;
 import com.antwerkz.ophelia.utils.MongoUtil;
+import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import org.bson.types.ObjectId;
 import org.testng.Assert;
@@ -25,6 +28,7 @@ import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -52,10 +56,10 @@ public class MongoUtilTest {
         db.getCollection(COLLECTION_NAME).drop();
 
         mongoUtil.insert(insert("{name : \"John Doe\", \"age\" : 23 }")
-                             .setNamespace(DATABASE_NAME, COLLECTION_NAME));
+                             .namespace(DATABASE_NAME, COLLECTION_NAME));
 
         MongoCommand query = query("{}")
-                                 .setNamespace(DATABASE_NAME, COLLECTION_NAME);
+                                 .namespace(DATABASE_NAME, COLLECTION_NAME);
 
         Iterator<Map> iterator = mongoUtil.query(query).iterator();
         Map map = iterator.next();
@@ -63,10 +67,44 @@ public class MongoUtilTest {
         Assert.assertEquals(map.get("age"), 23);
     }
 
-/*
     @Test
     public void fields() throws IOException {
-        DBCollection collection = db.getCollection("fields");
+        generateData();
+        MongoCommand query = query("")
+                                 .setProjections("{count:0}")
+                                 .namespace(DATABASE_NAME, COLLECTION_NAME);
+
+        List<Map> results = mongoUtil.query(query);
+        for (Map result : results) {
+            Assert.assertNull(result.get("count"));
+        }
+    }
+
+    @Test
+    public void sort() throws IOException {
+        generateData();
+        MongoCommand query = query("")
+                                 .namespace(DATABASE_NAME, COLLECTION_NAME);
+
+        Assert.assertEquals(mongoUtil.query(query).iterator().next().get("count"), 0);
+
+        query.setSort("{count:-1}");
+        Assert.assertEquals(mongoUtil.query(query).iterator().next().get("count"), 9);
+    }
+
+    @Test
+    public void limit() throws IOException {
+        generateData();
+        MongoCommand query = query("")
+                                 .setLimit(5)
+                                 .namespace(DATABASE_NAME, COLLECTION_NAME);
+
+        Assert.assertEquals(mongoUtil.query(query).size(), 5);
+
+    }
+
+    private void generateData() {
+        DBCollection collection = db.getCollection(COLLECTION_NAME);
         collection.drop();
         List<DBObject> list = new ArrayList<>();
         for (int x = 0; x < 10; x++) {
@@ -77,22 +115,17 @@ public class MongoUtilTest {
             list.add(objects);
         }
         collection.insert(list);
-        List<Map> results = new MongoCommand("db.users.find({}, {count:0});").execute(db);
-        for (Map result : results) {
-            Assert.assertNull(result.get("count"));
-        }
     }
-*/
 
     @Test
     public void emptyFind() {
         db.getCollection(COLLECTION_NAME).drop();
 
         mongoUtil.insert(insert("{name : \"John Doe\", \"age\" : 23 }")
-                             .setNamespace(DATABASE_NAME, COLLECTION_NAME));
+                             .namespace(DATABASE_NAME, COLLECTION_NAME));
 
         MongoCommand query = query("")
-                                 .setNamespace(DATABASE_NAME, COLLECTION_NAME);
+                                 .namespace(DATABASE_NAME, COLLECTION_NAME);
         Iterator<Map> iterator = mongoUtil.query(query).iterator();
 
         Map map = iterator.next();
@@ -103,7 +136,7 @@ public class MongoUtilTest {
     @Test
     public void systemIndexes() throws IOException {
         MongoCommand query = query("")
-                                 .setNamespace(DATABASE_NAME, "system.indexes");
+                                 .namespace(DATABASE_NAME, "system.indexes");
         Iterator<Map> iterator = mongoUtil.query(query).iterator();
         Assert.assertTrue(iterator.hasNext());
     }
@@ -113,17 +146,15 @@ public class MongoUtilTest {
         db.getCollection(COLLECTION_NAME).drop();
 
         mongoUtil.insert(insert("{name : \"John Doe\", \"age\" : 23 }")
-                             .setNamespace(DATABASE_NAME, COLLECTION_NAME));
+                             .namespace(DATABASE_NAME, COLLECTION_NAME));
 
-        Iterator<Map> iterator = mongoUtil.query(query("{}").setNamespace(DATABASE_NAME, COLLECTION_NAME))
-                                          .iterator();
-        Map map = iterator.next();
+        Map map = mongoUtil.query(query("{}").namespace(DATABASE_NAME, COLLECTION_NAME))
+                           .iterator().next();
 
-
-        MongoCommand query = query(format("{ _id : ObjectId(\"%s\") }", map.get("_id").toString()))
-                                 .setNamespace(DATABASE_NAME, COLLECTION_NAME);
-        iterator = mongoUtil.query(query).iterator();
-        //        new MongoCommand("db.Collection.find( { _id : ObjectId(\"4f54216718c69681f6f14e13\") })").execute(db);
+        Map loaded = mongoUtil.query(query(format("{ _id : ObjectId(\"%s\") }", map.get("_id").toString()))
+                                         .namespace(DATABASE_NAME, COLLECTION_NAME))
+                              .iterator().next();
+        Assert.assertEquals(map, loaded);
     }
 
     /*
@@ -143,7 +174,7 @@ public class MongoUtilTest {
                                           + "count : 1,"
                                           + "info : {x : 203, y : 102}" +
                                           "})")
-                                        .setNamespace(DATABASE_NAME, COLLECTION_NAME);
+                                        .namespace(DATABASE_NAME, COLLECTION_NAME);
         List<Map> explain = mongoUtil.explain(mongoCommand);
         Assert.assertTrue(explain.iterator().hasNext());
     }

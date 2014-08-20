@@ -17,7 +17,7 @@ package com.antwerkz.ophelia.models;
 
 import com.antwerkz.ophelia.controllers.InvalidQueryException;
 import com.antwerkz.ophelia.utils.JacksonMapper;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.mongodb.BasicDBObject;
@@ -42,41 +42,29 @@ import java.util.TreeMap;
 public class MongoCommand extends MongoModel<MongoCommand> {
     public static final int DEFAULT_LIMIT = 100;
 
-    @JsonProperty
-    private String database;
-
-    @JsonProperty
+    private String bookmark;
     private String collection;
-
-    @JsonProperty
+    private String database;
+    private String insert;
+    private Integer limit;
+    private Boolean multiple;
+    private Map<String, String> params = new HashMap<>();
+    private String projections;
     private String query;
-
-    private DBObject queryDocument;
-
-    @JsonProperty
+    private Boolean showCount;
+    private String sort;
     private String update;
 
-    private DBObject updateDocument;
-
-    @JsonProperty
-    private String insert;
-
+    @JsonIgnore
     private DBObject insertDocument;
-
-    @JsonProperty
-    private String bookmark;
-
-    @JsonProperty
-    private Integer limit;
-
-    @JsonProperty
-    private Boolean multiple;
-
-    @JsonProperty
-    private Boolean showCount;
-
-    @JsonProperty
-    private Map<String, String> params = new HashMap<>();
+    @JsonIgnore
+    private DBObject projectionsDocument;
+    @JsonIgnore
+    private DBObject queryDocument;
+    @JsonIgnore
+    private DBObject sortDocument;
+    @JsonIgnore
+    private DBObject updateDocument;
 
     public MongoCommand() {
         showCount = true;
@@ -104,6 +92,12 @@ public class MongoCommand extends MongoModel<MongoCommand> {
         return command;
     }
 
+    public MongoCommand namespace(String database, String collection) {
+        this.database = database;
+        this.collection = collection;
+        return this;
+    }
+
     public String getBookmark() {
         return bookmark;
     }
@@ -122,13 +116,6 @@ public class MongoCommand extends MongoModel<MongoCommand> {
         return database;
     }
 
-    public DBObject getInsertDocument() {
-        if (insertDocument == null && insert != null) {
-            insertDocument = parse(insert);
-        }
-        return insertDocument;
-    }
-
     public Integer getLimit() {
         return limit == null || limit < 1 ? DEFAULT_LIMIT : limit;
     }
@@ -136,7 +123,6 @@ public class MongoCommand extends MongoModel<MongoCommand> {
     public MongoCommand setLimit(Integer limit) {
         this.limit = limit;
         return this;
-
     }
 
     public Boolean getMultiple() {
@@ -145,12 +131,6 @@ public class MongoCommand extends MongoModel<MongoCommand> {
 
     public MongoCommand setMultiple(final Boolean multiple) {
         this.multiple = multiple;
-        return this;
-    }
-
-    public MongoCommand setNamespace(String database, String collection) {
-        this.database = database;
-        this.collection = collection;
         return this;
     }
 
@@ -163,19 +143,21 @@ public class MongoCommand extends MongoModel<MongoCommand> {
         return this;
     }
 
+    public String getProjections() {
+        return projections;
+    }
+
+    public MongoCommand setProjections(final String projections) {
+        this.projections = projections;
+        return this;
+    }
+
     public String getQuery() {
         return query;
     }
 
     public void setQuery(final String query) {
         this.query = query;
-    }
-
-    public DBObject getQueryDocument() {
-        if (queryDocument == null && query != null) {
-            queryDocument = parse(query);
-        }
-        return queryDocument;
     }
 
     public Boolean getShowCount() {
@@ -185,7 +167,15 @@ public class MongoCommand extends MongoModel<MongoCommand> {
     public MongoCommand setShowCount(Boolean showCount) {
         this.showCount = coerce(showCount);
         return this;
+    }
 
+    public String getSort() {
+        return sort;
+    }
+
+    public MongoCommand setSort(final String sort) {
+        this.sort = sort;
+        return this;
     }
 
     public String getUpdate() {
@@ -195,6 +185,35 @@ public class MongoCommand extends MongoModel<MongoCommand> {
     public MongoCommand setUpdate(final String update) {
         this.update = update;
         return this;
+    }
+
+    public DBObject getInsertDocument() {
+        if (insertDocument == null && insert != null) {
+            insertDocument = parse(insert);
+        }
+        return insertDocument;
+    }
+
+    public DBObject getProjectionsDocument() {
+        if (projectionsDocument == null && projections != null) {
+            projectionsDocument = parse(projections);
+        }
+        return projectionsDocument;
+    }
+
+    public DBObject getQueryDocument() {
+        if (queryDocument == null && query != null) {
+            queryDocument = parse(query);
+        }
+        return queryDocument;
+    }
+
+    public DBObject getSortDocument() {
+        if (sortDocument == null && sort != null) {
+            sortDocument = parse(sort);
+        }
+
+        return sortDocument;
     }
 
     public DBObject getUpdateDocument() {
@@ -215,27 +234,6 @@ public class MongoCommand extends MongoModel<MongoCommand> {
             }
         }
         return query.replace("\n", "");
-    }
-
-    private String scrub(String query) {
-        String scrubbed = scrubObjectIds(query);
-        scrubbed = scrubObjectIds(scrubbed);
-        return scrubbed;
-    }
-
-    private String scrubObjectIds(String query) {
-        int index = -1;
-        while ((index = query.indexOf("ObjectId(\"", index + 1)) != -1) {
-            String slug = query.substring(index - 4, index);
-            if (slug.equals("new ")) {
-                index -= 4;
-            }
-            query = String.format("%s%s%s", query.substring(0, index),
-                                  extractValue(query, index),
-                                  query.substring(query.indexOf(")", index) + 1));
-            index = query.indexOf(")", index);
-        }
-        return query;
     }
 
     private String extractValue(String value, int index) {
@@ -271,6 +269,27 @@ public class MongoCommand extends MongoModel<MongoCommand> {
         } catch (IOException e) {
             throw new InvalidQueryException(e.getMessage(), e);
         }
+    }
+
+    private String scrub(String query) {
+        String scrubbed = scrubObjectIds(query);
+        scrubbed = scrubObjectIds(scrubbed);
+        return scrubbed;
+    }
+
+    private String scrubObjectIds(String query) {
+        int index = -1;
+        while ((index = query.indexOf("ObjectId(\"", index + 1)) != -1) {
+            String slug = query.substring(index - 4, index);
+            if (slug.equals("new ")) {
+                index -= 4;
+            }
+            query = String.format("%s%s%s", query.substring(0, index),
+                                  extractValue(query, index),
+                                  query.substring(query.indexOf(")", index) + 1));
+            index = query.indexOf(")", index);
+        }
+        return query;
     }
 
     @Override
@@ -343,5 +362,4 @@ public class MongoCommand extends MongoModel<MongoCommand> {
                ", params=" + params +
                '}';
     }
-
 }
