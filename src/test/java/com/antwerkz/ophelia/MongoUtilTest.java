@@ -52,7 +52,7 @@ public class MongoUtilTest {
     }
 
     @Test
-    public void shouldInsertADocument() throws IOException {
+    public void insertDocument() throws IOException {
         db.getCollection(COLLECTION_NAME).drop();
 
         mongoUtil.insert(insert("{name : \"John Doe\", \"age\" : 23 }")
@@ -81,7 +81,7 @@ public class MongoUtilTest {
     }
 
     @Test
-    public void sort() throws IOException {
+    public void queryWithASort() throws IOException {
         generateData();
         MongoCommand query = query("")
                                  .namespace(DATABASE_NAME, COLLECTION_NAME);
@@ -93,7 +93,7 @@ public class MongoUtilTest {
     }
 
     @Test
-    public void limit() throws IOException {
+    public void queryWithALimit() throws IOException {
         generateData();
         MongoCommand query = query("")
                                  .setLimit(5)
