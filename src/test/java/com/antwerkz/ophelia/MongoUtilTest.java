@@ -35,6 +35,8 @@ import java.util.Map;
 
 import static com.antwerkz.ophelia.models.MongoCommand.insert;
 import static com.antwerkz.ophelia.models.MongoCommand.query;
+import static com.antwerkz.ophelia.models.MongoCommand.remove;
+import static com.antwerkz.ophelia.models.MongoCommand.update;
 import static java.lang.String.format;
 
 @Test
@@ -101,6 +103,48 @@ public class MongoUtilTest {
 
         Assert.assertEquals(mongoUtil.query(query).size(), 5);
 
+    }
+
+    @Test
+    public void simpleUpdate() {
+        DBCollection collection = db.getCollection(COLLECTION_NAME);
+        collection.drop();
+
+        MongoCommand command = insert("{ name : \"John Doe\", age: 30 }")
+                                   .namespace(DATABASE_NAME, COLLECTION_NAME);
+        mongoUtil.insert(command);
+
+        String query = "{ name : \"John Doe\" }";
+        command = update(query, "{ $inc : { age : 1 } }")
+                      .setMultiple(false)
+                      .setUpsert(false)
+                      .namespace(DATABASE_NAME, COLLECTION_NAME);
+
+        mongoUtil.update(command);
+
+        List<Map> result = mongoUtil.query(query(query).namespace(DATABASE_NAME, COLLECTION_NAME));
+        Assert.assertEquals(result.get(0).get("age"), 31);
+    }
+
+    @Test
+    public void simpleRemove() {
+        DBCollection collection = db.getCollection(COLLECTION_NAME);
+        collection.drop();
+
+        MongoCommand command = insert("{ name : \"John Doe\", age: 30 }")
+                                   .namespace(DATABASE_NAME, COLLECTION_NAME);
+        mongoUtil.insert(command);
+
+        String query = "{ name : \"John Doe\" }";
+        command = remove(query)
+                      .setMultiple(false)
+                      .setUpsert(false)
+                      .namespace(DATABASE_NAME, COLLECTION_NAME);
+
+        mongoUtil.remove(command);
+
+        List<Map> result = mongoUtil.query(query(query).namespace(DATABASE_NAME, COLLECTION_NAME));
+        Assert.assertEquals(result.get(0).get("age"), 31);
     }
 
     private void generateData() {

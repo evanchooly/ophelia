@@ -34,27 +34,28 @@ public class MongoUtil {
         return extract(query);
     }
 
-    private DBCursor getCursor(final MongoCommand command) {
-        DBCollection collection = client.getDB(command.getDatabase()).getCollection(command.getCollection());
-        return collection.find(command.getQueryDocument(), command.getProjectionsDocument());
-    }
-
     public List<Map> insert(final MongoCommand command) {
         DBCollection collection = client.getDB(command.getDatabase()).getCollection(command.getCollection());
         return wrap(collection.insert(command.getInsertDocument()).getN());
     }
 
-/*
-    private List<Map> remove(DBCollection collection) {
-        Parser parser = new Parser(this);
-        WriteResult remove = collection.remove(parser.getQueryExpression());
-        String error = remove.getError();
-        if (error != null) {
-            throw new IllegalArgumentException(error);
-        }
-        return wrap(remove.getN());
+    public List<Map> update(final MongoCommand command) {
+        DBCollection collection = client.getDB(command.getDatabase()).getCollection(command.getCollection());
+        WriteResult update = collection.update(command.getQueryDocument(),
+                                               command.getUpdateDocument(),
+                                               command.getUpsert(),
+                                               command.getMultiple());
+        return wrap(update.getN());
     }
-*/
+    public List<Map> remove(final MongoCommand command) {
+        DBCollection collection = client.getDB(command.getDatabase()).getCollection(command.getCollection());
+        return wrap(collection.remove(command.getQueryDocument()).getN());
+    }
+
+    private DBCursor getCursor(final MongoCommand command) {
+        DBCollection collection = client.getDB(command.getDatabase()).getCollection(command.getCollection());
+        return collection.find(command.getQueryDocument(), command.getProjectionsDocument());
+    }
 
     @SuppressWarnings("unchecked")
     private List<Map> count(final DBCollection collection) {
@@ -63,10 +64,10 @@ public class MongoUtil {
         return Arrays.asList(map);
     }
 
+
     private Object extract(final DBObject eval, final String first, final String second) {
         return ((DBObject) eval.get(first)).get(second);
     }
-
 
     private List<Map> extract(DBCursor execute) {
         List<Map> list = new ArrayList<>();

@@ -35,6 +35,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import static java.lang.Boolean.FALSE;
+
 @Entity("queries")
 @Indexes(
             @Index(name = "names", value = "database, bookmark", unique = true, dropDups = true)
@@ -47,13 +49,14 @@ public class MongoCommand extends MongoModel<MongoCommand> {
     private String database;
     private String insert;
     private Integer limit;
-    private Boolean multiple;
+    private Boolean multiple = FALSE;
     private Map<String, String> params = new HashMap<>();
     private String projections;
     private String query;
-    private Boolean showCount;
+    private Boolean showCount = FALSE;
     private String sort;
     private String update;
+    private Boolean upsert = FALSE;
 
     @JsonIgnore
     private DBObject insertDocument;
@@ -92,6 +95,13 @@ public class MongoCommand extends MongoModel<MongoCommand> {
         return command;
     }
 
+    public static MongoCommand remove(String remove) {
+        MongoCommand command = new MongoCommand();
+        command.query = remove;
+
+        return command;
+    }
+
     public MongoCommand namespace(String database, String collection) {
         this.database = database;
         this.collection = collection;
@@ -112,8 +122,24 @@ public class MongoCommand extends MongoModel<MongoCommand> {
         return collection;
     }
 
+    public void setCollection(final String collection) {
+        this.collection = collection;
+    }
+
     public String getDatabase() {
         return database;
+    }
+
+    public void setDatabase(final String database) {
+        this.database = database;
+    }
+
+    public String getInsert() {
+        return insert;
+    }
+
+    public void setInsert(final String insert) {
+        this.insert = insert;
     }
 
     public Integer getLimit() {
@@ -184,6 +210,15 @@ public class MongoCommand extends MongoModel<MongoCommand> {
 
     public MongoCommand setUpdate(final String update) {
         this.update = update;
+        return this;
+    }
+
+    public Boolean getUpsert() {
+        return upsert;
+    }
+
+    public MongoCommand setUpsert(final Boolean upsert) {
+        this.upsert = upsert;
         return this;
     }
 
@@ -306,10 +341,13 @@ public class MongoCommand extends MongoModel<MongoCommand> {
         if (bookmark != null ? !bookmark.equals(that.bookmark) : that.bookmark != null) {
             return false;
         }
-        if (!collection.equals(that.collection)) {
+        if (collection != null ? !collection.equals(that.collection) : that.collection != null) {
             return false;
         }
-        if (!database.equals(that.database)) {
+        if (database != null ? !database.equals(that.database) : that.database != null) {
+            return false;
+        }
+        if (insert != null ? !insert.equals(that.insert) : that.insert != null) {
             return false;
         }
         if (limit != null ? !limit.equals(that.limit) : that.limit != null) {
@@ -321,13 +359,22 @@ public class MongoCommand extends MongoModel<MongoCommand> {
         if (params != null ? !params.equals(that.params) : that.params != null) {
             return false;
         }
-        if (!query.equals(that.query)) {
+        if (projections != null ? !projections.equals(that.projections) : that.projections != null) {
+            return false;
+        }
+        if (query != null ? !query.equals(that.query) : that.query != null) {
             return false;
         }
         if (showCount != null ? !showCount.equals(that.showCount) : that.showCount != null) {
             return false;
         }
+        if (sort != null ? !sort.equals(that.sort) : that.sort != null) {
+            return false;
+        }
         if (update != null ? !update.equals(that.update) : that.update != null) {
+            return false;
+        }
+        if (upsert != null ? !upsert.equals(that.upsert) : that.upsert != null) {
             return false;
         }
 
@@ -336,30 +383,38 @@ public class MongoCommand extends MongoModel<MongoCommand> {
 
     @Override
     public int hashCode() {
-        int result = database.hashCode();
-        result = 31 * result + collection.hashCode();
-        result = 31 * result + query.hashCode();
-        result = 31 * result + (update != null ? update.hashCode() : 0);
-        result = 31 * result + (bookmark != null ? bookmark.hashCode() : 0);
+        int result = bookmark != null ? bookmark.hashCode() : 0;
+        result = 31 * result + (collection != null ? collection.hashCode() : 0);
+        result = 31 * result + (database != null ? database.hashCode() : 0);
+        result = 31 * result + (insert != null ? insert.hashCode() : 0);
         result = 31 * result + (limit != null ? limit.hashCode() : 0);
         result = 31 * result + (multiple != null ? multiple.hashCode() : 0);
-        result = 31 * result + (showCount != null ? showCount.hashCode() : 0);
         result = 31 * result + (params != null ? params.hashCode() : 0);
+        result = 31 * result + (projections != null ? projections.hashCode() : 0);
+        result = 31 * result + (query != null ? query.hashCode() : 0);
+        result = 31 * result + (showCount != null ? showCount.hashCode() : 0);
+        result = 31 * result + (sort != null ? sort.hashCode() : 0);
+        result = 31 * result + (update != null ? update.hashCode() : 0);
+        result = 31 * result + (upsert != null ? upsert.hashCode() : 0);
         return result;
     }
 
     @Override
     public String toString() {
         return "MongoCommand{" +
-               "database='" + database + '\'' +
-               ", collection='" + collection + '\'' +
-               ", query='" + query + '\'' +
-               ", update='" + update + '\'' +
+               "upsert=" + upsert +
                ", bookmark='" + bookmark + '\'' +
+               ", collection='" + collection + '\'' +
+               ", database='" + database + '\'' +
+               ", insert='" + insert + '\'' +
                ", limit=" + limit +
                ", multiple=" + multiple +
-               ", showCount=" + showCount +
                ", params=" + params +
+               ", projections='" + projections + '\'' +
+               ", query='" + query + '\'' +
+               ", showCount=" + showCount +
+               ", sort='" + sort + '\'' +
+               ", update='" + update + '\'' +
                '}';
     }
 }
