@@ -17,6 +17,7 @@ package com.antwerkz.ophelia;
 
 import com.antwerkz.ophelia.models.MongoCommand;
 import com.antwerkz.ophelia.utils.MongoUtil;
+import com.antwerkz.sofia.Ophelia;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
@@ -144,7 +145,7 @@ public class MongoUtilTest {
         mongoUtil.remove(command);
 
         List<Map> result = mongoUtil.query(query(query).namespace(DATABASE_NAME, COLLECTION_NAME));
-        Assert.assertEquals(result.get(0).get("age"), 31);
+        Assert.assertNotNull(result.get(0).get("message"), result.toString());
     }
 
     private void generateData() {

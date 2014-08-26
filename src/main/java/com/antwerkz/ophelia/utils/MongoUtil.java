@@ -52,22 +52,18 @@ public class MongoUtil {
         return wrap(collection.remove(command.getQueryDocument()).getN());
     }
 
+    public List<Map> count(final MongoCommand command) {
+        Map<String, Long> map = new HashMap<>();
+        DBCollection collection = client.getDB(command.getDatabase()).getCollection(command.getCollection());
+        map.put(Ophelia.count(), collection.count(command.getQueryDocument()));
+        return Arrays.asList(map);
+    }
+
     private DBCursor getCursor(final MongoCommand command) {
         DBCollection collection = client.getDB(command.getDatabase()).getCollection(command.getCollection());
         return collection.find(command.getQueryDocument(), command.getProjectionsDocument());
     }
 
-    @SuppressWarnings("unchecked")
-    private List<Map> count(final DBCollection collection) {
-        Map map = new HashMap();
-        map.put(Ophelia.count(), collection.count(null));
-        return Arrays.asList(map);
-    }
-
-
-    private Object extract(final DBObject eval, final String first, final String second) {
-        return ((DBObject) eval.get(first)).get(second);
-    }
 
     private List<Map> extract(DBCursor execute) {
         List<Map> list = new ArrayList<>();
@@ -84,9 +80,9 @@ public class MongoUtil {
         return list;
     }
 
-    private List<Map> wrap(int number) {
-        Map<String, Number> count = new TreeMap<>();
-        count.put("count", number);
+    private List<Map> wrap(long number) {
+        Map<String, Long> count = new TreeMap<>();
+        count.put(Ophelia.count(), number);
         return Arrays.<Map>asList(count);
     }
 }
