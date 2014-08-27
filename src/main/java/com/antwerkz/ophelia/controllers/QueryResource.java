@@ -193,11 +193,10 @@ public class QueryResource {
         try {
             queryResults = new QueryResults();
             generateContent(request.getSession(), queryResults);
-            final Parser parser = new Parser(mongoCommand);
+            queryResults.setDbResults(mongoUtil.query(mongoCommand));
             if (mongoCommand.getShowCount()) {
-                queryResults.setResultCount(parser.count(getDB(mongoCommand.getDatabase())));
+                queryResults.setResultCount(mongoUtil.count(mongoCommand));
             }
-//            queryResults.setDbResults(mongoCommand.execute(getDB(mongoCommand.getDatabase())));
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             queryResults = new QueryResults();
@@ -211,11 +210,11 @@ public class QueryResource {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
     public Response export(@Context HttpServletRequest request,
-                           @FormParam("queryString") String queryString,
+                           @FormParam("query") String queryString,
                            @FormParam("database") String database,
                            @FormParam("collection") String collection) throws IOException {
         try {
-            MongoCommand mongoCommand = new MongoCommand(/*queryString*/);
+            MongoCommand mongoCommand = new MongoCommand(/*query*/);
             mongoCommand.namespace(database, collection);
             final Parser parser = new Parser(mongoCommand);
             parser.setLimit(null);

@@ -15,7 +15,7 @@ sofia = {
         return "Close";
     },
     collectionStats: function() {
-        return "Collection Stats";
+        return "Stats";
     },
     collections: function() {
         return "Collections";
@@ -34,6 +34,9 @@ sofia = {
     },
     loadBookmark: function() {
         return "Load Bookmark";
+    },
+    message: function() {
+        return "message";
     },
     noResults: function() {
         return "No results found";

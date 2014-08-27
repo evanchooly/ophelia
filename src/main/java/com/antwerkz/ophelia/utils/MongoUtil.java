@@ -52,11 +52,9 @@ public class MongoUtil {
         return wrap(collection.remove(command.getQueryDocument()).getN());
     }
 
-    public List<Map> count(final MongoCommand command) {
-        Map<String, Long> map = new HashMap<>();
+    public long count(final MongoCommand command) {
         DBCollection collection = client.getDB(command.getDatabase()).getCollection(command.getCollection());
-        map.put(Ophelia.count(), collection.count(command.getQueryDocument()));
-        return Arrays.asList(map);
+        return collection.count(command.getQueryDocument());
     }
 
     private DBCursor getCursor(final MongoCommand command) {

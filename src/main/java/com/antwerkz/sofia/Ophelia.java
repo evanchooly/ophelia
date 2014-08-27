@@ -85,6 +85,10 @@ public class Ophelia {
         return getMessageValue("load.bookmark", locale);
     }
 
+    public static String message(Locale... locale) {
+        return getMessageValue("message", locale);
+    }
+
     public static String noResults(Locale... locale) {
         return getMessageValue("no.results", locale);
     }

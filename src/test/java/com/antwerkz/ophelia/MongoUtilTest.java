@@ -17,7 +17,6 @@ package com.antwerkz.ophelia;
 
 import com.antwerkz.ophelia.models.MongoCommand;
 import com.antwerkz.ophelia.utils.MongoUtil;
-import com.antwerkz.sofia.Ophelia;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;

@@ -24,6 +24,7 @@ var app = angular.module('ophelia', ['ui', 'ui.bootstrap'])
         $scope.operation = {
             query: '',
             update: '',
+            collection: '',
             database: '',
             limit: 100,
             showCount: true,
@@ -35,12 +36,10 @@ var app = angular.module('ophelia', ['ui', 'ui.bootstrap'])
 
         function resetState() {
             $scope.bookmarks = [];
-            $scope.collection = null;
             $scope.collections = [];
             $scope.collectionStats = null;
             $scope.collectionIndexes = null;
             $scope.count = -1;
-            $scope.database = '';
             $scope.databases = [];
             $scope.collectionStats = [];
             $scope.errorMessage = '';
@@ -90,8 +89,8 @@ var app = angular.module('ophelia', ['ui', 'ui.bootstrap'])
                 });
         };
         $scope.selectCollection = function (key) {
-            $scope.collection = key
-            $scope.operation.queryString='db.' + key + '.find( {\n\n} )'
+            $scope.operation.collection = key
+            $scope.operation.query='{ }'
             $http({
                 method: 'POST',
                 url: contextPath + 'collectionInfo',
@@ -126,6 +125,7 @@ var app = angular.module('ophelia', ['ui', 'ui.bootstrap'])
         };
         $scope.update = function (db) {
             resetState();
+            $scope.database = db
             get(contextPath + 'database/' + db);
             $scope.showList = false;
         };
@@ -199,7 +199,7 @@ var app = angular.module('ophelia', ['ui', 'ui.bootstrap'])
 
         /*
          $scope.useBookmark = function (bookmark) {
-         $scope.operation.queryString = bookmark['queryString'];
+         $scope.operation.queryString = bookmark['query'];
          $scope.modalShown = false;
          //        $scope.queryChange();
          };

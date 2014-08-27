@@ -12,6 +12,7 @@ logging:
   loggers:
 
     com.antwerkz: DEBUG
+    javax.ws.rs: DEBUG
     com.sun.jersey: ERROR
     org.eclipse.jetty: ERROR
 

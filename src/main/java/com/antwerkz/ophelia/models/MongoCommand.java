@@ -18,6 +18,7 @@ package com.antwerkz.ophelia.models;
 import com.antwerkz.ophelia.controllers.InvalidQueryException;
 import com.antwerkz.ophelia.utils.JacksonMapper;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.mongodb.BasicDBObject;
@@ -52,7 +53,8 @@ public class MongoCommand extends MongoModel<MongoCommand> {
     private Boolean multiple = FALSE;
     private Map<String, String> params = new HashMap<>();
     private String projections;
-    private String query;
+    @JsonProperty("query")
+    private String queryString;
     private Boolean showCount = FALSE;
     private String sort;
     private String update;
@@ -76,7 +78,7 @@ public class MongoCommand extends MongoModel<MongoCommand> {
 
     public static MongoCommand query(String query) {
         MongoCommand command = new MongoCommand();
-        command.query = query;
+        command.queryString = query;
 
         return command;
     }
@@ -97,7 +99,7 @@ public class MongoCommand extends MongoModel<MongoCommand> {
 
     public static MongoCommand remove(String remove) {
         MongoCommand command = new MongoCommand();
-        command.query = remove;
+        command.queryString = remove;
 
         return command;
     }
@@ -178,12 +180,12 @@ public class MongoCommand extends MongoModel<MongoCommand> {
         return this;
     }
 
-    public String getQuery() {
-        return query;
+    public String getQueryString() {
+        return queryString;
     }
 
-    public void setQuery(final String query) {
-        this.query = query;
+    public void setQueryString(final String queryString) {
+        this.queryString = queryString;
     }
 
     public Boolean getShowCount() {
@@ -237,8 +239,8 @@ public class MongoCommand extends MongoModel<MongoCommand> {
     }
 
     public DBObject getQueryDocument() {
-        if (queryDocument == null && query != null) {
-            queryDocument = parse(query);
+        if (queryDocument == null && queryString != null) {
+            queryDocument = parse(queryString);
         }
         return queryDocument;
     }
@@ -265,10 +267,10 @@ public class MongoCommand extends MongoModel<MongoCommand> {
     public String expand() {
         if (params != null) {
             for (Entry<String, String> entry : params.entrySet()) {
-                query = query.replaceAll("\\{\\{" + entry.getKey() + "\\}\\}", entry.getValue());
+                queryString = queryString.replaceAll("\\{\\{" + entry.getKey() + "\\}\\}", entry.getValue());
             }
         }
-        return query.replace("\n", "");
+        return queryString.replace("\n", "");
     }
 
     private String extractValue(String value, int index) {
@@ -362,7 +364,7 @@ public class MongoCommand extends MongoModel<MongoCommand> {
         if (projections != null ? !projections.equals(that.projections) : that.projections != null) {
             return false;
         }
-        if (query != null ? !query.equals(that.query) : that.query != null) {
+        if (queryString != null ? !queryString.equals(that.queryString) : that.queryString != null) {
             return false;
         }
         if (showCount != null ? !showCount.equals(that.showCount) : that.showCount != null) {
@@ -391,7 +393,7 @@ public class MongoCommand extends MongoModel<MongoCommand> {
         result = 31 * result + (multiple != null ? multiple.hashCode() : 0);
         result = 31 * result + (params != null ? params.hashCode() : 0);
         result = 31 * result + (projections != null ? projections.hashCode() : 0);
-        result = 31 * result + (query != null ? query.hashCode() : 0);
+        result = 31 * result + (queryString != null ? queryString.hashCode() : 0);
         result = 31 * result + (showCount != null ? showCount.hashCode() : 0);
         result = 31 * result + (sort != null ? sort.hashCode() : 0);
         result = 31 * result + (update != null ? update.hashCode() : 0);
@@ -411,7 +413,7 @@ public class MongoCommand extends MongoModel<MongoCommand> {
                ", multiple=" + multiple +
                ", params=" + params +
                ", projections='" + projections + '\'' +
-               ", query='" + query + '\'' +
+               ", query='" + queryString + '\'' +
                ", showCount=" + showCount +
                ", sort='" + sort + '\'' +
                ", update='" + update + '\'' +

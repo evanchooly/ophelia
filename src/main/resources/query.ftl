@@ -42,7 +42,8 @@
                         <table>
                             <tr>
                                 <td class="queryColumn" rowspan="4">
-                                    <textarea id="mongo" name="queryString" rows="5" ng-model="operation.query"></textarea>
+                                    <span class="nav-header">Collection:</span> {{operation.collection}}
+                                    <textarea id="mongo" name="query" rows="5" ng-model="operation.query"></textarea>
 
                                     <div id="query-buttons">
                                         <input id="queryButton" type="button" value="{{sofia.querySubmit()}}"
@@ -120,21 +121,22 @@
     <div class="span3">
         <div class="well sidebar-nav collections">
             <ul class="nav nav-list">
-                <li class="nav-header">{{sofia.collectionStats()}}</li>
+                <li class="nav-header">{{operation.collection}} {{sofia.collectionStats()}}</li>
                 <li class="nav-pills" ng-switch="collection.length">
                     <div class="user-advice" ng-switch-when="0">{{sofia.selectCollection()}}</div>
                     <table id="countTable" ng-switch-default>
                         <tr ng-repeat="(key, value) in collectionStats">
                             <td class="dbName">
-                                <div ng-click="query.queryString='db.' + key + '.find( {\n\n} )'">{{key}}</div>
+                                <div ng-click="query.query='db.' + key + '.find( {\n\n} )'">{{key}}</div>
                             </td>
                             <td class="count"><span class="countContent">{{value}}</span></td>
                         </tr>
                     </table>
                 </li>
             </ul>
+            <hr/>
             <ul class="nav nav-list">
-                <li class="nav-header">{{sofia.indexes()}}</li>
+                <li class="nav-header">{{operation.collection}} {{sofia.indexes()}}</li>
                 <li class="nav-pills">
                         <table id="countTable">
                         <tr ng-repeat="index in collectionIndexes">
@@ -183,7 +185,7 @@
                         <tr ng-repeat="bookmark in bookmarks">
                             <td>
                                 <a class="bookmarkName" ng-click="useBookmark(bookmark);modalShown=false;"
-                                   title="{{bookmark['queryString']}}">{{bookmark['bookmark']}}</a>
+                                   title="{{bookmark['query']}}">{{bookmark['bookmark']}}</a>
                             </td>
                             <td><a ng-click="deleteBookmark(bookmark)" title="{{sofia.delete()}}">X</a></td>
                         </tr>
