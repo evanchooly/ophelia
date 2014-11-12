@@ -33,91 +33,17 @@
             </ul>
         </div>
     </div>
-    <div class="span6 main-content">
+    <div class="span9 main-content">
         <tabset>
             <tab heading="Query">
-                <div class="query">
-                    <div id="error" ng-show="showError">{{errorMessage}}</div>
-                    <form id="queryForm" action="/export" ng-model="query" method="post">
-                        <table>
-                            <tr>
-                                <td class="queryColumn" rowspan="4">
-                                    <span class="nav-header">Collection:</span> {{operation.collection}}
-                                    <textarea id="mongo" name="query" rows="5" ng-model="operation.query"></textarea>
-
-                                    <div id="query-buttons">
-                                        <input id="queryButton" type="button" value="{{sofia.querySubmit()}}"
-                                               ng-click="submitQuery()">
-                                        <input id="explainButton" type="button" value="{{sofia.queryExplain()}}"
-                                               ng-click="explain()">
-                                        <input id="exportButton" type="submit" value="{{sofia.queryExport()}}">
-                                        <input type="hidden" name="database" value="{{query.database}}"
-                                               ng-model="query.database"/>
-                                        <!--<input id="bookmark" type="button" value="{{sofia.queryBookmark()}}" ng-click="showSaveBookmark=true;">-->
-                                    </div>
-                                </td>
-                                <!--
-                                    <td>
-                                        <label for="bookmark">{{sofia.queryBookmark()}}
-                                            <span ng-show="bookmarks.length > 0">(<a
-                                                ng-click="modalShown=true">{{sofia.load()}}</a>)</span>
-                                        </label>
-                                    </td>
-                                    <td>
-                                        <input id="bookmark" name="bookmark" type="text" ng-model="operation.bookmark">
-                                    </td>
-                                    <td class="paramsColumn" rowspan="4">
-                                        <table id="queryParameters" ng-hide="operation.params.length == 0">
-                                            <thead>
-                                                <tr>
-                                                    <td colspan="2"><span class="nav-header">{{sofia.parameters()}}</span></td>
-                                                </tr>
-                                                <tr ng-repeat="param in operation.params">
-                                                    <td>{{param.key}}</td>
-                                                    <td><input type="text" ></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>fixed</td>
-                                                    <td><input type="text" ></td>
-                                                </tr>
-                                                <tr ng-repeat="(name, value) in operation.params">
-                                                    <td>{{name}}</td>
-                                                    <td><input type="text" ng-model="operation.params[name]"></td>
-                                                </tr>
-                                            </thead>
-                                        </table>
-                                    </td>
-                                -->
-                            </tr>
-                            <tr>
-                                <td><label for="limit">{{sofia.queryLimit()}}</label></td>
-                                <td><input id="limit" name="limit" type="number" ng-model="operation.limit"></td>
-                            </tr>
-                            <tr>
-                                <td><label for="showCount">{{sofia.queryShowCount()}}</label></td>
-                                <td><input id="showCount" name="showCount" type="checkbox" ng-model="operation.showCount"></td>
-                            </tr>
-                        </table>
-                    </form>
-                </div>
-                <div class="table" ng-show="showCount">
-                    {{sofia.resultCount()}} <span id="countValue">{{count}}</span>
-                </div>
-                <div class="table">
-                    <table>
-                        <tr ng-repeat="row in results">
-                            <td>
-                                <pre ng-bind-html="syntaxHighlight(row)"></pre>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
+                <span ng-include="'find.html'"></span>
             </tab>
-            <tab heading="Manage">
-                dude!
+            <tab heading="Update">
+                <span ng-include="'update.html'"></span>
             </tab>
         </tabset>
     </div>
+<#--
     <div class="span3">
         <div class="well sidebar-nav collections">
             <ul class="nav nav-list">
@@ -149,6 +75,7 @@
             </ul>
         </div>
     </div>
+-->
 </div>
 
 <#--

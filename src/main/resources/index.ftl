@@ -64,7 +64,7 @@
 
             <div class="btn-group pull-right">
                 <a class="btn dropdown-toggle" href="#" ng-model="showList" ng-click="showList = !showList">
-                    <i class="icon-home"></i> <span id="db">{{query.database}}</span>
+                    <i class="icon-home"></i> <span id="db">{{operation.database}}</span>
                     <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu dropdown-form" ng-show="showList">

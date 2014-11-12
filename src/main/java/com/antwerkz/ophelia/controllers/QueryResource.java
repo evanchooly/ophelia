@@ -50,6 +50,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import static java.lang.String.*;
+
 @Path("/")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
@@ -129,9 +131,9 @@ public class QueryResource {
 
     @GET
     @Produces("text/html;charset=ISO-8859-1")
-    @Path("/query.html")
-    public View queryHtml() {
-        return new View("/query.ftl", Charsets.ISO_8859_1) {
+    @Path("/{name}.html")
+    public View html(@PathParam("name") String name) {
+        return new View(format("/%s.ftl", name), Charsets.ISO_8859_1) {
         };
     }
 
@@ -220,7 +222,7 @@ public class QueryResource {
             parser.setLimit(null);
             ResponseBuilder response = Response.ok(parser.export(getDB(mongoCommand.getDatabase())));
             response.type(MediaType.APPLICATION_JSON);
-            response.header("Content-Disposition", String.format("attachment; filename=\"%s.json\"", parser.getCollection()));
+            response.header("Content-Disposition", format("attachment; filename=\"%s.json\"", parser.getCollection()));
             return response.build();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -236,7 +238,7 @@ public class QueryResource {
         try {
             queryResults = new QueryResults();
             generateContent(request.getSession(), queryResults);
-//            queryResults.setDbResults(mongoCommand.explain(getDB(mongoCommand.getDatabase())));
+            queryResults.setDbResults(mongoUtil.explain(mongoCommand));
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             queryResults = new QueryResults();

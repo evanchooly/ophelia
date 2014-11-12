@@ -1,7 +1,10 @@
 server:
   type: simple
   applicationContextPath: /ophelia  # Default value*
-
+  connector:
+      type: http
+      port: 8081
+      
 # Logging settings.
 logging:
 

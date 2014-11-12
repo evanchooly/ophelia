@@ -23,8 +23,17 @@ sofia = {
     count: function() {
         return "Count";
     },
+    explainSubmit: function() {
+        return "Explain";
+    },
+    findSubmit: function() {
+        return "Find";
+    },
     indexes: function() {
         return "Indexes";
+    },
+    insertSubmit: function() {
+        return "Insert";
     },
     invalidQuery: function(arg0) {
         return "Bad query: {0}";
@@ -41,26 +50,29 @@ sofia = {
     noResults: function() {
         return "No results found";
     },
+    operationBookmark: function() {
+        return "Bookmark";
+    },
+    operationExport: function() {
+        return "Export";
+    },
+    operationLimit: function() {
+        return "Limit:";
+    },
+    operationMultiple: function() {
+        return "Update Multiple";
+    },
+    operationShowCount: function() {
+        return "Show Count:";
+    },
+    operationUpsert: function() {
+        return "Upsert";
+    },
     parameters: function() {
         return "Parameters";
     },
-    queryBookmark: function() {
-        return "Bookmark";
-    },
-    queryExplain: function() {
-        return "Explain";
-    },
-    queryExport: function() {
-        return "Export";
-    },
-    queryLimit: function() {
-        return "Limit:";
-    },
-    queryShowCount: function() {
-        return "Show Count:";
-    },
-    querySubmit: function() {
-        return "Query";
+    removeSubmit: function() {
+        return "Remove";
     },
     resultCount: function() {
         return "Result count:";
@@ -73,5 +85,8 @@ sofia = {
     },
     unknownQueryMethod: function(arg0) {
         return "Unknown or unsupported query method: {0}";
+    },
+    updateSubmit: function() {
+        return "Update";
     }
 };
