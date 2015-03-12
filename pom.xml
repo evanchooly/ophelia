@@ -17,6 +17,7 @@
         <dropwizard.version>0.7.1</dropwizard.version>
         <morphia.version>0.105</morphia.version>
         <sofia.version>0.13</sofia.version>
+        <critter.version>2.2.0-SNAPSHOT</critter.version>
     </properties>
 
     <!--
@@ -53,14 +54,8 @@
         </dependency>
         <dependency>
             <groupId>com.antwerkz.critter</groupId>
-            <artifactId>critter</artifactId>
-            <version>1.2.3-SNAPSHOT</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.freemarker</groupId>
-                    <artifactId>freemarker</artifactId>
-                </exclusion>
-            </exclusions>
+            <artifactId>critter-core</artifactId>
+            <version>${critter.version}</version>
         </dependency>
         <dependency>
             <groupId>org.twitter4j</groupId>
@@ -157,6 +152,19 @@
                 </executions>
             </plugin>
 -->
+            <plugin>
+                <groupId>com.antwerkz.critter</groupId>
+                <artifactId>critter-maven</artifactId>
+                <version>${critter.version}</version>
+                <executions>
+                    <execution>
+                        <id>critter</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
