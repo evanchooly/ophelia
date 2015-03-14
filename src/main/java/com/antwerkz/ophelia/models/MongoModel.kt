@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.antwerkz.ophelia.controllers;
+package com.antwerkz.ophelia.models
 
-public class QueryParams {
-  private Integer limit;
+import org.bson.types.ObjectId
+import org.mongodb.morphia.annotations.Id
 
-  private Boolean explain;
+public open class MongoModel<T> {
+    Id
+    public var id: ObjectId? = null
 }

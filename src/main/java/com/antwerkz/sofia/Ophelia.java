@@ -11,9 +11,7 @@ import org.slf4j.*;
 
 public class Ophelia {
     private static Map<Locale, ResourceBundle> messages = new HashMap<>();
-        private static final Logger logger = LoggerFactory.getLogger(Ophelia.class);
-
-    private Ophelia() {}
+    private static final Logger logger = LoggerFactory.getLogger(Ophelia.class);
 
     private static ResourceBundle getBundle(Locale... localeList) {
         Locale locale = localeList.length == 0 ? Locale.getDefault() : localeList[0];

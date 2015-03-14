@@ -13,20 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.antwerkz.ophelia.models;
+package com.antwerkz.ophelia.controllers
 
-import org.bson.types.ObjectId;
-import org.mongodb.morphia.annotations.Id;
+public class QueryParams {
+    private val limit: Int? = null
 
-public class MongoModel<T> {
-  @Id
-  private ObjectId _id;
-
-  public ObjectId getId() {
-    return _id;
-  }
-
-  public void setId(ObjectId id) {
-    this._id = id;
-  }
+    private val explain: Boolean? = null
 }

@@ -1,92 +1,168 @@
+var sofiaBundles = [];
+    sofiaBundles[''] = {
+        'app.title' : 'Ophelia',
+        'bookmark.exists' : 'Bookmark already exists',
+        'bookmarks' : 'Bookmarks',
+        'cancel' : 'Cancel',
+        'close' : 'Close',
+        'collectionStats' : 'Stats',
+        'collections' : 'Collections',
+        'count' : 'Count',
+        'explain.submit' : 'Explain',
+        'find.submit' : 'Find',
+        'indexes' : 'Indexes',
+        'insert.submit' : 'Insert',
+        'invalid.query' : 'Bad query: {0}',
+        'load' : 'Load',
+        'load.bookmark' : 'Load Bookmark',
+        'message' : 'message',
+        'no.results' : 'No results found',
+        'operation.bookmark' : 'Bookmark',
+        'operation.export' : 'Export',
+        'operation.limit' : 'Limit:',
+        'operation.multiple' : 'Update Multiple',
+        'operation.showCount' : 'Show Count:',
+        'operation.upsert' : 'Upsert',
+        'parameters' : 'Parameters',
+        'remove.submit' : 'Remove',
+        'result.count' : 'Result count:',
+        'save' : 'Save',
+        'selectCollection' : 'Choose a collection',
+        'unknown.query.method' : 'Unknown or unsupported query method: {0}',
+        'update.submit' : 'Update'
+    };
+    sofiaBundles['en_US'] = {
+        'app.title' : 'Ophelia',
+        'bookmark.exists' : 'Bookmark already exists',
+        'bookmarks' : 'Bookmarks',
+        'cancel' : 'Cancel',
+        'close' : 'Close',
+        'collectionStats' : 'Stats',
+        'collections' : 'Collections',
+        'count' : 'Count',
+        'explain.submit' : 'Explain',
+        'find.submit' : 'Find',
+        'indexes' : 'Indexes',
+        'insert.submit' : 'Insert',
+        'invalid.query' : 'Bad query: {0}',
+        'load' : 'Load',
+        'load.bookmark' : 'Load Bookmark',
+        'message' : 'message',
+        'no.results' : 'No results found',
+        'operation.bookmark' : 'Bookmark',
+        'operation.export' : 'Export',
+        'operation.limit' : 'Limit:',
+        'operation.multiple' : 'Update Multiple',
+        'operation.showCount' : 'Show Count:',
+        'operation.upsert' : 'Upsert',
+        'parameters' : 'Parameters',
+        'remove.submit' : 'Remove',
+        'result.count' : 'Result count:',
+        'save' : 'Save',
+        'selectCollection' : 'Choose a collection',
+        'unknown.query.method' : 'Unknown or unsupported query method: {0}',
+        'update.submit' : 'Update'
+    };
+
+var sofiaLang = navigator.language || navigator.userLanguage;
 sofia = {
-        appTitle: function() {
-        return "Ophelia";
+    format: function(value, arguments) {
+        var formatted = value;
+        if (arguments) {
+            for (var arg in arguments) {
+                formatted = formatted.replace("{" + arg + "}", arguments[arg]);
+            }
+        }
+        return formatted;
+    },
+    appTitle: function() {
+        return format(sofiaBundles[sofiaLang]['app.title']);
     },
     bookmarkExists: function() {
-        return "Bookmark already exists";
+        return format(sofiaBundles[sofiaLang]['bookmark.exists']);
     },
     bookmarks: function() {
-        return "Bookmarks";
+        return format(sofiaBundles[sofiaLang]['bookmarks']);
     },
     cancel: function() {
-        return "Cancel";
+        return format(sofiaBundles[sofiaLang]['cancel']);
     },
     close: function() {
-        return "Close";
+        return format(sofiaBundles[sofiaLang]['close']);
     },
     collectionStats: function() {
-        return "Stats";
+        return format(sofiaBundles[sofiaLang]['collectionStats']);
     },
     collections: function() {
-        return "Collections";
+        return format(sofiaBundles[sofiaLang]['collections']);
     },
     count: function() {
-        return "Count";
+        return format(sofiaBundles[sofiaLang]['count']);
     },
     explainSubmit: function() {
-        return "Explain";
+        return format(sofiaBundles[sofiaLang]['explain.submit']);
     },
     findSubmit: function() {
-        return "Find";
+        return format(sofiaBundles[sofiaLang]['find.submit']);
     },
     indexes: function() {
-        return "Indexes";
+        return format(sofiaBundles[sofiaLang]['indexes']);
     },
     insertSubmit: function() {
-        return "Insert";
+        return format(sofiaBundles[sofiaLang]['insert.submit']);
     },
     invalidQuery: function(arg0) {
-        return "Bad query: {0}";
+        return format(sofiaBundles[sofiaLang]['invalid.query']);
     },
     load: function() {
-        return "Load";
+        return format(sofiaBundles[sofiaLang]['load']);
     },
     loadBookmark: function() {
-        return "Load Bookmark";
+        return format(sofiaBundles[sofiaLang]['load.bookmark']);
     },
     message: function() {
-        return "message";
+        return format(sofiaBundles[sofiaLang]['message']);
     },
     noResults: function() {
-        return "No results found";
+        return format(sofiaBundles[sofiaLang]['no.results']);
     },
     operationBookmark: function() {
-        return "Bookmark";
+        return format(sofiaBundles[sofiaLang]['operation.bookmark']);
     },
     operationExport: function() {
-        return "Export";
+        return format(sofiaBundles[sofiaLang]['operation.export']);
     },
     operationLimit: function() {
-        return "Limit:";
+        return format(sofiaBundles[sofiaLang]['operation.limit']);
     },
     operationMultiple: function() {
-        return "Update Multiple";
+        return format(sofiaBundles[sofiaLang]['operation.multiple']);
     },
     operationShowCount: function() {
-        return "Show Count:";
+        return format(sofiaBundles[sofiaLang]['operation.showCount']);
     },
     operationUpsert: function() {
-        return "Upsert";
+        return format(sofiaBundles[sofiaLang]['operation.upsert']);
     },
     parameters: function() {
-        return "Parameters";
+        return format(sofiaBundles[sofiaLang]['parameters']);
     },
     removeSubmit: function() {
-        return "Remove";
+        return format(sofiaBundles[sofiaLang]['remove.submit']);
     },
     resultCount: function() {
-        return "Result count:";
+        return format(sofiaBundles[sofiaLang]['result.count']);
     },
     save: function() {
-        return "Save";
+        return format(sofiaBundles[sofiaLang]['save']);
     },
     selectCollection: function() {
-        return "Choose a collection";
+        return format(sofiaBundles[sofiaLang]['selectCollection']);
     },
     unknownQueryMethod: function(arg0) {
-        return "Unknown or unsupported query method: {0}";
+        return format(sofiaBundles[sofiaLang]['unknown.query.method']);
     },
     updateSubmit: function() {
-        return "Update";
+        return format(sofiaBundles[sofiaLang]['update.submit']);
     }
 };
