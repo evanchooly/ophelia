@@ -13,15 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.antwerkz.ophelia.models;
+package com.antwerkz.ophelia.controllers
 
-public class User extends MongoModel<User> {
-  public String name;
-
-  public Boolean admin;
-
-  public User(String name, boolean admin) {
-    this.name = name;
-    this.admin = admin;
-  }
-}
+public class InvalidQueryException(message: String, cause: Throwable) : RuntimeException(message, cause)
