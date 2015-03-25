@@ -10,7 +10,7 @@ import java.util.ResourceBundle.Control
 import org.slf4j.*
 
 public class Ophelia {
-    class object {
+    companion object {
         private val messages = HashMap<Locale, ResourceBundle>()
         private val logger = LoggerFactory.getLogger(javaClass<Ophelia>())
 

@@ -31,7 +31,7 @@ import org.eclipse.jetty.server.session.SessionHandler
 class OpheliaApplication : Application<OpheliaConfiguration>() {
     val morphia: Morphia = Morphia()
 
-    public var mongo: MongoClient? = null
+    public var mongo: MongoClient = MongoClient()
 
 /*
     static void main(String[] args) throws Exception {

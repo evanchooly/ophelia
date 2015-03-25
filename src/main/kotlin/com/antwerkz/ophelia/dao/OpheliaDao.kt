@@ -10,8 +10,8 @@ public open class OpheliaDao<T>(public val ds: Datastore, private val clazz: Cla
         return ds.createQuery<T>(clazz).field("_id").equal(id).get()
     }
 
-    public fun save(model: MongoModel<Any>) {
-        ds.save<MongoModel<Any>>(model)
+    public fun save(model: MongoModel<T>) {
+        ds.save<MongoModel<T>>(model)
     }
 
     public fun delete(model: MongoModel<Any>) {

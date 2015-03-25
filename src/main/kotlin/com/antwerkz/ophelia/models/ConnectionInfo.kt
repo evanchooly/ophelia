@@ -16,28 +16,22 @@
 package com.antwerkz.ophelia.models
 
 import com.antwerkz.ophelia.OpheliaApplication
-import com.fasterxml.jackson.annotation.JsonIgnore
-import com.mongodb.DB
 import java.util.TreeMap
 
-public class ConnectionInfo {
-    public var database: String? = null
+public class ConnectionInfo(public val application: OpheliaApplication,
+                            public var host: String = "127.0.0.1",
+                            public var port: Int = 27017,
+                            public var database: String = "test",
+                            public var collection: String = "test") {
 
-    public var collection: String? = null
-
-    public var host: String = "127.0.0.1"
-
-    public var port: Int? = 27017
-
-    transient public var application: OpheliaApplication? = null
 
     public fun getDatabaseNames(): List<String> {
-        return application!!.mongo!!.getDatabaseNames()
+        return application.mongo.getDatabaseNames()
     }
 
     public fun loadCollections(): Map<String, Any> {
         val map = TreeMap<String, Any>()
-        val db = application!!.mongo!!.getDB(database)
+        val db = application.mongo.getDB(database)
         if (db != null) {
             val collections = db.getCollectionNames()
             for (collection in collections) {

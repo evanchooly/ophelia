@@ -14,11 +14,12 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <critter.version>2.2.0-SNAPSHOT</critter.version>
         <dropwizard.version>0.7.1</dropwizard.version>
+        <kotlin.version>0.11.91</kotlin.version>
         <morphia.version>0.110</morphia.version>
         <sofia.version>0.15</sofia.version>
-        <critter.version>2.2.0-SNAPSHOT</critter.version>
-        <kotlin.version>0.10.195</kotlin.version>
     </properties>
 
     <!--
@@ -35,7 +36,7 @@
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongo-java-driver</artifactId>
-            <version>2.12.2</version>
+            <version>3.0.0-rc0</version>
         </dependency>
         <dependency>
             <groupId>org.mongodb.morphia</groupId>
@@ -137,6 +138,8 @@
     </dependencies>
 
     <build>
+        <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
+        <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
         <plugins>
             <!--
                         <plugin>
@@ -158,6 +161,7 @@
                             </executions>
                         </plugin>
             -->
+<!--
             <plugin>
                 <groupId>com.antwerkz.critter</groupId>
                 <artifactId>critter-maven</artifactId>
@@ -171,15 +175,25 @@
                     </execution>
                 </executions>
             </plugin>
+-->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                    <encoding>UTF-8</encoding>
-                </configuration>
+                <artifactId>kotlin-maven-plugin</artifactId>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <version>${kotlin.version}</version>
+
+                <executions>
+                    <execution>
+                        <id>compile</id>
+                        <phase>compile</phase>
+                        <goals> <goal>compile</goal> </goals>
+                    </execution>
+
+                    <execution>
+                        <id>test-compile</id>
+                        <phase>test-compile</phase>
+                        <goals> <goal>test-compile</goal> </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -312,29 +326,6 @@
             </executions>
         </plugin>
             -->
-            <plugin>
-                <artifactId>kotlin-maven-plugin</artifactId>
-                <groupId>org.jetbrains.kotlin</groupId>
-                <version>${kotlin.version}</version>
-
-                <executions>
-                    <execution>
-                        <id>compile</id>
-                        <phase>process-sources</phase>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                    </execution>
-
-                    <execution>
-                        <id>test-compile</id>
-                        <phase>process-test-sources</phase>
-                        <goals>
-                            <goal>test-compile</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
 </project>

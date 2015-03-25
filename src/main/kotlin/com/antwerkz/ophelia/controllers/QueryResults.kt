@@ -18,33 +18,24 @@ package com.antwerkz.ophelia.controllers
 import com.antwerkz.ophelia.models.ConnectionInfo
 import com.antwerkz.ophelia.models.MongoCommand
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import org.bson.Document
 
 import javax.xml.bind.annotation.XmlRootElement
 
 XmlRootElement
 JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
-public class QueryResults {
-    public var collections: Map<String, Any>
+public class QueryResults() {
+    public var info: ConnectionInfo? = null
 
-    public var bookmarks: List<MongoCommand>
+    public var collections: Map<String, Any> = mapOf()
 
-    public var databaseList: List<String>
+    public var databaseList: List<String> = listOf()
 
-    public var dbResults: List<Map<Any, Any>>
+    public var dbResults: List<Document> = listOf()
 
-    public var error: String
+    public var error: String = ""
 
-    public var info: ConnectionInfo
+    public var resultCount: Int = 0
 
-    public var resultCount: Long? = null
-
-    private var collectionStats: Map<String, String>? = null
-
-    public fun getCollectionStats(): Map<Any, Any> {
-        return collectionStats
-    }
-
-    public fun setCollectionStats(collectionStats: Map<Any, Any>) {
-        this.collectionStats = collectionStats
-    }
+    public var collectionStats: Document = Document()
 }

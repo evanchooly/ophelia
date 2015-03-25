@@ -24,7 +24,7 @@ import org.mongodb.morphia.Datastore
 public class MongoCommandDao(ds: Datastore) : OpheliaDao<MongoCommand>(ds, javaClass<MongoCommand>()) {
 
     public fun byBookmarkAndDatabase(bookmark: String, database: String): MongoCommand {
-        val criteria = MongoCommandCriteria(getDs())
+        val criteria = MongoCommandCriteria(ds)
         /*
                 criteria.and(
                     criteria.bookmark(bookmark),
@@ -35,14 +35,14 @@ public class MongoCommandDao(ds: Datastore) : OpheliaDao<MongoCommand>(ds, javaC
     }
 
     public fun findAll(database: String): List<MongoCommand> {
-        val criteria = MongoCommandCriteria(getDs())
+        val criteria = MongoCommandCriteria(ds)
         criteria.database().equal(database)
         return criteria.query().asList()
     }
 
     public fun delete(id: ObjectId) {
-        val criteria = MongoCommandCriteria(getDs())
+        val criteria = MongoCommandCriteria(ds)
         criteria._id().equal(id)
-        getDs().delete<MongoCommand>(criteria.query())
+        ds.delete<MongoCommand>(criteria.query())
     }
 }

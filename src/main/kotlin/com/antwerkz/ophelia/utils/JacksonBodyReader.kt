@@ -33,26 +33,23 @@ import com.fasterxml.jackson.databind.SerializationFeature
 Provider
 Consumes(MediaType.APPLICATION_JSON)
 public class JacksonBodyReader : MessageBodyReader<MongoCommand> {
-    private val mapper: JacksonMapper
+    private val mapper: JacksonMapper = JacksonMapper()
 
-    {
-        mapper = JacksonMapper()
+    init {
         mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
     }
 
-    Override
+    override
     public fun isReadable(type: Class<*>, genericType: Type, annotations: Array<Annotation>, mediaType: MediaType): Boolean {
         return javaClass<MongoCommand>() == type
     }
 
-    Override
+    override
     throws(javaClass<IOException>(), javaClass<WebApplicationException>())
-    public fun readFrom(type: Class<MongoCommand>, genericType: Type, annotations: Array<Annotation>, mediaType: MediaType, httpHeaders: MultivaluedMap<String, String>, entityStream: InputStream): MongoCommand? {
-        if (entityStream.available() > 0) {
-            val reader = BufferedReader(InputStreamReader(entityStream))
-            val content = reader.readLine()
-            return mapper.readValue(content, javaClass<MongoCommand>())
-        }
-        return null
+    public fun readFrom(type: Class<MongoCommand>, genericType: Type, annotations: Array<Annotation>, mediaType: MediaType,
+                        httpHeaders: MultivaluedMap<String, String>, entityStream: InputStream): MongoCommand {
+        val reader = BufferedReader(InputStreamReader(entityStream))
+        val content = reader.readLine()
+        return mapper.readValue(content, javaClass<MongoCommand>())
     }
 }

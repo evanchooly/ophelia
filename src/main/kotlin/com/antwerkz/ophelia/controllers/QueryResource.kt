@@ -23,12 +23,12 @@ import com.antwerkz.ophelia.utils.JacksonMapper
 import com.antwerkz.ophelia.utils.MongoUtil
 import com.antwerkz.ophelia.utils.Parser
 import com.google.common.base.Charsets
-import com.mongodb.CommandResult
 import com.mongodb.DB
-import com.mongodb.DBCollection
+import com.mongodb.client.MongoCollection
+import com.mongodb.client.MongoDatabase
 import io.dropwizard.views.View
+import org.bson.Document
 import org.bson.types.ObjectId
-import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 import javax.servlet.http.HttpServletRequest
@@ -43,39 +43,35 @@ import javax.ws.rs.Produces
 import javax.ws.rs.core.Context
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
-import javax.ws.rs.core.Response.ResponseBuilder
 import java.io.IOException
 import java.util.HashMap
 import java.util.TreeMap
 
 import java.lang.String.*
+import java.nio.charset.Charset
 
 Path("/")
 Consumes(MediaType.APPLICATION_JSON)
 Produces(MediaType.APPLICATION_JSON)
-public class QueryResource(private val application: OpheliaApplication, private val mongoCommandDao: MongoCommandDao, private val mongoUtil: MongoUtil) {
+public class QueryResource(private val application: OpheliaApplication,
+                           private val mongoCommandDao: MongoCommandDao, private val mongoUtil: MongoUtil) {
 
     private val mapper = JacksonMapper()
 
     public fun getDatabaseNames(): List<String> {
-        return application.mongo!!.getDatabaseNames()
+        return application.mongo.listDatabaseNames().toList()
     }
 
-    private fun generateContent(session: HttpSession, queryResults: QueryResults): QueryResults {
+    private fun generateContent(session: HttpSession): QueryResults {
+        val queryResults = QueryResults()
         try {
-            queryResults.databaseList = getDatabaseNames()
             val info = getConnectionInfo(session)
-            var database = info.database
-            if (database == null) {
-                database = queryResults.databaseList.get(0)
-                info.database = database
-            }
-            if (info.collection != null) {
-                queryResults.setCollectionStats(getCollectionStats(info))
-            }
 
+            queryResults.databaseList = getDatabaseNames()
             queryResults.info = info
+            queryResults.collectionStats = getCollectionStats(info)
             queryResults.collections = loadCollections(info)
+
             return queryResults
         } catch (e: Exception) {
             logger.error(e.getMessage(), e)
@@ -85,37 +81,42 @@ public class QueryResource(private val application: OpheliaApplication, private 
         return queryResults
     }
 
-    private fun getCollectionStats(info: ConnectionInfo): Map<Any, Any> {
-        val collection = application.mongo!!.getDB(info.database).getCollection(info.collection)
-        return collection.getStats()
+    private fun getCollectionStats(info: ConnectionInfo): Document {
+        return getStats(info, info.collection)
     }
 
     private fun loadBookmarks(database: String): List<MongoCommand> {
         return mongoCommandDao.findAll(database)
     }
 
-    private fun loadCollections(info: ConnectionInfo): Map<String, Any> {
-        val map = TreeMap<String, Any>()
-        val db = getDB(info.database)
-        if (db != null) {
-            for (collection in db.getCollectionNames()) {
-                map.put(collection, db.getCollection(collection).getStats().get("count"))
-            }
+    private fun loadCollections(info: ConnectionInfo): Map<String, Int> {
+        val map = TreeMap<String, Int>()
+        val db = getDatabase(info.database)
+        for (name in db.listCollectionNames()) {
+            map.put(name, getStats(info, name).get("count") as Int)
         }
         return map
+    }
+
+    private fun getStats(info: ConnectionInfo, name: String): Document {
+        return getDatabase(info.database)
+                .runCommand(Document("collstats", name))
+
     }
 
     GET
     Produces("text/html;charset=ISO-8859-1")
     public fun index(): View {
-        return object : View("/index.ftl", Charsets.ISO_8859_1)
+        return object : View("/index.ftl", Charsets.ISO_8859_1) {}
     }
 
     GET
     Produces("text/html;charset=ISO-8859-1")
     Path("/{name}.html")
     public fun html(PathParam("name") name: String): View {
-        return object : View(format("/%s.ftl", name), Charsets.ISO_8859_1)
+        val s: String = "/${name}.ftl".toString()
+        val charset: Charset = Charsets.ISO_8859_1
+        return object : View(s, charset) {}
     }
 
     GET
@@ -123,7 +124,7 @@ public class QueryResource(private val application: OpheliaApplication, private 
     Produces(MediaType.APPLICATION_JSON)
     throws(javaClass<IOException>())
     public fun content(Context request: HttpServletRequest): String {
-        return mapper.writeValueAsString(generateContent(request.getSession(), QueryResults()))
+        return mapper.writeValueAsString(generateContent(request.getSession()))
     }
 
     GET
@@ -134,8 +135,7 @@ public class QueryResource(private val application: OpheliaApplication, private 
         val session = request.getSession()
         val connectionInfo = getConnectionInfo(session)
         connectionInfo.database = database
-        connectionInfo.collection = null
-        return mapper.writeValueAsString(generateContent(session, QueryResults()))
+        return mapper.writeValueAsString(generateContent(session))
     }
 
     GET
@@ -145,7 +145,7 @@ public class QueryResource(private val application: OpheliaApplication, private 
     public fun changeHost(Context request: HttpServletRequest, PathParam("host") host: String, PathParam("port") port: Int?): String {
         val info = getConnectionInfo(request.getSession())
         info.host = host
-        info.port = port
+        info.port = port ?: 27017
         return content(request)
     }
 
@@ -159,9 +159,9 @@ public class QueryResource(private val application: OpheliaApplication, private 
         return mapper.writeValueAsString(getCollectionInfo(connectionInfo))
     }
 
-    private fun getCollectionInfo(connectionInfo: ConnectionInfo): Map<Any, Any> {
-        val collection = application.mongo!!.getDB(connectionInfo.database).getCollection(connectionInfo.collection)
-        val map = HashMap()
+    private fun getCollectionInfo(connectionInfo: ConnectionInfo): Map<String, Any> {
+        val collection = application.mongo.getDB(connectionInfo.database).getCollection(connectionInfo.collection)
+        val map = HashMap<String, Any>()
         val stats = collection.getStats()
         for (name in UNUSED_STATS) {
             stats.remove(name)
@@ -179,20 +179,21 @@ public class QueryResource(private val application: OpheliaApplication, private 
         val queryResults: QueryResults
         try {
             queryResults = QueryResults()
-            generateContent(request.getSession(), queryResults)
+            generateContent(request.getSession())
             queryResults.dbResults = mongoUtil.query(mongoCommand)
-            if (mongoCommand.showCount!!) {
+            if (mongoCommand.showCount) {
                 queryResults.resultCount = mongoUtil.count(mongoCommand)
             }
         } catch (e: Exception) {
             logger.error(e.getMessage(), e)
             queryResults = QueryResults()
-            queryResults.error = e.getMessage()
+            queryResults.error = e.getMessage()!!
         }
 
         return mapper.writeValueAsString(queryResults)
     }
 
+/*
     POST
     Path("/export")
     Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -200,13 +201,15 @@ public class QueryResource(private val application: OpheliaApplication, private 
     throws(javaClass<IOException>())
     public fun export(Context request: HttpServletRequest, FormParam("query") queryString: String, FormParam("database") database: String, FormParam("collection") collection: String): Response {
         try {
-            val mongoCommand = MongoCommand()/*query*/
+            val mongoCommand = MongoCommand()*/
+/*query*//*
+
             mongoCommand.namespace(database, collection)
             val parser = Parser(mongoCommand)
-            parser.setLimit(null)
-            val response = Response.ok(parser.export(getDB(mongoCommand.database)))
+            parser.limit = null
+            val response = Response.ok(parser.export(getDatabase(mongoCommand.database)))
             response.type(MediaType.APPLICATION_JSON)
-            response.header("Content-Disposition", format("attachment; filename=\"%s.json\"", parser.getCollection()))
+            response.header("Content-Disposition", format("attachment; filename=\"%s.json\"", parser.collection))
             return response.build()
         } catch (e: Exception) {
             logger.error(e.getMessage(), e)
@@ -214,6 +217,7 @@ public class QueryResource(private val application: OpheliaApplication, private 
         }
 
     }
+*/
 
     POST
     Path("/explain")
@@ -223,12 +227,12 @@ public class QueryResource(private val application: OpheliaApplication, private 
         val queryResults: QueryResults
         try {
             queryResults = QueryResults()
-            generateContent(request.getSession(), queryResults)
+            generateContent(request.getSession())
             queryResults.dbResults = mongoUtil.explain(mongoCommand)
         } catch (e: Exception) {
             logger.error(e.getMessage(), e)
             queryResults = QueryResults()
-            queryResults.error = e.getMessage()
+            queryResults.error = e.getMessage()!!
         }
 
         return queryResults
@@ -243,17 +247,17 @@ public class QueryResource(private val application: OpheliaApplication, private 
         try {
             mongoCommandDao.delete(ObjectId(id))
         } catch (e: IllegalArgumentException) {
-            queryResults.error = e.getMessage()
+            queryResults.error = e.getMessage()!!
         }
 
-        return generateContent(request.getSession(), queryResults)
+        return generateContent(request.getSession())
     }
 
     POST
     Path("/bookmark")
     throws(javaClass<IOException>())
     public fun bookmark(Context request: HttpServletRequest, mongoCommand: MongoCommand): QueryResults {
-        val queryResults = QueryResults()
+//        val queryResults = QueryResults()
         //        Query operation = mapper.readValue(json, Query.class);
         System.out.println("operation = " + mongoCommand)
         try {
@@ -262,24 +266,23 @@ public class QueryResource(private val application: OpheliaApplication, private 
             throw RuntimeException(e.getMessage(), e)
         }
 
-        return generateContent(request.getSession(), queryResults)
+        return generateContent(request.getSession())
     }
 
-    private fun getDB(database: String): DB? {
-        return application.mongo!!.getDB(database)
+    private fun getDatabase(database: String): MongoDatabase {
+        return application.mongo.getDatabase(database)
     }
 
     public fun getConnectionInfo(session: HttpSession): ConnectionInfo {
         var info: ConnectionInfo? = session.getAttribute(INFO) as ConnectionInfo
         if (info == null) {
-            info = ConnectionInfo()
+            info = ConnectionInfo(application)
             session.setAttribute(INFO, info)
         }
-        info!!.application = application
-        return info
+        return info!!
     }
 
-    class object {
+    companion object {
         private val logger = LoggerFactory.getLogger(javaClass<QueryResource>())
 
         private val INFO = "connection-info"
