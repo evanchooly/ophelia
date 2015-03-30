@@ -15,7 +15,7 @@
  */
 package com.antwerkz.ophelia.utils
 
-import com.antwerkz.ophelia.controllers.InvalidQueryException
+import com.antwerkz.ophelia.InvalidQueryException
 import com.antwerkz.ophelia.models.MongoCommand
 import com.antwerkz.sofia.Ophelia
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -57,9 +57,9 @@ public class Parser(mongoCommand: MongoCommand) {
             consume(3)
             parseQuery()
         } else {
-            throw InvalidQueryException(Ophelia.invalidQuery(mongoCommand))
+            throw InvalidQueryException(Ophelia().invalidQuery(mongoCommand))
         }
-        limit = mongoCommand.getLimit()
+        limit = mongoCommand.limit
     }
 
     private fun consume(count: Int): String {

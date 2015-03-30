@@ -26,24 +26,24 @@
                     <textarea name="update" rows="5" ng-model="operation.update"></textarea>
 
                     <div id="query-buttons">
-                        <input id="queryButton" type="button" value="{{sofia.updateSubmit()}}"
+                        <input id="queryButton" type="button" value="${ophelia().updateSubmit()}"
                                ng-click="operation.collection ? submitQuery() : ''">
                     </div>
                 </td>
             </tr>
             <tr>
-                <td><label for="upsert">{{sofia.operationUpsert()}}</label></td>
+                <td><label for="upsert">${ophelia().operationUpsert()}</label></td>
                 <td><input id="upsert" name="upsert" type="checkbox" ng-model="operation.upsert"></td>
             </tr>
             <tr>
-                <td><label for="multiple">{{sofia.operationMultiple()}}</label></td>
+                <td><label for="multiple">${ophelia().operationMultiple()}</label></td>
                 <td><input id="multiple" name="multiple" type="checkbox" ng-model="operation.multiple"></td>
             </tr>
         </table>
     </form>
 </div>
 <div class="table" ng-show="showCount">
-    {{sofia.resultCount()}} <span id="countValue">{{count}}</span>
+    ${ophelia().resultCount()} <span id="countValue">{{count}}</span>
 </div>
 <div class="table">
     <table>

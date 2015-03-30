@@ -130,6 +130,7 @@ var app = angular.module('ophelia', ['ui', 'ui.bootstrap'])
             $scope.showList = false;
         };
 
+/*
         function get(url) {
             $http.get(url)
                 .success(function (data, status, headers, config) {
@@ -140,6 +141,7 @@ var app = angular.module('ophelia', ['ui', 'ui.bootstrap'])
                     $scope.errorMessage = status.responseText;
                 });
         }
+*/
 
         function processResponse(response) {
             resetState();
@@ -152,7 +154,6 @@ var app = angular.module('ophelia', ['ui', 'ui.bootstrap'])
                 } else if (key == 'bookmarks') {
                     $scope.bookmarks = response[key];
                 } else if (key == 'collections') {
-                    $scope.collections = response[key];
                 } else if (key == 'databaseList') {
                     $scope.databases = response[key];
                 } else if (key == 'collectionStats') {
@@ -229,6 +230,27 @@ var app = angular.module('ophelia', ['ui', 'ui.bootstrap'])
          };
          */
         resetState();
-        get(contextPath + 'content');
+        //get(contextPath + 'content');
+        $scope.listCollections = function () {
+            $http.get(contextPath + 'collections')
+                .success(function (response) {
+                    $scope.collections = response;
+                })
+                .error(function (response) {
+                    console.error(response);
+                    $scope.errorMessage = status.responseText;
+                });
+        }
+        $scope.listDatabases = function () {
+            $http.get(contextPath + 'databases')
+                .success(function (response) {
+                    $scope.databases = response;
+                })
+                .error(function (response) {
+                    console.error(response);
+                    $scope.errorMessage = status.responseText;
+                });
+        }
+
     })
 

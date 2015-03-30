@@ -15,70 +15,51 @@
  */
 package com.antwerkz.ophelia.models
 
-import com.antwerkz.ophelia.controllers.InvalidQueryException
-import com.antwerkz.ophelia.utils.JacksonMapper
+import com.antwerkz.ophelia.InvalidQueryException
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.common.base.Strings
-import org.bson.types.ObjectId
+import org.bson.BsonDocument
+import org.bson.Document
 import org.mongodb.morphia.annotations.Entity
 import org.mongodb.morphia.annotations.Index
 import org.mongodb.morphia.annotations.Indexes
-
+import org.mongodb.morphia.annotations.Transient
 import java.io.IOException
-import java.io.StringReader
-import java.util.HashMap
-import java.util.LinkedHashMap
+import java.lang.Boolean.FALSE
 import java.util.TreeMap
 
-import java.lang.Boolean.FALSE
-import org.bson.BsonDocument
-import org.bson.BsonString
-import org.bson.Document
-
 Entity("queries")
-Indexes(Index(name = "names", value = "database, bookmark", unique = true, dropDups = true) )
+Indexes(Index(name = "names", value = "database, bookmark", unique = true, dropDups = true))
 public class MongoCommand : MongoModel<MongoCommand>() {
 
-    public var bookmark: String? = null
+    public var bookmark: String = ""
         private set
     public var collection: String = "test"
     public var database: String = "test"
-    public var insert: String? = null
-    private var limit: Int = DEFAULT_LIMIT
-    public var multiple: Boolean? = FALSE
-        private set
-    public var params: Map<String, String> = HashMap()
-        private set
-    public var projections: String? = null
-        private set
+    public var insert: String = ""
+    public var limit: Int = DEFAULT_LIMIT
+    public var multiple: Boolean = FALSE
+    //    public var params: java.util.Map<java.lang.String, java.lang.String> = HashMap<java.lang.String, java.lang.String>()
+    public var projections: String = ""
     JsonProperty("query")
     public var queryString: String = ""
-    public var showCount: Boolean = FALSE
-        private set
-    public var sort: String? = null
-        private set
-    public var update: String? = null
-        private set
-    public var upsert: Boolean? = FALSE
-        private set
+    public var showCount: Boolean = true
+    public var sort: String = ""
+    public var update: String = ""
+    public var upsert: Boolean = FALSE
 
     JsonIgnore
-    private var insertDocument: Document? = null
+    private Transient var insertDocument: Document = Document()
     JsonIgnore
-    private var projectionsDocument: BsonDocument? = null
+    private Transient var projectionsDocument: Document = Document()
     JsonIgnore
-    private var queryDocument: BsonDocument? = null
+    private Transient var queryDocument: Document = Document()
     JsonIgnore
-    private var sortDocument: BsonDocument? = null
+    private Transient var sortDocument: Document = Document()
     JsonIgnore
-    private var updateDocument: BsonDocument? = null
-
-    init {
-        showCount = true
-        limit = DEFAULT_LIMIT
-    }
+    private Transient var updateDocument: Document = Document()
 
     public fun namespace(database: String, collection: String): MongoCommand {
         this.database = database
@@ -86,38 +67,30 @@ public class MongoCommand : MongoModel<MongoCommand>() {
         return this
     }
 
-    public fun setBookmark(bookmark: String): MongoCommand {
-        this.bookmark = bookmark
-        return this
-
-    }
-
-    public fun getLimit(): Int {
-        return if (limit < 1) DEFAULT_LIMIT else limit
-    }
-
     public fun setLimit(limit: Int): MongoCommand {
-        this.limit = limit
+        this.limit = if (limit < 1) DEFAULT_LIMIT else limit
         return this
     }
 
-    public fun setMultiple(multiple: Boolean?): MongoCommand {
+    public fun setMultiple(multiple: Boolean): MongoCommand {
         this.multiple = multiple
         return this
     }
 
-    public fun setParams(params: Map<String, String>): MongoCommand {
-        this.params = params
-        return this
-    }
+    /*
+        public fun setParams(params: Map<String, String>): MongoCommand {
+            this.params = params
+            return this
+        }
+    */
 
     public fun setProjections(projections: String): MongoCommand {
         this.projections = projections
         return this
     }
 
-    public fun setShowCount(showCount: Boolean?): MongoCommand {
-        this.showCount = coerce(showCount)
+    public fun setShowCount(showCount: Boolean): MongoCommand {
+        this.showCount = showCount
         return this
     }
 
@@ -131,57 +104,76 @@ public class MongoCommand : MongoModel<MongoCommand>() {
         return this
     }
 
-    public fun setUpsert(upsert: Boolean?): MongoCommand {
+    public fun setUpsert(upsert: Boolean): MongoCommand {
         this.upsert = upsert
         return this
     }
 
-    public fun getInsertDocument(): Document? {
-        if (insertDocument == null) {
+    public fun getInsertDocument(): Document {
+        if (insertDocument.isEmpty() && !insert.isEmpty()) {
             insertDocument = if (Strings.isNullOrEmpty(insert)) Document() else Document.parse(insert)
         }
         return insertDocument
     }
 
-    public fun getProjectionsDocument(): BsonDocument? {
-        if (projectionsDocument == null && projections != null) {
+    public fun getProjectionsDocument(): Document {
+        if (projectionsDocument.isEmpty() && !projections.isEmpty()) {
             projectionsDocument = parse(projections)
         }
         return projectionsDocument
     }
 
-    public fun getQueryDocument(): BsonDocument? {
-        if (queryDocument == null) {
+    public fun getQueryDocument(): Document {
+        if (queryDocument.isEmpty() && !queryString.isEmpty()) {
             queryDocument = parse(queryString)
         }
         return queryDocument
     }
 
-    public fun getSortDocument(): BsonDocument? {
-        if (sortDocument == null && sort != null) {
+    public fun getSortDocument(): Document {
+        if (sortDocument.isEmpty () && !sort.isEmpty()) {
             sortDocument = parse(sort)
         }
 
         return sortDocument
     }
 
-    public fun getUpdateDocument(): BsonDocument? {
-        if (updateDocument == null && update != null) {
+    public fun getUpdateDocument(): Document {
+        if (updateDocument.isEmpty() && !update.isEmpty()) {
             updateDocument = parse(update)
         }
         return updateDocument
     }
 
-    private fun coerce(value: Boolean?): Boolean {
-        return value ?: false
+    public fun insert(insert: String): MongoCommand {
+        this.insert = insert
+        return this
     }
 
-    public fun expand(): String {
-        for (entry in params.entrySet()) {
-            queryString = queryString.replaceAll("\\{\\{" + entry.getKey() + "\\}\\}", entry.getValue())
-        }
-        return queryString.replace("\n", "")
+    public fun query(query: String): MongoCommand {
+        queryString = query
+        return this
     }
+
+    public fun update(query: String, update: String): MongoCommand {
+        query(query)
+        this.update = update
+        return this
+    }
+
+    public fun remove(remove: String): MongoCommand {
+        queryString = remove
+        return this
+    }
+
+    /*
+        public fun expand(): String {
+            for (entry in params.entrySet()) {
+                queryString = queryString.replaceAll("\\{\\{" + entry.getKey() + "\\}\\}", entry.getValue())
+            }
+            return queryString.replace("\n", "")
+        }
+    */
 
     private fun extractValue(value: String, index: Int): String {
         val first = value.indexOf("\"", index) + 1
@@ -198,9 +190,9 @@ public class MongoCommand : MongoModel<MongoCommand>() {
     }
 
     SuppressWarnings("unchecked")
-    private fun parse(json: String?): BsonDocument {
+    private fun parse(json: String?): Document {
         try {
-            return if (Strings.isNullOrEmpty(json)) BsonDocument() else BsonDocument.parse(json)
+            return Document(if (Strings.isNullOrEmpty(json)) BsonDocument() else BsonDocument.parse(json))
         } catch (e: IOException) {
             throw InvalidQueryException(e.getMessage()!!, e)
         }
@@ -216,7 +208,7 @@ public class MongoCommand : MongoModel<MongoCommand>() {
 
         val that = other as MongoCommand
 
-        if (if (bookmark != null) bookmark != that.bookmark else that.bookmark != null) {
+        if (bookmark != that.bookmark) {
             return false
         }
         if (collection != that.collection) {
@@ -225,19 +217,21 @@ public class MongoCommand : MongoModel<MongoCommand>() {
         if (database != that.database) {
             return false
         }
-        if (if (insert != null) insert != that.insert else that.insert != null) {
+        if (insert != that.insert) {
             return false
         }
         if (limit != that.limit) {
             return false
         }
-        if (if (multiple != null) multiple != that.multiple else that.multiple != null) {
+        if (multiple != that.multiple) {
             return false
         }
-        if (params != that.params) {
-            return false
-        }
-        if (if (projections != null) projections != that.projections else that.projections != null) {
+        /*
+                if (params != that.params) {
+                    return false
+                }
+        */
+        if (projections != that.projections) {
             return false
         }
         if (queryString != that.queryString) {
@@ -246,13 +240,13 @@ public class MongoCommand : MongoModel<MongoCommand>() {
         if (showCount != that.showCount) {
             return false
         }
-        if (if (sort != null) sort != that.sort else that.sort != null) {
+        if (sort != that.sort) {
             return false
         }
-        if (if (update != null) update != that.update else that.update != null) {
+        if (update != that.update) {
             return false
         }
-        if (if (upsert != null) upsert != that.upsert else that.upsert != null) {
+        if (upsert != that.upsert) {
             return false
         }
 
@@ -260,55 +254,30 @@ public class MongoCommand : MongoModel<MongoCommand>() {
     }
 
     override fun hashCode(): Int {
-        var result = if (bookmark != null) bookmark!!.hashCode() else 0
-        result = 31 * result + (collection.hashCode())
-        result = 31 * result + (database.hashCode())
-        result = 31 * result + (if (insert != null) insert!!.hashCode() else 0)
-        result = 31 * result + (limit.hashCode())
-        result = 31 * result + (if (multiple != null) multiple!!.hashCode() else 0)
-        result = 31 * result + (params.hashCode())
-        result = 31 * result + (if (projections != null) projections!!.hashCode() else 0)
-        result = 31 * result + (queryString.hashCode())
-        result = 31 * result + (showCount.hashCode())
-        result = 31 * result + (if (sort != null) sort!!.hashCode() else 0)
-        result = 31 * result + (if (update != null) update!!.hashCode() else 0)
-        result = 31 * result + (if (upsert != null) upsert!!.hashCode() else 0)
+        var result = bookmark.hashCode()
+        result = 31 * result + collection.hashCode()
+        result = 31 * result + database.hashCode()
+        result = 31 * result + insert.hashCode()
+        result = 31 * result + limit.hashCode()
+        result = 31 * result + multiple.hashCode()
+        //        result = 31 * result + params.hashCode()
+        result = 31 * result + projections.hashCode()
+        result = 31 * result + queryString.hashCode()
+        result = 31 * result + showCount.hashCode()
+        result = 31 * result + sort.hashCode()
+        result = 31 * result + update.hashCode()
+        result = 31 * result + upsert.hashCode()
         return result
     }
 
     override fun toString(): String {
-        return "MongoCommand{" + "upsert=" + upsert + ", bookmark='" + bookmark + '\'' + ", collection='" + collection + '\'' + ", database='" + database + '\'' + ", insert='" + insert + '\'' + ", limit=" + limit + ", multiple=" + multiple + ", params=" + params + ", projections='" + projections + '\'' + ", query='" + queryString + '\'' + ", showCount=" + showCount + ", sort='" + sort + '\'' + ", update='" + update + '\'' + '}'
+        return "MongoCommand{upsert=$upsert, bookmark='$bookmark', collection='$collection', database='$database', insert='$insert', " +
+                "limit=$limit, multiple=$multiple, projections='$projections', query='$queryString', showCount=$showCount, " +
+                "sort='$sort', update='$update'}"
     }
 
     companion object {
         public val DEFAULT_LIMIT: Int = 100
 
-        public fun query(query: String): MongoCommand {
-            val command = MongoCommand()
-            command.queryString = query
-
-            return command
-        }
-
-        public fun update(query: String, update: String): MongoCommand {
-            val command = query(query)
-            command.update = update
-
-            return command
-        }
-
-        public fun insert(insert: String): MongoCommand {
-            val command = MongoCommand()
-            command.insert = insert
-
-            return command
-        }
-
-        public fun remove(remove: String): MongoCommand {
-            val command = MongoCommand()
-            command.queryString = remove
-
-            return command
-        }
     }
 }

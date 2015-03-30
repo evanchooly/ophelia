@@ -18,7 +18,7 @@ package com.antwerkz.ophelia.models
 import com.antwerkz.ophelia.OpheliaApplication
 import java.util.TreeMap
 
-public class ConnectionInfo(public val application: OpheliaApplication,
+public class ConnectionInfo(public transient val application: OpheliaApplication,
                             public var host: String = "127.0.0.1",
                             public var port: Int = 27017,
                             public var database: String = "test",

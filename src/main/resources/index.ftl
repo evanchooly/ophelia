@@ -19,7 +19,7 @@
 
 <html ng-app="ophelia">
 <head>
-    <title>@Sofia.appTitle()</title>
+    <title>${ophelia().appTitle()}</title>
     <style type="text/css">
         body {
             padding-top: 60px;
@@ -60,7 +60,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </a>
-            <a class="brand" href="#">{{sofia.appTitle("US")}}</a>
+            <a class="brand" href="#">${ophelia().appTitle()}</a>
 
             <div class="btn-group pull-right">
                 <a class="btn dropdown-toggle" href="#" ng-model="showList" ng-click="showList = !showList">
@@ -82,7 +82,7 @@
     <div class="row-fluid">
         <hr>
         <footer>
-            &copy; Justin Lee 2012-2014
+            &copy; Justin Lee 2012-2015
             <div id="projectInfo">
                 <a href="https://github.com/evanchooly/ophelia">Ophelia at github</a>
             </div>

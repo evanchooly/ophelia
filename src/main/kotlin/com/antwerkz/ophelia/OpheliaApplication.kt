@@ -24,7 +24,7 @@ import io.dropwizard.assets.AssetsBundle
 import io.dropwizard.setup.Environment
 import com.antwerkz.ophelia.models.ConnectionInfo
 import com.antwerkz.ophelia.utils.MongoUtil
-import com.antwerkz.ophelia.controllers.QueryResource
+import com.antwerkz.ophelia.resources.QueryResource
 import com.antwerkz.ophelia.dao.MongoCommandDao
 import org.eclipse.jetty.server.session.SessionHandler
 
@@ -32,12 +32,6 @@ class OpheliaApplication : Application<OpheliaConfiguration>() {
     val morphia: Morphia = Morphia()
 
     public var mongo: MongoClient = MongoClient()
-
-/*
-    static void main(String[] args) throws Exception {
-        new OpheliaApplication().run(args) ;
-    }
-*/
 
     override
     fun getName(): String {
@@ -66,4 +60,9 @@ class OpheliaApplication : Application<OpheliaConfiguration>() {
                 MongoCommandDao(morphia.createDatastore(mongo, "ophelia")), mongoUtil) );
         environment.healthChecks().register("ophelia", OpheliaHealthCheck()) ;
     }
+}
+
+throws(javaClass<Exception>())
+fun main(args: Array<String>) {
+    OpheliaApplication().run(args) ;
 }

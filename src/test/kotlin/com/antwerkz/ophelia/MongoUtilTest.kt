@@ -17,6 +17,7 @@ package com.antwerkz.ophelia
 
 import com.antwerkz.ophelia.models.MongoCommand
 import com.antwerkz.ophelia.utils.MongoUtil
+import com.antwerkz.ophelia.utils.pretty
 import com.mongodb.BasicDBObject
 import com.mongodb.DB
 import com.mongodb.DBCollection
@@ -51,9 +52,9 @@ public class MongoUtilTest [throws(javaClass<UnknownHostException>())] () {
     public fun insertDocument() {
         db.getCollection(COLLECTION_NAME).drop()
 
-        mongoUtil.insert(MongoCommand.insert("{name : \"John Doe\", \"age\" : 23 }").namespace(DATABASE_NAME, COLLECTION_NAME))
+        mongoUtil.insert(MongoCommand().insert("{name : \"John Doe\", \"age\" : 23 }").namespace(DATABASE_NAME, COLLECTION_NAME))
 
-        val query = MongoCommand.query("{}").namespace(DATABASE_NAME, COLLECTION_NAME)
+        val query = MongoCommand().namespace(DATABASE_NAME, COLLECTION_NAME)
 
         val iterator = mongoUtil.query(query).iterator()
         val map = iterator.next()
@@ -65,7 +66,7 @@ public class MongoUtilTest [throws(javaClass<UnknownHostException>())] () {
     throws(javaClass<IOException>())
     public fun fields() {
         generateData()
-        val query = MongoCommand.query("").setProjections("{count:0}").namespace(DATABASE_NAME, COLLECTION_NAME)
+        val query = MongoCommand().setProjections("{count:0}").namespace(DATABASE_NAME, COLLECTION_NAME)
 
         val results = mongoUtil.query(query)
         for (result in results) {
@@ -77,7 +78,7 @@ public class MongoUtilTest [throws(javaClass<UnknownHostException>())] () {
     throws(javaClass<IOException>())
     public fun queryWithASort() {
         generateData()
-        val query = MongoCommand.query("").namespace(DATABASE_NAME, COLLECTION_NAME)
+        val query = MongoCommand().namespace(DATABASE_NAME, COLLECTION_NAME)
 
         Assert.assertEquals(mongoUtil.query(query).iterator().next().get("count"), 0)
 
@@ -89,7 +90,7 @@ public class MongoUtilTest [throws(javaClass<UnknownHostException>())] () {
     throws(javaClass<IOException>())
     public fun queryWithALimit() {
         generateData()
-        val query = MongoCommand.query("").setLimit(5).namespace(DATABASE_NAME, COLLECTION_NAME)
+        val query = MongoCommand().setLimit(5).namespace(DATABASE_NAME, COLLECTION_NAME)
 
         Assert.assertEquals(mongoUtil.query(query).size(), 5)
 
@@ -100,16 +101,16 @@ public class MongoUtilTest [throws(javaClass<UnknownHostException>())] () {
         val collection = db.getCollection(COLLECTION_NAME)
         collection.drop()
 
-        var command = MongoCommand.insert("{ name : \"John Doe\", age: 30 }").namespace(DATABASE_NAME, COLLECTION_NAME)
+        var command = MongoCommand().insert("{ name : \"John Doe\", age: 30 }").namespace(DATABASE_NAME, COLLECTION_NAME)
         mongoUtil.insert(command)
 
         val query = "{ name : \"John Doe\" }"
-        command = MongoCommand.update(query, "{ \$inc : { age : 1 } }").setMultiple(false).setUpsert(false).namespace(DATABASE_NAME,
+        command = MongoCommand().update(query, "{ \$inc : { age : 1 } }").setMultiple(false).setUpsert(false).namespace(DATABASE_NAME,
                 COLLECTION_NAME)
 
         mongoUtil.update(command)
 
-        val result = mongoUtil.query(MongoCommand.query(query).namespace(DATABASE_NAME, COLLECTION_NAME))
+        val result = mongoUtil.query(MongoCommand().query(query).namespace(DATABASE_NAME, COLLECTION_NAME))
         Assert.assertEquals(result.get(0).get("age"), 31)
     }
 
@@ -118,15 +119,15 @@ public class MongoUtilTest [throws(javaClass<UnknownHostException>())] () {
         val collection = db.getCollection(COLLECTION_NAME)
         collection.drop()
 
-        var command = MongoCommand.insert("{ name : \"John Doe\", age: 30 }").namespace(DATABASE_NAME, COLLECTION_NAME)
+        var command = MongoCommand().insert("{ name : \"John Doe\", age: 30 }").namespace(DATABASE_NAME, COLLECTION_NAME)
         mongoUtil.insert(command)
 
         val query = "{ name : \"John Doe\" }"
-        command = MongoCommand.remove(query).setMultiple(false).setUpsert(false).namespace(DATABASE_NAME, COLLECTION_NAME)
+        command = MongoCommand().remove(query).setMultiple(false).setUpsert(false).namespace(DATABASE_NAME, COLLECTION_NAME)
 
         mongoUtil.remove(command)
 
-        val result = mongoUtil.query(MongoCommand.query(query).namespace(DATABASE_NAME, COLLECTION_NAME))
+        val result = mongoUtil.query(MongoCommand().query(query).namespace(DATABASE_NAME, COLLECTION_NAME))
         Assert.assertNotNull(result.get(0).get("message"), result.toString())
     }
 
@@ -148,9 +149,9 @@ public class MongoUtilTest [throws(javaClass<UnknownHostException>())] () {
     public fun emptyFind() {
         db.getCollection(COLLECTION_NAME).drop()
 
-        mongoUtil.insert(MongoCommand.insert("{name : \"John Doe\", \"age\" : 23 }").namespace(DATABASE_NAME, COLLECTION_NAME))
+        mongoUtil.insert(MongoCommand().insert("{name : \"John Doe\", \"age\" : 23 }").namespace(DATABASE_NAME, COLLECTION_NAME))
 
-        val query = MongoCommand.query("").namespace(DATABASE_NAME, COLLECTION_NAME)
+        val query = MongoCommand().query("").namespace(DATABASE_NAME, COLLECTION_NAME)
         val iterator = mongoUtil.query(query).iterator()
 
         val map = iterator.next()
@@ -161,7 +162,7 @@ public class MongoUtilTest [throws(javaClass<UnknownHostException>())] () {
     Test
     throws(javaClass<IOException>())
     public fun systemIndexes() {
-        val query = MongoCommand.query("").namespace(DATABASE_NAME, "system.indexes")
+        val query = MongoCommand().namespace(DATABASE_NAME, "system.indexes")
         val iterator = mongoUtil.query(query).iterator()
         Assert.assertTrue(iterator.hasNext())
     }
@@ -171,11 +172,11 @@ public class MongoUtilTest [throws(javaClass<UnknownHostException>())] () {
     public fun objectId() {
         db.getCollection(COLLECTION_NAME).drop()
 
-        mongoUtil.insert(MongoCommand.insert("{name : \"John Doe\", \"age\" : 23 }").namespace(DATABASE_NAME, COLLECTION_NAME))
+        mongoUtil.insert(MongoCommand().insert("{name : \"John Doe\", \"age\" : 23 }").namespace(DATABASE_NAME, COLLECTION_NAME))
 
-        val map = mongoUtil.query(MongoCommand.query("{}").namespace(DATABASE_NAME, COLLECTION_NAME)).iterator().next()
+        val map = mongoUtil.query(MongoCommand().namespace(DATABASE_NAME, COLLECTION_NAME)).iterator().next()
 
-        val loaded = mongoUtil.query(MongoCommand.query(format("{ _id : ObjectId(\"%s\") }", map.get("_id").toString())).namespace(DATABASE_NAME, COLLECTION_NAME)).iterator().next()
+        val loaded = mongoUtil.query(MongoCommand().query(format("{ _id : ObjectId(\"%s\") }", map.get("_id").toString())).namespace(DATABASE_NAME, COLLECTION_NAME)).iterator().next()
         Assert.assertEquals(map, loaded)
     }
 
@@ -192,11 +193,14 @@ public class MongoUtilTest [throws(javaClass<UnknownHostException>())] () {
     Test
     throws(javaClass<IOException>())
     public fun explain() {
-        val mongoCommand = MongoCommand
+        val mongoCommand = MongoCommand()
                 .query("{name : \"MongoDB\"," + "type : \"database\"," + "count : 1," + "info : {x : 203, y : 102}" + "})")
                 .namespace(DATABASE_NAME, COLLECTION_NAME)
         val explain = mongoUtil.explain(mongoCommand)
-        Assert.assertTrue(explain.iterator().hasNext())
+        val iterator = explain.iterator()
+        Assert.assertTrue(iterator.hasNext())
+        val document = iterator.next()
+        println("document = ${document.pretty()}")
     }
 
     companion object {

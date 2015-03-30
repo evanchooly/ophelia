@@ -2,34 +2,33 @@ package com.antwerkz.ophelia.utils
 
 import com.antwerkz.ophelia.models.MongoCommand
 import com.antwerkz.sofia.Ophelia
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.mongodb.BasicDBObject
 import com.mongodb.MongoClient
 import com.mongodb.client.FindIterable
 import com.mongodb.client.model.UpdateOptions
-import org.bson.BsonDocument
 import org.bson.Document
 import java.util.ArrayList
 import java.util.Arrays
-import java.util.TreeMap
 
 public class MongoUtil(private val client: MongoClient) {
 
     public fun explain(command: MongoCommand): List<Document> {
         val explain = client.getDB(command.database)
                 .getCollection(command.collection)
-                .find(BasicDBObject(command.getQueryDocument()), BasicDBObject(command.getProjectionsDocument()?: Document().toLinkedMap()))
+                .find(BasicDBObject(command.getQueryDocument()), BasicDBObject(command.getProjectionsDocument().toLinkedMap()))
                 .explain()
                 as BasicDBObject
         val document = Document()
         explain.entrySet()
-            .forEach { document.put(it.key : String, it.value) }
+                .forEach { document.put(it.key : String, it.value) }
         return Arrays.asList<Document>(document)
     }
 
     public fun query(command: MongoCommand): List<Document> {
         val query = getCursor(command)
         query.sort(command.getSortDocument())
-        query.limit(command.getLimit())
+        query.limit(command.limit)
         return extract(query)
     }
 
@@ -40,12 +39,12 @@ public class MongoUtil(private val client: MongoClient) {
 
     public fun update(command: MongoCommand): Long {
         val collection = client.getDatabase(command.database).getCollection(command.collection)
-        val upsert = command.upsert ?: false
-        if (command.multiple ?: false) {
-            return collection.updateOne(command.getQueryDocument(), command.getUpdateDocument(), UpdateOptions().upsert(upsert))
+        val upsert = command.upsert
+        return if (command.multiple) {
+            collection.updateOne(command.getQueryDocument(), command.getUpdateDocument(), UpdateOptions().upsert(upsert))
                     .getModifiedCount()
         } else {
-            return collection.updateMany(command.getQueryDocument(), command.getUpdateDocument(), UpdateOptions().upsert(upsert))
+            collection.updateMany(command.getQueryDocument(), command.getUpdateDocument(), UpdateOptions().upsert(upsert))
                     .getModifiedCount()
         }
     }
@@ -76,9 +75,13 @@ public class MongoUtil(private val client: MongoClient) {
         }
         if (list.isEmpty()) {
             val map = Document()
-            map.put("message", Ophelia.noResults())
+            map.put("message", Ophelia().noResults())
             list.add(map)
         }
         return list
     }
+}
+
+fun Document.pretty(): String {
+    return ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(this);
 }

@@ -19,7 +19,7 @@
     <div class="span3">
         <div class="well sidebar-nav collections">
             <ul class="nav nav-list">
-                <li class="nav-header">{{sofia.collections()}}</li>
+                <li class="nav-header">${ophelia().collections()}</li>
                 <li class="nav-pills">
                     <table id="countTable">
                         <tr ng-repeat="(key, value) in collections">
@@ -47,9 +47,9 @@
     <div class="span3">
         <div class="well sidebar-nav collections">
             <ul class="nav nav-list">
-                <li class="nav-header">{{operation.collection}} {{sofia.collectionStats()}}</li>
+                <li class="nav-header">{{operation.collection}} ${ophelia().collectionStats()}</li>
                 <li class="nav-pills" ng-switch="collection.length">
-                    <div class="user-advice" ng-switch-when="0">{{sofia.selectCollection()}}</div>
+                    <div class="user-advice" ng-switch-when="0">${ophelia().selectCollection()}</div>
                     <table id="countTable" ng-switch-default>
                         <tr ng-repeat="(key, value) in collectionStats">
                             <td class="dbName">
@@ -62,7 +62,7 @@
             </ul>
             <hr/>
             <ul class="nav nav-list">
-                <li class="nav-header">{{operation.collection}} {{sofia.indexes()}}</li>
+                <li class="nav-header">{{operation.collection}} ${ophelia().indexes()}</li>
                 <li class="nav-pills">
                         <table id="countTable">
                         <tr ng-repeat="index in collectionIndexes">
@@ -82,21 +82,21 @@
 <div id="bookmarkModal" ng-show="showSaveBookmark">
     <div class="modal-header">
         <button type="button" class="close" ng-click="showSaveBookmark=false;">×</button>
-        <h3 id="myModalLabel">{{sofia.bookmarks()}}</h3>
+        <h3 id="myModalLabel">${ophelia().bookmarks()}</h3>
     </div>
     <div class="modal-body">
         <form>
             <table>
                 <tr>
-                    <td class="formLabel">{{sofia.queryBookmark()}}</td>
+                    <td class="formLabel">${ophelia().queryBookmark()}</td>
                     <td><input type="text" name="name" ng-model="newBookmark"></td>
                 </tr>
             </table>
         </form>
     </div>
     <div class="modal-footer">
-        <button class="cancelButton" ng-click="showSaveBookmark=false;">{{sofia.cancel()}}</button>
-        <button class="saveButton" ng-click="saveBookmark(newBookmark)">{{sofia.save()}}</button>
+        <button class="cancelButton" ng-click="showSaveBookmark=false;">${ophelia().cancel()}}</button>
+        <button class="saveButton" ng-click="saveBookmark(newBookmark)">${ophelia().save()}</button>
     </div>
 </div>
 -->
@@ -106,7 +106,7 @@
     <div class="modal-body">
         <div class="well sidebar-nav">
             <ul class="nav nav-list">
-                <li class="nav-header">{{sofia.loadBookmark()}}</li>
+                <li class="nav-header">${ophelia().loadBookmark()}</li>
                 <li class="nav-pills">
                     <table>
                         <tr ng-repeat="bookmark in bookmarks">
@@ -114,7 +114,7 @@
                                 <a class="bookmarkName" ng-click="useBookmark(bookmark);modalShown=false;"
                                    title="{{bookmark['query']}}">{{bookmark['bookmark']}}</a>
                             </td>
-                            <td><a ng-click="deleteBookmark(bookmark)" title="{{sofia.delete()}}">X</a></td>
+                            <td><a ng-click="deleteBookmark(bookmark)" title="${ophelia().delete()}">X</a></td>
                         </tr>
                     </table>
                 </li>
@@ -123,7 +123,7 @@
     </div>
 
     <!--<div class="modal-footer">&ndash;&gt;
-    <!--<a class="btn" ng-click="modalShown=false" href="">{{sofia.close()}}</a>&ndash;&gt;
+    <!--<a class="btn" ng-click="modalShown=false" href="">${ophelia().close()}</a>&ndash;&gt;
     <!--</div>&ndash;&gt;
 </div>
 -->
