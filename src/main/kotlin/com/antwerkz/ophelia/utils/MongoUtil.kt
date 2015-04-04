@@ -3,6 +3,7 @@ package com.antwerkz.ophelia.utils
 import com.antwerkz.ophelia.models.MongoCommand
 import com.antwerkz.sofia.Ophelia
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.ObjectWriter
 import com.mongodb.BasicDBObject
 import com.mongodb.MongoClient
 import com.mongodb.client.FindIterable
@@ -83,5 +84,5 @@ public class MongoUtil(private val client: MongoClient) {
 }
 
 fun Document.pretty(): String {
-    return ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(this);
+    return ObjectMapper().writerWithDefaultPrettyPrinter<ObjectWriter>().writeValueAsString(this);
 }

@@ -16,9 +16,9 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <critter.version>2.2.0-SNAPSHOT</critter.version>
-        <dropwizard.version>0.7.1</dropwizard.version>
+        <dropwizard.version>0.8.0</dropwizard.version>
         <kotlin.version>0.11.91</kotlin.version>
-        <morphia.version>0.110</morphia.version>
+        <morphia.version>0.111</morphia.version>
         <sofia.version>0.15</sofia.version>
     </properties>
 
@@ -36,7 +36,7 @@
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongo-java-driver</artifactId>
-            <version>3.0.0-rc0</version>
+            <version>3.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.mongodb.morphia</groupId>
@@ -140,6 +140,11 @@
             <version>6.8.8</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>18.0</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -166,21 +171,21 @@
                             </executions>
                         </plugin>
             -->
-<!--
-            <plugin>
-                <groupId>com.antwerkz.critter</groupId>
-                <artifactId>critter-maven</artifactId>
-                <version>${critter.version}</version>
-                <executions>
-                    <execution>
-                        <id>critter</id>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
--->
+            <!--
+                        <plugin>
+                            <groupId>com.antwerkz.critter</groupId>
+                            <artifactId>critter-maven</artifactId>
+                            <version>${critter.version}</version>
+                            <executions>
+                                <execution>
+                                    <id>critter</id>
+                                    <goals>
+                                        <goal>generate</goal>
+                                    </goals>
+                                </execution>
+                            </executions>
+                        </plugin>
+            -->
             <plugin>
                 <artifactId>kotlin-maven-plugin</artifactId>
                 <groupId>org.jetbrains.kotlin</groupId>
@@ -190,13 +195,17 @@
                     <execution>
                         <id>compile</id>
                         <phase>compile</phase>
-                        <goals> <goal>compile</goal> </goals>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
                     </execution>
 
                     <execution>
                         <id>test-compile</id>
                         <phase>test-compile</phase>
-                        <goals> <goal>test-compile</goal> </goals>
+                        <goals>
+                            <goal>test-compile</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>

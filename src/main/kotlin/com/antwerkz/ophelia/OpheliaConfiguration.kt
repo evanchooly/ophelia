@@ -15,6 +15,23 @@
  */
 package com.antwerkz.ophelia
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import io.dropwizard.Configuration
+import com.google.common.collect.ImmutableMap;
+import java.util
 
-public class OpheliaConfiguration : Configuration()
+public class OpheliaConfiguration : Configuration() {
+    JsonProperty("viewRendererConfiguration")
+    var viewRendererConfiguration: ImmutableMap<String, ImmutableMap<String, String>> =
+          ImmutableMap.builder<String, ImmutableMap<String, String>>().build()
+
+    JsonProperty("viewRendererConfiguration")
+    fun setViewRendererConfiguration(config: Map<String, Map<String, String>> ) {
+        var  builder: ImmutableMap.Builder<String, ImmutableMap<String, String>> = ImmutableMap.builder();
+        val set = config.entrySet()
+        set.forEach { entry ->
+            builder.put(entry.getKey(), ImmutableMap.copyOf(entry.getValue()));
+        }
+        viewRendererConfiguration = builder.build();
+    }
+}

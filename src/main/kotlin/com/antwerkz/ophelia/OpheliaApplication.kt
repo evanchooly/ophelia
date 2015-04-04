@@ -26,6 +26,11 @@ import com.antwerkz.ophelia.models.ConnectionInfo
 import com.antwerkz.ophelia.utils.MongoUtil
 import com.antwerkz.ophelia.resources.QueryResource
 import com.antwerkz.ophelia.dao.MongoCommandDao
+import com.google.common.collect.ImmutableMap
+import io.dropwizard.cli.CheckCommand
+import io.dropwizard.cli.Cli
+import io.dropwizard.cli.ServerCommand
+import io.dropwizard.util.JarLocation
 import org.eclipse.jetty.server.session.SessionHandler
 
 class OpheliaApplication : Application<OpheliaConfiguration>() {
@@ -40,7 +45,13 @@ class OpheliaApplication : Application<OpheliaConfiguration>() {
 
     override
     fun initialize(bootstrap: Bootstrap<OpheliaConfiguration>) {
-        bootstrap.addBundle(ViewBundle());
+        bootstrap.addBundle(object : ViewBundle<OpheliaConfiguration>() {
+            override fun getViewConfiguration(configuration: OpheliaConfiguration): ImmutableMap<String, ImmutableMap<String, String>> {
+                val immutableMap: ImmutableMap<String, ImmutableMap<String, String>> = configuration.viewRendererConfiguration
+                return immutableMap;
+
+            }
+        });
         bootstrap.addBundle(AssetsBundle("/assets", "/assets", null, "assets"));
         bootstrap.addBundle(AssetsBundle("/META-INF/resources/webjars", "/webjars", null, "webjars"));
     }
@@ -63,6 +74,6 @@ class OpheliaApplication : Application<OpheliaConfiguration>() {
 }
 
 throws(javaClass<Exception>())
-fun main(args: Array<String>) {
-    OpheliaApplication().run(args) ;
+fun main(vararg args: String) {
+    OpheliaApplication().run(*args);
 }

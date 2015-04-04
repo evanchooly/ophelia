@@ -8,11 +8,6 @@ import javax.servlet.ServletException
 import javax.servlet.ServletInputStream
 import javax.servlet.ServletRequest
 import javax.servlet.ServletResponse
-import javax.servlet.http.Cookie
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
-import javax.servlet.http.HttpSession
-import javax.servlet.http.Part
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.UnsupportedEncodingException
@@ -20,8 +15,21 @@ import java.security.Principal
 import java.util.Enumeration
 import java.util.Locale
 import java.util.UUID
+import javax.servlet.http.*
 
 public class MockServletRequest : HttpServletRequest {
+    override fun getContentLengthLong(): Long {
+        throw UnsupportedOperationException()
+    }
+
+    override fun changeSessionId(): String? {
+        throw UnsupportedOperationException()
+    }
+
+    override fun <T : HttpUpgradeHandler?> upgrade(handlerClass: Class<T>?): T? {
+        throw UnsupportedOperationException()
+    }
+
     private val cookies = array<Cookie>()
 
     override fun getAuthType(): String? {
