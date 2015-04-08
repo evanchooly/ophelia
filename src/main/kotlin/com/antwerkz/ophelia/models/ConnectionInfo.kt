@@ -40,6 +40,12 @@ public class ConnectionInfo(application: OpheliaApplication,
         collectionInfo = getCollectionInfo(application)
     }
 
+    constructor(application: OpheliaApplication, info: ConnectionInfo,
+                host: String = info.host,
+                port: Int = info.port,
+                database: String = info.database,
+                collection: String = info.collection) : this(application, host, port, database, collection) {}
+
     public fun loadCollections(application: OpheliaApplication): Map<String, Any> {
         val map = TreeMap<String, Any>()
         val db = application.mongo.getDatabase(database)

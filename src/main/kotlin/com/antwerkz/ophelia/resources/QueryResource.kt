@@ -58,10 +58,10 @@ public class QueryResource(private val application: OpheliaApplication, private 
     Path("/database/{database}")
     Produces(MediaType.APPLICATION_JSON)
     throws(javaClass<IOException>())
-    public fun database(Context request: HttpServletRequest, PathParam("database") database: String): String {
+    public fun database(Context request: HttpServletRequest, PathParam("database") newDB: String): String {
         val session = request.getSession()
         var info = getConnectionInfo(session)
-        info = ConnectionInfo(application, info.host, info.port, database, info.collection)
+        info = ConnectionInfo(application, info, database = newDB)
         session.setAttribute(INFO, info)
         return mapper.writeValueAsString(info)
     }
@@ -70,9 +70,10 @@ public class QueryResource(private val application: OpheliaApplication, private 
     Path("/host/{host}/{port}")
     Produces(MediaType.APPLICATION_JSON)
     throws(javaClass<IOException>())
-    public fun changeHost(Context request: HttpServletRequest, PathParam("host") host: String, PathParam("port") port: Int?): String {
+    public fun changeHost(Context request: HttpServletRequest, PathParam("host") newHost: String,
+                          PathParam("port") newPort: Int): String {
         var info = getConnectionInfo(request.getSession())
-        info = ConnectionInfo(application, host, port ?: 27017, info.database, info.collection);
+        info = ConnectionInfo(application, info, host = newHost, port = newPort);
         request.getSession().setAttribute(INFO, info)
         return mapper.writeValueAsString(info)
     }
@@ -83,7 +84,7 @@ public class QueryResource(private val application: OpheliaApplication, private 
     throws(javaClass<IOException>())
     public fun collectionInfo(Context request: HttpServletRequest, name: String): String {
         var info = getConnectionInfo(request.getSession())
-        info = ConnectionInfo(application, info.host, info.port, info.database, name);
+        info = ConnectionInfo(application, info, collection = name);
         request.getSession().setAttribute(INFO, info)
         return mapper.writeValueAsString(info)
     }
@@ -184,7 +185,7 @@ public class QueryResource(private val application: OpheliaApplication, private 
         }
     */
 
-    public fun getConnectionInfo(session: HttpSession): ConnectionInfo {
+    private fun getConnectionInfo(session: HttpSession): ConnectionInfo {
         var info = session.getAttribute(INFO)
         if (info == null) {
             info = ConnectionInfo(application)

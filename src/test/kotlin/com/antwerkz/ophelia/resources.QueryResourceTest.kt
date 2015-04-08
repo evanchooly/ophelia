@@ -19,6 +19,7 @@ import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
 import javax.ws.rs.client.Client
 import javax.ws.rs.client.ClientBuilder
+import javax.ws.rs.core.Response
 
 class QueryResourceTest {
     private var client: Client = ClientBuilder.newClient()
@@ -63,20 +64,43 @@ class QueryResourceTest {
 
     Test
     fun database() {
-        val response = client.target("${URL}database/test").request().get()
-        val status = response.getStatus()
-        Assert.assertEquals(status, 200)
+        val response = get("/database/test")
+        val document = parseResponse(response)
 
-        val s = response.readEntity(javaClass<String>())
-        val document = Document(JSON.parse(s) as BasicDBObject)
-        Assert.assertEquals(document.get("port"), 27017)
-        Assert.assertEquals(document.get("host"), "127.0.0.1")
-        Assert.assertEquals(document.get("database"), "test")
-        Assert.assertEquals(document.get("collection"), "test")
+        testConnectionInfo(document)
+    }
+
+    Test
+    fun changeHost() {
+        var response = get("/host/localhost/27017")
+        var document = parseResponse(response)
+
+        testConnectionInfo(document)
+
+        response = get("/host/127.0.0.1/26000")
+        document = parseResponse(response)
+
+        testConnectionInfo(document, host = "127.0.0.1", port = 26000)
+    }
+
+    private fun testConnectionInfo(document: Document, host: String = "localhost", port: Int = 27017,
+                                   database: String = "test", collection: String = "test") {
+        Assert.assertEquals(document.get("host"), host)
+        Assert.assertEquals(document.get("port"), port)
+        Assert.assertEquals(document.get("database"), database)
+        Assert.assertEquals(document.get("collection"), collection)
         Assert.assertNotNull(document.get("databases"))
         Assert.assertNotNull(document.get("collections"))
         Assert.assertNotNull(document.get("collectionInfo"))
         Assert.assertFalse((document.get("collectionInfo") as Map<*, *>).isEmpty())
+    }
+
+    private fun parseResponse(response: Response) = Document(JSON.parse(response.readEntity(javaClass<String>())) as BasicDBObject)
+
+    private fun get(path: String): Response {
+        var response = client.target("${URL}${path}").request().get()
+        Assert.assertEquals(response.getStatus(), 200)
+        return response
     }
 
     fun getByName(driver: WebDriver, name: String): WebElement {
@@ -104,6 +128,6 @@ class QueryResourceTest {
     companion object {
         val dropwizard: DropwizardTestSupport<OpheliaConfiguration> = DropwizardTestSupport(javaClass<OpheliaApplication>(),
               "ophelia.yml");
-        val URL: String = "http://localhost:8081/ophelia/"
+        val URL: String = "http://localhost:8081/ophelia"
     }
 }
