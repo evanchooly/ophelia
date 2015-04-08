@@ -23,6 +23,7 @@ import com.mongodb.BasicDBObject
 import com.mongodb.DB
 import com.mongodb.DBCollection
 import com.mongodb.DBCursor
+import com.mongodb.client.FindIterable
 import com.mongodb.client.MongoDatabase
 import org.bson.Document
 import org.bson.types.ObjectId
@@ -119,16 +120,17 @@ public class Parser(mongoCommand: MongoCommand) {
         return db.getCollection(collection).count(queryExpression)
     }
 
-/*
-    public fun export(db: MongoDatabase): MongoInputStream {
+    public fun export(db: MongoDatabase): FindIterable<Document>? {
         if ("find" != method) {
             throw IllegalArgumentException("Only find queries may be exported")
         }
         val collection = db.getCollection(collection)
-        val dbObjects = collection.find(queryExpression, keys)
-        return MongoInputStream(dbObjects)
+        val results = collection.find(queryExpression)
+        if(keys != null) {
+            results.projection(keys)
+        }
+        return results
     }
-*/
 
 /*
     private inner class ConsumingStringReader(query: String) : StringReader(query) {

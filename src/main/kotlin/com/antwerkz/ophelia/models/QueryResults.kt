@@ -6,18 +6,7 @@ import javax.xml.bind.annotation.XmlRootElement
 
 XmlRootElement
 JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
-public class QueryResults() {
-    public var info: ConnectionInfo? = null
-
-    public var collections: Map<String, Any> = mapOf()
-
-    public var databaseList: List<String> = listOf()
-
-    public var dbResults: List<Document> = listOf()
-
-    public var error: String = ""
-
-    public var resultCount: Int = 0
-
-    public var collectionStats: Document = Document()
+public class QueryResults(var dbResults: List<Document> = listOf(),
+                          var resultCount: Int = 0,
+                          var error: String = "") {
 }

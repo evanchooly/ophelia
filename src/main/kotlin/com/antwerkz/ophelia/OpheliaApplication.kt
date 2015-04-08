@@ -67,8 +67,7 @@ class OpheliaApplication : Application<OpheliaConfiguration>() {
         environment.getApplicationContext().setSessionsEnabled(true) ;
         environment.getApplicationContext().setSessionHandler(SessionHandler()) ;
 
-        environment.jersey().register(QueryResource(this,
-                MongoCommandDao(morphia.createDatastore(mongo, "ophelia")), mongoUtil) );
+        environment.jersey().register(QueryResource(this, mongoUtil) );
         environment.healthChecks().register("ophelia", OpheliaHealthCheck()) ;
     }
 }
