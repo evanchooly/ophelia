@@ -55,6 +55,14 @@ public class QueryResource(private val application: OpheliaApplication, private 
     }
 
     GET
+    Path("/connectioninfo")
+    Produces(MediaType.APPLICATION_JSON)
+    throws(javaClass<IOException>())
+    public fun connectionInfo(Context request: HttpServletRequest): String {
+        return mapper.writeValueAsString(getConnectionInfo(request.getSession()))
+    }
+
+    GET
     Path("/database/{database}")
     Produces(MediaType.APPLICATION_JSON)
     throws(javaClass<IOException>())

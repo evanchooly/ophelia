@@ -154,9 +154,9 @@ var app = angular.module('ophelia', ['ui', 'ui.bootstrap'])
                 } else if (key == 'bookmarks') {
                     $scope.bookmarks = response[key];
                 } else if (key == 'collections') {
-                } else if (key == 'databaseList') {
+                } else if (key == 'databases') {
                     $scope.databases = response[key];
-                } else if (key == 'collectionStats') {
+                } else if (key == 'collections') {
                     $scope.collectionStats = response[key];
                 } else if (key == 'error') {
                     $scope.errorMessage = response[key];
@@ -231,7 +231,7 @@ var app = angular.module('ophelia', ['ui', 'ui.bootstrap'])
          */
         resetState();
         //get(contextPath + 'content');
-        $scope.listCollections = function () {
+        function listCollections() {
             $http.get(contextPath + 'collections')
                 .success(function (response) {
                     $scope.collections = response;
@@ -241,10 +241,10 @@ var app = angular.module('ophelia', ['ui', 'ui.bootstrap'])
                     $scope.errorMessage = status.responseText;
                 });
         }
-        $scope.listDatabases = function () {
-            $http.get(contextPath + 'databases')
+        function connectionInfo() {
+            $http.get(contextPath + 'connectioninfo')
                 .success(function (response) {
-                    $scope.databases = response;
+                    processResponse(response)
                 })
                 .error(function (response) {
                     console.error(response);
@@ -252,5 +252,6 @@ var app = angular.module('ophelia', ['ui', 'ui.bootstrap'])
                 });
         }
 
+        connectionInfo();
     })
 

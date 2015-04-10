@@ -63,13 +63,13 @@
             <a class="brand" href="#">${ophelia().appTitle()}</a>
 
             <div class="btn-group pull-right">
-                <a class="btn dropdown-toggle" href="#" ng-model="showList" ng-click="showList = !showList">
+                <a id="db-list" class="btn dropdown-toggle" href="#" ng-model="showList" ng-click="showList = !showList">
                     <i class="icon-home"></i> <span id="db">{{operation.database}}</span>
                     <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu dropdown-form" ng-show="showList">
                     <li ng-repeat="db in databases">
-                        <a ng-click="update(db);">{{db}}</a>
+                        <a id="database-{{db}}" ng-click="update(db);">{{db}}</a>
                     </li>
                 </ul>
             </div>
